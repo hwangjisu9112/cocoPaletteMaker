@@ -1,0 +1,17 @@
+// manifest.json
+{
+  "manifest_version": 3,
+  "name": "cocoPalateMaker",
+  "version": "1.0",
+  "description": "코코포리아와 연동할 수 있는 TRPG 캐릭터 생성기",
+  "icons": {
+    "16": "vite.svg",
+    "48": "vite.svg",
+    "128": "vite.svg"
+  },
+  "action": {
+    "default_popup": "index.html", // Vite 빌드 시 이 파일을 팝업으로 사용
+    "default_icon": "vite.svg",
+    "default_title": "cocoPalateMaker"
+  }
+}
