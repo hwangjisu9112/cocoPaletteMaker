@@ -1,7 +1,8 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import { AppState } from './store';
+  import Result from './CoCsheet.svelte';
+  $: state = $AppState;
+
 
 //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치 정의
 
@@ -57,7 +58,6 @@ function rollCOC(): void {
 
 
    CharacteristicsStatus = {
-
     str: rolledStr,
     con: rolledCon,
     siz: rolledSiz,
@@ -67,17 +67,52 @@ function rollCOC(): void {
     int: rolledInt,
     pow: rolledPow,
     luc: rolledLuc
-
   };
 
+  const newStat = {
+    str: rolledStr,
+    con: rolledCon,
+    siz: rolledSiz,
+    dex: rolledDex,
+    app: rolledApp,
+    edu: rolledEdu,
+    int: rolledInt,
+    pow: rolledPow,
+    luc: rolledLuc
+    
+  };
+
+  AppState.update(s => ({ ...s, currentStats: newStat }));
+
+  console.log("특성치 생성됨")
+
+}
+
+
+function confirmStat(): void {
+
+  if(!state.currentStats || state.currentStats.total ===0 ) {
+    alert("먼저 특성치를 굴려주세요")
+    return
+  };
+
+    AppState.update(s => ({ ...s, isConfirmed: true }));
+
+    if(chrome && chrome.storage) {
+      chrome.storage.local.set({ confirmedStats: state.currentStats }, () => {
+       console.log('확정된 능력치가 크롬 저장소에 저장되었습니다.');
+        });
+    }
 }
  
 </script>
+{#if !$AppState.isConfirmed}
 
 <main>
   <h1> 크툴루의 부름 탐사자 특성치 생성기 </h1>
 
-  <button on:click={rollCOC}>능력치 굴리기</button>
+  <button on:click={rollCOC}>특성치 생성</button>
+  <button on:click={confirmStat}>확정하기</button>
 
   <p>근력 (STR): <strong>{CharacteristicsStatus.str}</strong></p>
   <p>건강 (CON): <strong>{CharacteristicsStatus.con}</strong></p>
@@ -89,7 +124,10 @@ function rollCOC(): void {
   <p>정신력 (POW): <strong>{CharacteristicsStatus.pow}</strong></p>
   <p>행운 (LUCK): <strong>{CharacteristicsStatus.luc}</strong></p>
 
+
 </main>
+{/if}
+
 
 <style>
   main {
