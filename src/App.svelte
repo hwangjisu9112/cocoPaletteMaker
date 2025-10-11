@@ -85,14 +85,16 @@ function rollCOC(): void {
   AppState.update(s => ({ ...s, currentStats: newStat }));
 
   console.log("특성치 생성됨")
+  console.log(CharacteristicsStatus)
 
 }
 
 
 function confirmStat(): void {
 
-  if(!state.currentStats || state.currentStats.total ===0 ) {
+  if(!state.currentStats) {
     alert("먼저 특성치를 굴려주세요")
+    console.log(CharacteristicsStatus)
     return
   };
 
@@ -114,40 +116,23 @@ function confirmStat(): void {
   <button on:click={rollCOC}>특성치 생성</button>
   <button on:click={confirmStat}>확정하기</button>
 
-  <p>근력 (STR): <strong>{CharacteristicsStatus.str}</strong></p>
-  <p>건강 (CON): <strong>{CharacteristicsStatus.con}</strong></p>
-  <p>크기 (SIZ): <strong>{CharacteristicsStatus.siz}</strong></p>
-  <p>민첩성 (DEX): <strong>{CharacteristicsStatus.dex}</strong></p>
-  <p>외모 (APP): <strong>{CharacteristicsStatus.app}</strong></p>
-  <p>교육 (EDU): <strong>{CharacteristicsStatus.edu}</strong></p>
-  <p>지능 (INT): <strong>{CharacteristicsStatus.int}</strong></p>
-  <p>정신력 (POW): <strong>{CharacteristicsStatus.pow}</strong></p>
-  <p>행운 (LUCK): <strong>{CharacteristicsStatus.luc}</strong></p>
+  <p>근력 (STR): <strong>{CharacteristicsStatus?.str ?? 0}</strong></p>
+  <p>건강 (CON): <strong>{CharacteristicsStatus?.con ?? 0}</strong></p>
+  <p>크기 (SIZ): <strong>{CharacteristicsStatus?.siz ?? 0}</strong></p>
+  <p>민첩성 (DEX): <strong>{CharacteristicsStatus?.dex ?? 0}</strong></p>
+  <p>외모 (APP): <strong>{CharacteristicsStatus?.app ?? 0}</strong></p>
+  <p>교육 (EDU): <strong>{CharacteristicsStatus?.edu ?? 0}</strong></p>
+  <p>지능 (INT): <strong>{CharacteristicsStatus?.int ?? 0}</strong></p>
+  <p>정신력 (POW): <strong>{CharacteristicsStatus?.pow ?? 0}</strong></p>
+  <p>행운 (LUCK): <strong>{CharacteristicsStatus?.luc ?? 0}</strong></p>
 
 
 </main>
+{:else}
+    <Result />
 {/if}
 
 
 <style>
-  main {
-    padding: 15px;
-    font-family: Arial, sans-serif;
-  }
-  h1 {
-    color: #4CAF50;
-    font-size: 1.2em;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 5px;
-  }
-  button {
-    background-color: #008CBA;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-top: 10px;
-  }
+
 </style>
