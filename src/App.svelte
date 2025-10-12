@@ -89,43 +89,32 @@ function rollCOC(): void {
 
 }
 
-
 function confirmStat(): void {
-
-  if(!state.currentStats) {
-    alert("먼저 특성치를 굴려주세요")
-    console.log(CharacteristicsStatus)
-    return
-  };
-
     AppState.update(s => ({ ...s, isConfirmed: true }));
+    console.log("확정 -> 다음 페이지 이동")
+    console.log(CharacteristicsStatus)
 
-    if(chrome && chrome.storage) {
-      chrome.storage.local.set({ confirmedStats: state.currentStats }, () => {
-       console.log('확정된 능력치가 크롬 저장소에 저장되었습니다.');
-        });
-    }
 }
  
 </script>
 {#if !$AppState.isConfirmed}
 
 <main>
-  <h1> 크툴루의 부름 탐사자 특성치 생성기 </h1>
+  <h2> 크툴루의 부름 탐사자 특성치 생성기 </h2>
 
   <button on:click={rollCOC}>특성치 생성</button>
   <button on:click={confirmStat}>확정하기</button>
-
-  <p>근력 (STR): <strong>{CharacteristicsStatus?.str ?? 0}</strong></p>
-  <p>건강 (CON): <strong>{CharacteristicsStatus?.con ?? 0}</strong></p>
-  <p>크기 (SIZ): <strong>{CharacteristicsStatus?.siz ?? 0}</strong></p>
-  <p>민첩성 (DEX): <strong>{CharacteristicsStatus?.dex ?? 0}</strong></p>
-  <p>외모 (APP): <strong>{CharacteristicsStatus?.app ?? 0}</strong></p>
-  <p>교육 (EDU): <strong>{CharacteristicsStatus?.edu ?? 0}</strong></p>
-  <p>지능 (INT): <strong>{CharacteristicsStatus?.int ?? 0}</strong></p>
-  <p>정신력 (POW): <strong>{CharacteristicsStatus?.pow ?? 0}</strong></p>
-  <p>행운 (LUCK): <strong>{CharacteristicsStatus?.luc ?? 0}</strong></p>
-
+<div class="stats-grid"> 
+  <p>근력 (STR): <strong>{CharacteristicsStatus.str}</strong></p>
+  <p>건강 (CON): <strong>{CharacteristicsStatus.con}</strong></p>
+  <p>크기 (SIZ): <strong>{CharacteristicsStatus.siz}</strong></p>
+  <p>민첩성 (DEX): <strong>{CharacteristicsStatus.dex}</strong></p>
+  <p>외모 (APP): <strong>{CharacteristicsStatus.app }</strong></p>
+  <p>교육 (EDU): <strong>{CharacteristicsStatus.edu }</strong></p>
+  <p>지능 (INT): <strong>{CharacteristicsStatus.int }</strong></p>
+  <p>정신력 (POW): <strong>{CharacteristicsStatus.pow }</strong></p>
+  <p>행운 (LUCK): <strong>{CharacteristicsStatus.luc }</strong></p>
+</div>
 
 </main>
 {:else}
@@ -134,5 +123,11 @@ function confirmStat(): void {
 
 
 <style>
-
+    .stats-grid {
+        display: grid;
+        /* 3개의 열(column)을 만들고, 각 열이 동일한 공간(1fr)을 차지하도록 설정. */
+        grid-template-columns: 1fr 1fr 1fr; 
+        gap: 10px; 
+        margin-bottom: 20px;
+    }
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { AppState } from './store';
-
+    import { AppState, EMPTY_STATS} from './store';
+  import { onMount } from 'svelte';
   
    // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다 
     $: stats = $AppState.currentStats;
@@ -14,7 +14,7 @@
     $: job = stats ? (stats.edu)*4 : 0;
 
       let skillPoint: number;
-      $: skillPoint = interest+job;
+      $: baseSkillPoint = interest+job;
 
 
     $: db = stats ? (stats.siz + stats.str) : 0;
@@ -34,94 +34,112 @@ $: {
     }
    }
 
-
-   function goBack() : void {
-       // 탐사자의 특성치를 다시 초기화한다
-        AppState.set({ currentStats: null, isConfirmed: false });
-
-        console.log("AppState" + AppState)
-        console.log(stats)
-   }
-
-
    // 크툴루의 부름 탐사자 기능들에 대한 설명
    interface Skills {
     name: string;
     point: number;
+    base: number;
 
    }
 
    let skills: Skills[] = [
-    {name: "Accounting" ,point: 0},
-    {name: "Anthropology" ,point: 0},
-    {name: "Appraise" ,point: 0},
-    {name: "Archaeology" ,point: 0},
-    {name: "Charm" ,point: 0},
-    {name: "Climb" ,point: 0},
-    {name: "Computer Use" ,point: 0},
-    {name: "Credit" ,point: 0},
-    {name: "Cthulhu Mythos" ,point: 0},
-    {name: "Disguise" ,point: 0},
-    {name: "Dodge" ,point: 0},
-    {name: "Drive Auto" ,point: 0},
-    {name: "Elec. Repair" ,point: 0},
-    {name: "Electronics" ,point: 0},
-    {name: "Fast Talk" ,point: 0},
-    {name: "Fighting (Brawl)" ,point: 0},
-    {name: "Firearms (Handgun)" ,point: 0},
-    {name: "Firearms (Rifle/Shotgun)" ,point: 0},
-    {name: "First Aid" ,point: 0},
-    {name: "History" ,point: 0},
-    {name: "Intimidate" ,point: 0},
-    {name: "Jump" ,point: 0},
-    {name: "Language(Mother)" ,point: 0},
-    {name: "Language()" ,point: 0},
-    {name: "Law" ,point: 0},
-    {name: "Library Use" ,point: 0},
-    {name: "Listen" ,point: 0},
-    {name: "Locksmith" ,point: 0},
-    {name: "Mech. Repair" ,point: 0},
-    {name: "Medicine" ,point: 0},
-    {name: "Natural World" ,point: 0},
-    {name: "Navigate" ,point: 0},
-    {name: "Occult" ,point: 0},
-    {name: "Persuade" ,point: 0},
-    {name: "Pilot()" ,point: 0},
-    {name: "Psychoanalysis" ,point: 0},
-    {name: "Psychology" ,point: 0},
-    {name: "Ride" ,point: 0},
-    {name: "Science()" ,point: 0},
-    {name: "Sleight of Hand" ,point: 0},
-    {name: "Spot Hidden" ,point: 0},
-    {name: "Stealth" ,point: 0},
-    {name: "Survival()" ,point: 0},
-    {name: "Swim" ,point: 0},
-    {name: "Throw" ,point: 0},
-    {name: "Track" ,point: 0},
-    {name: "[extra1]" ,point: 0},
-    {name: "[extra2]" ,point: 0},
-    {name: "[extra3]" ,point: 0},
+    {name: "예술/공예()" ,point: 0, base: 5},
+    {name: "회계" ,point: 0, base: 5},
+    {name: "인류학" ,point: 0, base: 5},
+    {name: "감정" ,point: 0, base: 5},
+    {name: "고고학" ,point: 0, base: 5},
+    {name: "매혹" ,point: 0, base: 5},
+    {name: "오르기" ,point: 0, base: 5},
+    {name: "컴퓨터 사용" ,point: 0, base: 5},
+    {name: "재력" ,point: 0, base: 5},
+    {name: "변장" ,point: 0, base: 5},
+    {name: "회피" ,point: 0, base: 5},
+    {name: "자동차 운전" ,point: 0, base: 5},
+    {name: "전기 수리" ,point: 0, base: 5},
+    {name: "전자기기" ,point: 0, base: 5},
+    {name: "말재주" ,point: 0, base: 5},
+    {name: "근접전 (격투)" ,point: 0, base: 5},
+    {name: "사격 (권총)" ,point: 0, base: 5},
+    {name: "사격(라이플/산탄총)" ,point: 25, base: 5},
+    {name: "응급처치" ,point: 0, base: 5},
+    {name: "역사" ,point: 0, base: 5},
+    {name: "위협" ,point: 0, base: 5},
+    {name: "도약" ,point: 0, base: 5},
+    {name: "언어(모국어)" ,point: 0, base: 5},
+    {name: "언어()" ,point: 0, base: 5},
+    {name: "법률" ,point: 0, base: 5},
+    {name: "자료조사" ,point: 0, base: 5},
+    {name: "듣기" ,point: 0, base: 5},
+    {name: "열쇠공" ,point: 0, base: 5},
+    {name: "기계 수리" ,point: 0, base: 5},
+    {name: "의학" ,point: 0, base: 5},
+    {name: "자연" ,point: 0, base: 5},
+    {name: "항법" ,point: 0, base: 5},
+    {name: "오컬트" ,point: 0, base: 5},
+    {name: "설득" ,point: 0, base: 5},
+    {name: "조종()" ,point: 0, base: 5},
+    {name: "정신분석" ,point: 0, base: 5},
+    {name: "심리학" ,point: 0, base: 5},
+    {name: "승마" ,point: 0, base: 5},
+    {name: "과학()" ,point: 0, base: 5},
+    {name: "손놀림" ,point: 0, base: 5},
+    {name: "관찰력" ,point: 0, base: 5},
+    {name: "은밀행동" ,point: 0, base: 5},
+    {name: "생존술()" ,point: 0, base: 5},
+    {name: "수영" ,point: 0, base: 5},
+    {name: "투척" ,point: 0, base: 5},
+    {name: "추적" ,point: 0, base: 5},
+    {name: "[추가기능 1]" ,point: 0, base: 5},
+    {name: "[추가기능 2]" ,point: 0, base: 5},
+    {name: "[추가기능 3]" ,point: 0, base: 5},
 
   ]
 
-function investSkill(index: number) : void {
-
-  if(skillPoint > 0 && skills[index].point < 100) {
-    skillPoint -=1 ;
-    skills[index].point += 1;
-    skills = skills;
-  }
-}
-
-  function resetSkill(index: number) : void {
-
-  if(skills[index].point > 0 ) {
-    skillPoint +=1 ;
-    skills[index].point -= 1;
-    skills = skills;
+  $: {
+    const totalInvested = skills.reduce((sum, skill) => sum + skill.point, 0);
+    
+    skillPoint = baseSkillPoint - totalInvested;
   }
 
-}
+  function adjustSkillPoint(index: number): void {
+   const skill = skills[index];
+    let newInvestedPoint = Math.floor(skill.point) || 0; 
+    
+    if (newInvestedPoint < 0 || isNaN(newInvestedPoint)) {
+        newInvestedPoint = 0;
+    }
+    const maxInvestForSkill = 100 - skill.base;
+    if (newInvestedPoint > maxInvestForSkill) {
+        newInvestedPoint = maxInvestForSkill;
+    }
+    
+    
+    const totalInvestedOthers = skills.reduce((sum, s, i) => sum + (i === index ? 0 : s.point), 0);
+    
+    const maxPointFromBudget = baseSkillPoint - totalInvestedOthers;
+    
+    if (newInvestedPoint > maxPointFromBudget) {
+        newInvestedPoint = Math.max(0, maxPointFromBudget); 
+    }
+    
+    skill.point = newInvestedPoint;
+    skills = skills; 
+  }
+
+
+  
+   function goBack() : void {
+       // 탐사자의 특성치를 다시 초기화한다
+        AppState.set({ currentStats: EMPTY_STATS, isConfirmed: false });
+
+        console.log("다시 만들기 수행")
+        console.log("AppState")
+        console.log(AppState)
+        console.log(AppState)
+   }
+
+
+
 </script>
 
 <main>
@@ -150,25 +168,24 @@ function investSkill(index: number) : void {
  </div>
 <hr>
 <h3>기능</h3>
-<p class="skill-points-display">남은 스킬 포인트: <strong>{skillPoint}</strong></p>
+<p class="skill-points-display">남은 기능 점수(지능 * 2 + 교육 * 4): <strong>{skillPoint}</strong></p>
 <div class="skill-grid-container"> 
 
     {#each skills as skill, i}
       <div class="skill-grid-item">
-            <span class="skill-name">{skill.name}</span>
-            <span class="skill-score">{skill.point}</span>
-        <div class="skill-item-buttons">
-            <button on:click={() => resetSkill(i)} disabled={skill.point === 0}>
-                -
-            </button>
+            <span class="skill-name">{skill.name} ({skill.base})</span> 
             
-            <button 
-                on:click={() => investSkill(i)} 
-                disabled={skillPoint === 0 || skill.point === 100}
-            >
-                +
-            </button>
-        </div>
+            <input 
+                type="number" 
+                min="0" 
+                max="{100 - skill.base}"
+                class="skill-input"
+                bind:value={skill.point}
+                on:input={() => adjustSkillPoint(i)} 
+            />
+            
+            <span class="skill-total-score">총점: {skill.point + skill.base}</span>
+
       </div>
     {/each}
 </div>
@@ -180,35 +197,30 @@ function investSkill(index: number) : void {
 
 
 <style>
-
-  /* 🌟 능력치 그리드 스타일 🌟 */
     .stats-grid {
         display: grid;
-        /* 3개의 열(column)을 만들고, 각 열이 동일한 공간(1fr)을 차지하도록 설정합니다. */
+        /* 3개의 열(column)을 만들고, 각 열이 동일한 공간(1fr)을 차지하도록 설정. */
         grid-template-columns: 1fr 1fr 1fr; 
-        gap: 10px; /* 항목 사이의 간격 설정 */
+        gap: 10px; 
         margin-bottom: 20px;
     }
 
-    /* 그리드 항목(각 능력치 <p> 태그)의 스타일 */
     .stats-grid p {
-        background-color: #f4f4f4; /* 배경색으로 항목 구분 */
+        background-color: #f4f4f4;
         padding: 8px;
         border-radius: 4px;
         text-align: center;
-        margin: 0; /* <p> 태그의 기본 마진 제거 */
+        margin: 0; 
         font-size: 0.9em;
         color: #333;
     }
     
     .stats-grid strong {
-        display: block; /* 수치를 다음 줄로 내려서 강조 */
+        display: block; 
         font-size: 1.2em;
-        color: #007bff; /* 능력치 값 색상 강조 */
+        color: #007bff; 
     }
 
-
-    /* 🌟 파생 수치 그리드 스타일 (1) 🌟 */
     .derived-stats-grid {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr; 
@@ -216,7 +228,6 @@ function investSkill(index: number) : void {
         margin-bottom: 20px;
     }
 
-    /* 파생 수치 항목에도 기본 능력치와 동일한 스타일을 적용합니다. */
     .derived-stats-grid p {
         background-color: #f4f4f4; 
         padding: 8px;
@@ -224,13 +235,13 @@ function investSkill(index: number) : void {
         text-align: center;
         margin: 0;
         font-size: 0.9em;
-        color: #333; /* 능력치 이름 색상 */
+        color: #333; 
     }
     
     .derived-stats-grid strong {
         display: block;
         font-size: 1.2em;
-        color: #dc3545; /* 파생 수치는 빨간 계열로 구분하여 강조해보겠습니다. */
+        color: #dc3545; 
     }
 
       .skill-points-display {
@@ -242,64 +253,40 @@ function investSkill(index: number) : void {
         margin-bottom: 15px;
     }
 
-    /* 🌟 스킬 그리드 컨테이너 (스크롤 영역 + 4열 배치) 🌟 */
     .skill-grid-container {
         display: grid;
-        /* 4개의 열을 만들고, 각 열이 동일한 공간을 차지하도록 설정 */
         grid-template-columns: repeat(4, 1fr); 
-        gap: 8px; /* 그리드 항목 사이의 간격 */
-        
-        /* 팝업 창의 일반적인 높이 (400px)를 고려하여 스크롤 높이 지정 */
+        gap: 8px;
+      
         max-height: 220px; 
-        overflow-y: auto; /* 내용이 넘치면 수직 스크롤 생성 */
-        padding: 5px; /* 스크롤바와 내용 사이의 여백 */
+        overflow-y: auto; 
+        padding: 5px; 
         border: 1px solid #eee;
         border-radius: 5px;
     }
-    
-    /* 🌟 개별 스킬 항목 스타일 🌟 */
+
     .skill-grid-item {
-        display: flex; /* 항목 내부 요소 정렬을 위해 Flexbox 사용 */
+        display: flex; 
         flex-direction: column; /* 세로로 쌓기 */
         align-items: center;
         text-align: center;
         background-color: #f9f9f9;
         padding: 5px;
         border-radius: 4px;
-        font-size: 0.8em; /* 좁은 공간에 맞추어 글자 크기 조정 */
+        font-size: 0.8em; 
         color: #333;
         border: 1px solid #ddd;
     }
-    
+  
     .skill-name {
         font-weight: bold;
-        /* 넘치는 스킬 이름 처리를 위해 설정 */
         white-space: nowrap; 
         overflow: hidden; 
-        text-overflow: ellipsis; /* ... 표시 */
+        text-overflow: ellipsis; 
         max-width: 100%;
         margin-bottom: 2px;
     }
     
-    .skill-score {
-        font-size: 1.2em;
-        color: #007bff;
-        margin-bottom: 5px;
-    }
-    
-    .skill-item-buttons {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .skill-item-buttons button {
-        width: 40%; /* 버튼 너비를 좁혀서 공간 확보 */
-        padding: 2px;
-        font-size: 0.9em;
-        /* ... (기존 버튼 스타일 유지) ... */
-        margin: 0 2px;
-    }
     
 
 </style>
