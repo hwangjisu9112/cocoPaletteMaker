@@ -138,6 +138,67 @@ $: {
         console.log(AppState)
    }
 
+   function createGooglesheetData(): string {
+    if(!stats) return "캐릭터의 능력치가 존재하지 않습니다";
+
+    let data=""
+    const EOL = "\n"; //줄 바꾸기 end of line
+    const SEP = "\t"; // 탭하기 tap
+
+    data += "이름" + EOL;
+    data += "나이" + EOL;
+    data += "신장" + EOL;
+    data += "출생지" + EOL;
+    data += "거주지" + EOL;
+    data += "직업" + EOL;
+
+    data += "특성치" + EOL;
+    data +=  ["근력", "건강", "크기", "민첩성", "외모", "교육", "지능", "정신력", "행운"].join(SEP) + EOL;
+
+    data += [
+      stats.str,stats.con,stats.siz,stats.dex,stats.app,stats.edu,stats.int,stats.pow,stats.luc
+    ].join(SEP) + EOL +EOL;
+
+    data += "부수적 수치"+EOL;
+    data += ["체력", "마력", "이성", "근접전 피해 보너스"].join(SEP)+EOL;
+    data += [Math.floor(hp), mp, sanity, damage].join(SEP)+EOL+EOL;
+
+    data += "기능치(남은 기능 점수  : " + skillPoint + ")" + EOL;
+    data += ["명칭", "기본값", "투입 점수", "총점"].join(SEP) + EOL;
+
+    skills.forEach(skill => {
+      const total = skill.point + skill.base;
+      data += [
+        skill.name,
+        skill.base,
+        skill.point,
+        total
+      ].join(SEP) + EOL;
+
+    });    
+      return data;
+   }
+
+   function copyToClipboard () {
+      const sheetData = createGooglesheetData();
+      const textarea = document.createElement('textarea');
+
+      textarea.value = sheetData;
+      textarea.style.position = 'fixed'; // 화면 밖으로 이동
+      document.body.appendChild(textarea);
+   
+      textarea.select();
+
+      try {
+        document.execCommand('copy');
+        alert('캐릭터 데이터가 클립보드에 복사되었습니다. 구글 시트의 A1 셀에서 ctrl +v를 입력하세요.');
+
+      } catch(err) {
+        alert('클립보드 복사에 실패했습니다.'); 
+      }
+      document.body.removeChild(textarea);
+   }
+
 
 
 </script>
@@ -193,6 +254,7 @@ $: {
 
 <button on:click={goBack}>다시 만들기</button>
 <button>지금 바로 생성하기 </button>
+<button on:click={copyToClipboard}>구글 시트에 붙여넣기</button>
 </main>
 
 
