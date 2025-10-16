@@ -1,9 +1,8 @@
-// manifest.json
 {
   "manifest_version": 3,
   "name": "cocoPalateMaker",
   "version": "1.0",
-  "description": "코코포리아와 연동할 수 있는 TRPG 캐릭터 생성기",
+  "description": "코코포리아 및 구글 시트와 연계할 수 있는 TRPG 캐릭터 생성기",
   "icons": {
     "16": "vite.svg",
     "48": "vite.svg",

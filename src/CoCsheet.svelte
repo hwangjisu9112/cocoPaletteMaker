@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AppState, EMPTY_STATS} from './store';
+    import { AppState} from './store';
   import { onMount } from 'svelte';
   
    // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다 
@@ -39,10 +39,12 @@ $: {
     name: string;
     point: number;
     base: number;
+    
 
    }
 
    let skills: Skills[] = [
+
     {name: "예술/공예()" ,point: 0, base: 5},
     {name: "회계" ,point: 0, base: 5},
     {name: "인류학" ,point: 0, base: 5},
@@ -129,13 +131,27 @@ $: {
 
   
    function goBack() : void {
-       // 탐사자의 특성치를 다시 초기화한다
-        AppState.set({ currentStats: EMPTY_STATS, isConfirmed: false });
+       // 탐사자의 특성치를 다시 초기화하고 특성치 생성 페이지로 복귀한다
+        const zeroStats = {
 
-        console.log("다시 만들기 수행")
+        str: 0,
+        con: 0,
+        siz: 0,
+        dex: 0,
+        app: 0,
+        edu: 0,
+        int: 0,
+        pow: 0,
+        luc: 0
+  };
+
+        AppState.set(({ currentStats: zeroStats, isConfirmed: false })); 
+
+        console.log("다시 만들기 수행 -> 생성 페이지로 복귀")
+
         console.log("AppState")
         console.log(AppState)
-        console.log(AppState)
+        console.log(zeroStats)
    }
 
    function createGooglesheetData(): string {
@@ -145,26 +161,35 @@ $: {
     const EOL = "\n"; //줄 바꾸기 end of line
     const SEP = "\t"; // 탭하기 tap
 
-    data += "이름" + EOL;
-    data += "나이" + EOL;
-    data += "신장" + EOL;
-    data += "출생지" + EOL;
-    data += "거주지" + EOL;
+    data += "◆크툴루의 부름 7판 탐사자 생성" + EOL;
+    data +=  ["이름", "", "플레이어"].join(SEP) + EOL;
     data += "직업" + EOL;
+    data +=  ["신장", "", "체중"].join(SEP) + EOL;
+    data +=  ["출생지", "", "국적","", "시대"].join(SEP) + EOL;
+    data += "나이" + EOL;
+    data += "외형" + EOL;
+    data += "성격" + EOL+ EOL;
 
-    data += "특성치" + EOL;
-    data +=  ["근력", "건강", "크기", "민첩성", "외모", "교육", "지능", "정신력", "행운"].join(SEP) + EOL;
+    data += "◆특성치" + EOL;
+    data +=  ["근력", "건강", "크기"].join(SEP) + EOL;
 
     data += [
-      stats.str,stats.con,stats.siz,stats.dex,stats.app,stats.edu,stats.int,stats.pow,stats.luc
-    ].join(SEP) + EOL +EOL;
+      stats.str,stats.con,stats.siz].join(SEP) + EOL +EOL;
+    data +=  ["민첩성", "외모", "교육"].join(SEP) + EOL;
 
-    data += "부수적 수치"+EOL;
+    data += [
+      stats.dex,stats.app,stats.edu].join(SEP) + EOL +EOL;
+    data +=  ["지능", "정신력", "행운"].join(SEP) + EOL;
+
+    data += [
+      stats.int,stats.pow,stats.luc].join(SEP) + EOL +EOL;
+
+    data += "◆부수적 수치"+EOL;
     data += ["체력", "마력", "이성", "근접전 피해 보너스"].join(SEP)+EOL;
     data += [Math.floor(hp), mp, sanity, damage].join(SEP)+EOL+EOL;
 
-    data += "기능치(남은 기능 점수  : " + skillPoint + ")" + EOL;
-    data += ["명칭", "기본값", "투입 점수", "총점"].join(SEP) + EOL;
+    data += "◆기능치(남은 기능 점수  : " + skillPoint + ")" + EOL;
+    data += ["명칭", "기본값", "투입 점수", "총점", "어려움(1/2)", "극단적(1/5)"].join(SEP) + EOL;
 
     skills.forEach(skill => {
       const total = skill.point + skill.base;
@@ -172,10 +197,16 @@ $: {
         skill.name,
         skill.base,
         skill.point,
-        total
-      ].join(SEP) + EOL;
+        total,
+        Math.floor(total/2),
+        Math.floor(total/5)
+      ].join(SEP) + EOL+ EOL;
 
     });    
+　    data += "◆소지품"+EOL+EOL+EOL+EOL;
+    　data += "◆코코포리아 채팅 팔레트(아래의 수식을 복사하여 코코포리아 채팅 팔레트에 붙여넣기)"+EOL;
+
+
       return data;
    }
 
@@ -191,7 +222,7 @@ $: {
 
       try {
         document.execCommand('copy');
-        alert('캐릭터 데이터가 클립보드에 복사되었습니다. 구글 시트의 A1 셀에서 ctrl +v를 입력하세요.');
+        alert('캐릭터 데이터가 클립보드에 복사되었습니다. \n 구글 시트의 A1 셀에서 ctrl +v를 입력하세요.');
 
       } catch(err) {
         alert('클립보드 복사에 실패했습니다.'); 
@@ -253,8 +284,7 @@ $: {
 <hr>
 
 <button on:click={goBack}>다시 만들기</button>
-<button>지금 바로 생성하기 </button>
-<button on:click={copyToClipboard}>구글 시트에 붙여넣기</button>
+<button on:click={copyToClipboard}> 구글 시트에 붙여넣기</button>
 </main>
 
 

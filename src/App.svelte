@@ -19,7 +19,7 @@ interface Characteristics {
 
 }
 
-let CharacteristicsStatus : Characteristics = {
+const zeroStats: Characteristics = {
   str: 0,
   con: 0,
   siz: 0,
@@ -30,6 +30,11 @@ let CharacteristicsStatus : Characteristics = {
   pow: 0,
   luc: 0
 }
+
+let CharacteristicsStatus: Characteristics = zeroStats;
+
+// AppState に合わせて常に同期
+$: CharacteristicsStatus = $AppState.currentStats ?? zeroStats;
 
 //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치를 무작위로 생성하는 func
 
@@ -89,7 +94,16 @@ function rollCOC(): void {
 
 }
 
+function resetStats() : void {
+  CharacteristicsStatus = zeroStats;
+  AppState.update(s => ({ ...s, currentStats: zeroStats })); 
+  console.log("특성치 초기화됨");
+  console.log(CharacteristicsStatus);
+}
+
 function confirmStat(): void {
+
+   
     AppState.update(s => ({ ...s, isConfirmed: true }));
     console.log("확정 -> 다음 페이지 이동")
     console.log(CharacteristicsStatus)
@@ -103,6 +117,7 @@ function confirmStat(): void {
   <h2> 크툴루의 부름 탐사자 특성치 생성기 </h2>
 
   <button on:click={rollCOC}>특성치 생성</button>
+  <button on:click={resetStats}>특성치 초기화</button>
   <button on:click={confirmStat}>확정하기</button>
 <div class="stats-grid"> 
   <p>근력 (STR): <strong>{CharacteristicsStatus.str}</strong></p>
