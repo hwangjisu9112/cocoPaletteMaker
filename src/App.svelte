@@ -1,7 +1,6 @@
 <script lang="ts">
   import { AppState } from './store';
   import Result from './CoCsheet.svelte';
-  $: state = $AppState;
 
 
 //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치 정의

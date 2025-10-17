@@ -1,6 +1,7 @@
 <script lang="ts">
     import { AppState} from './store';
-  import { onMount } from 'svelte';
+    import { INITIAL_SKILLS} from './CoCskill';
+    import { onMount } from 'svelte';
   
    // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다 
     $: stats = $AppState.currentStats;
@@ -39,63 +40,25 @@ $: {
     name: string;
     point: number;
     base: number;
-    
+    correction?: 'HALF_DEX';
 
    }
 
-   let skills: Skills[] = [
+   let skills: Skills[] = JSON.parse(JSON.stringify(INITIAL_SKILLS));
 
-    {name: "예술/공예()" ,point: 0, base: 5},
-    {name: "회계" ,point: 0, base: 5},
-    {name: "인류학" ,point: 0, base: 5},
-    {name: "감정" ,point: 0, base: 5},
-    {name: "고고학" ,point: 0, base: 5},
-    {name: "매혹" ,point: 0, base: 5},
-    {name: "오르기" ,point: 0, base: 5},
-    {name: "컴퓨터 사용" ,point: 0, base: 5},
-    {name: "재력" ,point: 0, base: 5},
-    {name: "변장" ,point: 0, base: 5},
-    {name: "회피" ,point: 0, base: 5},
-    {name: "자동차 운전" ,point: 0, base: 5},
-    {name: "전기 수리" ,point: 0, base: 5},
-    {name: "전자기기" ,point: 0, base: 5},
-    {name: "말재주" ,point: 0, base: 5},
-    {name: "근접전 (격투)" ,point: 0, base: 5},
-    {name: "사격 (권총)" ,point: 0, base: 5},
-    {name: "사격(라이플/산탄총)" ,point: 25, base: 5},
-    {name: "응급처치" ,point: 0, base: 5},
-    {name: "역사" ,point: 0, base: 5},
-    {name: "위협" ,point: 0, base: 5},
-    {name: "도약" ,point: 0, base: 5},
-    {name: "언어(모국어)" ,point: 0, base: 5},
-    {name: "언어()" ,point: 0, base: 5},
-    {name: "법률" ,point: 0, base: 5},
-    {name: "자료조사" ,point: 0, base: 5},
-    {name: "듣기" ,point: 0, base: 5},
-    {name: "열쇠공" ,point: 0, base: 5},
-    {name: "기계 수리" ,point: 0, base: 5},
-    {name: "의학" ,point: 0, base: 5},
-    {name: "자연" ,point: 0, base: 5},
-    {name: "항법" ,point: 0, base: 5},
-    {name: "오컬트" ,point: 0, base: 5},
-    {name: "설득" ,point: 0, base: 5},
-    {name: "조종()" ,point: 0, base: 5},
-    {name: "정신분석" ,point: 0, base: 5},
-    {name: "심리학" ,point: 0, base: 5},
-    {name: "승마" ,point: 0, base: 5},
-    {name: "과학()" ,point: 0, base: 5},
-    {name: "손놀림" ,point: 0, base: 5},
-    {name: "관찰력" ,point: 0, base: 5},
-    {name: "은밀행동" ,point: 0, base: 5},
-    {name: "생존술()" ,point: 0, base: 5},
-    {name: "수영" ,point: 0, base: 5},
-    {name: "투척" ,point: 0, base: 5},
-    {name: "추적" ,point: 0, base: 5},
-    {name: "[추가기능 1]" ,point: 0, base: 5},
-    {name: "[추가기능 2]" ,point: 0, base: 5},
-    {name: "[추가기능 3]" ,point: 0, base: 5},
+   $: if(stats) {
+    const invDex = stats.dex;
 
-  ]
+    const dodgeIndex = skills.findIndex(s => s.correction === "HALF_DEX")
+
+    if(dodgeIndex !== -1) {
+      const basicDodge = Math.floor(invDex/2);
+      skills[dodgeIndex].base = basicDodge;
+      skills = skills;
+      adjustSkillPoint(dodgeIndex);
+    }
+
+   }
 
   $: {
     const totalInvested = skills.reduce((sum, skill) => sum + skill.point, 0);
