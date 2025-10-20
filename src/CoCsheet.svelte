@@ -137,19 +137,19 @@ $: {
     data +=  ["근력", "건강", "크기"].join(SEP) + EOL;
 
     data += [
-      stats.str,stats.con,stats.siz].join(SEP) + EOL +EOL;
+      stats.str,stats.con,stats.siz].join(SEP) + EOL;
     data +=  ["민첩성", "외모", "교육"].join(SEP) + EOL;
 
     data += [
-      stats.dex,stats.app,stats.edu].join(SEP) + EOL +EOL;
+      stats.dex,stats.app,stats.edu].join(SEP) + EOL ;
     data +=  ["지능", "정신력", "행운"].join(SEP) + EOL;
 
     data += [
-      stats.int,stats.pow,stats.luc].join(SEP) + EOL +EOL;
+      stats.int,stats.pow,stats.luc].join(SEP) + EOL ;
 
     data += "◆부수적 수치"+EOL;
     data += ["체력", "마력", "이성", "근접전 피해 보너스"].join(SEP)+EOL;
-    data += [Math.floor(hp), mp, sanity, damage].join(SEP)+EOL+EOL;
+    data += [Math.floor(hp), mp, sanity, damage].join(SEP)+EOL;
 
     data += "◆기능치(남은 기능 점수  : " + skillPoint + ")" + EOL;
     data += ["명칭", "기본값", "투입 점수", "총점", "어려움(1/2)", "극단적(1/5)"].join(SEP) + EOL;
@@ -163,11 +163,17 @@ $: {
         total,
         Math.floor(total/2),
         Math.floor(total/5)
-      ].join(SEP) + EOL+ EOL;
+      ].join(SEP) + EOL;
 
     });    
 　    data += "◆소지품"+EOL+EOL+EOL+EOL;
     　data += "◆코코포리아 채팅 팔레트(아래의 수식을 복사하여 코코포리아 채팅 팔레트에 붙여넣기)"+EOL;
+
+       skills.forEach(skill => {
+        const total = skill.point + skill.base;
+        data += `CC<=${total}${SEP}[${skill.name}]` + EOL;
+    });
+
 
 
       return data;
@@ -197,10 +203,7 @@ $: {
 
 </script>
 
-<main>
-<h2> 탐사자 생성 결과</h2>
-<h3>특성치</h3>
-<hr>
+<main><br><br><br><br><br>
 <div class="stats-grid"> 
     <p>근력 <strong>{stats?.str ?? 'N/A'}</strong></p>
     <p>건강 <strong>{stats?.con ?? 'N/A'}</strong></p>
@@ -213,8 +216,6 @@ $: {
     <p>행운 <strong>{stats?.luc ?? 'N/A'}</strong></p>
 </div>
 <hr>
-<h3>기타 수치</h3>
-<hr>
   <div class="derived-stats-grid"> 
  <p>체력 <strong>{Math.floor(hp)}</strong></p>
  <p>마력<strong>{mp}</strong></p>
@@ -223,7 +224,7 @@ $: {
  </div>
 <hr>
 <h3>기능</h3>
-<p class="skill-points-display">남은 기능 점수(지능 * 2 + 교육 * 4): <strong>{skillPoint}</strong></p>
+<p class="skill-points-display">남은 기능 점수: <strong>{skillPoint}</strong></p>
 <div class="skill-grid-container"> 
 
     {#each skills as skill, i}
@@ -247,6 +248,7 @@ $: {
 <hr>
 
 <button on:click={goBack}>다시 만들기</button>
+<button> 바로 만들기</button>
 <button on:click={copyToClipboard}> 구글 시트에 붙여넣기</button>
 </main>
 
@@ -261,19 +263,19 @@ $: {
     }
 
     .stats-grid p {
-        background-color: #f4f4f4;
+        background-color: #70b5e7;
         padding: 8px;
         border-radius: 4px;
         text-align: center;
         margin: 0; 
         font-size: 0.9em;
-        color: #333;
+        color: #fefeff;
     }
     
     .stats-grid strong {
         display: block; 
         font-size: 1.2em;
-        color: #007bff; 
+        color: #4247df; 
     }
 
     .derived-stats-grid {
@@ -284,19 +286,19 @@ $: {
     }
 
     .derived-stats-grid p {
-        background-color: #f4f4f4; 
+        background-color: #4084ed; 
         padding: 8px;
         border-radius: 4px;
         text-align: center;
         margin: 0;
         font-size: 0.9em;
-        color: #333; 
+        color: #ddd; 
     }
     
     .derived-stats-grid strong {
         display: block;
         font-size: 1.2em;
-        color: #dc3545; 
+        color: #ddd; 
     }
 
       .skill-points-display {
