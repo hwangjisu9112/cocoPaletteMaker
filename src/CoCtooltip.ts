@@ -1,5 +1,3 @@
-
-
 export const StatDescriptions: { [key: string]: string } = {
     str: "근력 (STR): 물리적인 힘, 근육의 강인함.",
     con: "건강 (CON): 신체의 저항력 및 생명력.",

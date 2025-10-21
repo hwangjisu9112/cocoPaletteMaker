@@ -1,349 +1,296 @@
 <script lang="ts">
-    import { AppState} from './store';
-    import { INITIAL_SKILLS} from './CoCskill';
-    import { onMount } from 'svelte';
-  
-   // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다 
-    $: stats = $AppState.currentStats;
+  import { AppState } from "./store";
+  import { INITIAL_SKILLS } from "./CoCskill";
+  import { createGooglesheetData } from "./CoCsheetStyle";
+  import { onMount } from "svelte";
 
-   // 탐사자의 특성치를 활용한 기타 능력치들을 생성한다
-    $: sanity = stats ? stats.pow : 0;
-    $: hp = stats ? (stats.siz + stats.con)/10 : 0;
-    $: mp = stats ? (stats.pow)/5 : 0;
+  // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다
+  $: stats = $AppState.currentStats;
 
-    $: interest = stats ? (stats.int)*2 : 0;
-    $: job = stats ? (stats.edu)*4 : 0;
+  // 탐사자의 특성치를 활용한 기타 능력치들을 생성한다
+  $: sanity = stats ? stats.pow : 0;
+  $: hp = stats ? (stats.siz + stats.con) / 10 : 0;
+  $: mp = stats ? stats.pow / 5 : 0;
 
-      let skillPoint: number;
-      $: baseSkillPoint = interest+job;
+  $: interest = stats ? stats.int * 2 : 0;
+  $: job = stats ? stats.edu * 4 : 0;
 
+  let skillPoint: number;
+  $: baseSkillPoint = interest + job;
 
-    $: db = stats ? (stats.siz + stats.str) : 0;
+  $: db = stats ? stats.siz + stats.str : 0;
 
-      let damage : string = "0";
-$: {
-    if(db <= 64) {
+  let damage: string = "0";
+  $: {
+    if (db <= 64) {
       damage = "-2";
-    } else if(db <= 84) {
+    } else if (db <= 84) {
       damage = "-1";
-    } else if(db <= 124) {
+    } else if (db <= 124) {
       damage = "0";
-    } else if(db <= 164) {
+    } else if (db <= 164) {
       damage = "1d4";
     } else {
       damage = "1d6";
     }
-   }
+  }
 
-   // 크툴루의 부름 탐사자 기능들에 대한 설명
-   interface Skills {
+  // 크툴루의 부름 탐사자 기능들에 대한 설명
+  interface Skills {
     name: string;
     point: number;
     base: number;
-    correction?: 'HALF_DEX';
+    evade?: "HALF_DEX";
+    motherTongue?: "EDUCATION";
+  }
 
-   }
+  let skills: Skills[] = JSON.parse(JSON.stringify(INITIAL_SKILLS));
 
-   let skills: Skills[] = JSON.parse(JSON.stringify(INITIAL_SKILLS));
-
-   $: if(stats) {
+  $: if (stats) {
     const invDex = stats.dex;
+    const invMotherTongue = stats.edu;
 
-    const dodgeIndex = skills.findIndex(s => s.correction === "HALF_DEX")
+    const dodgeIndex = skills.findIndex((s) => s.evade === "HALF_DEX");
+    const native = skills.findIndex((s) => s.motherTongue === "EDUCATION");
 
-    if(dodgeIndex !== -1) {
-      const basicDodge = Math.floor(invDex/2);
+    if (dodgeIndex !== -1) {
+      const basicDodge = Math.floor(invDex / 2);
       skills[dodgeIndex].base = basicDodge;
       skills = skills;
       adjustSkillPoint(dodgeIndex);
     }
 
-   }
+    if (native !== -1) {
+      const basicNative = invMotherTongue;
+      skills[native].base = basicNative;
+      skills = skills;
+      adjustSkillPoint(native);
+    }
+  }
 
   $: {
     const totalInvested = skills.reduce((sum, skill) => sum + skill.point, 0);
-    
+
     skillPoint = baseSkillPoint - totalInvested;
   }
 
   function adjustSkillPoint(index: number): void {
-   const skill = skills[index];
-    let newInvestedPoint = Math.floor(skill.point) || 0; 
-    
+    const skill = skills[index];
+    let newInvestedPoint = Math.floor(skill.point) || 0;
+
     if (newInvestedPoint < 0 || isNaN(newInvestedPoint)) {
-        newInvestedPoint = 0;
+      newInvestedPoint = 0;
     }
     const maxInvestForSkill = 100 - skill.base;
     if (newInvestedPoint > maxInvestForSkill) {
-        newInvestedPoint = maxInvestForSkill;
+      newInvestedPoint = maxInvestForSkill;
     }
-    
-    
-    const totalInvestedOthers = skills.reduce((sum, s, i) => sum + (i === index ? 0 : s.point), 0);
-    
+
+    const totalInvestedOthers = skills.reduce(
+      (sum, s, i) => sum + (i === index ? 0 : s.point),
+      0,
+    );
+
     const maxPointFromBudget = baseSkillPoint - totalInvestedOthers;
-    
+
     if (newInvestedPoint > maxPointFromBudget) {
-        newInvestedPoint = Math.max(0, maxPointFromBudget); 
+      newInvestedPoint = Math.max(0, maxPointFromBudget);
     }
-    
+
     skill.point = newInvestedPoint;
-    skills = skills; 
+    skills = skills;
   }
 
+  function goBack(): void {
+    // 탐사자의 특성치를 다시 초기화하고 특성치 생성 페이지로 복귀한다
+    const zeroStats = {
+      str: 0,
+      con: 0,
+      siz: 0,
+      dex: 0,
+      app: 0,
+      edu: 0,
+      int: 0,
+      pow: 0,
+      luc: 0,
+    };
 
-  
-   function goBack() : void {
-       // 탐사자의 특성치를 다시 초기화하고 특성치 생성 페이지로 복귀한다
-        const zeroStats = {
+    AppState.set({ currentStats: zeroStats, isConfirmed: false });
 
-        str: 0,
-        con: 0,
-        siz: 0,
-        dex: 0,
-        app: 0,
-        edu: 0,
-        int: 0,
-        pow: 0,
-        luc: 0
-  };
+    console.log("다시 만들기 수행 -> 생성 페이지로 복귀");
 
-        AppState.set(({ currentStats: zeroStats, isConfirmed: false })); 
+    console.log("AppState");
+    console.log(AppState);
+    console.log(zeroStats);
+  }
 
-        console.log("다시 만들기 수행 -> 생성 페이지로 복귀")
+  function copyToClipboard(): void {
+    if (!stats) {
+      console.log("error : 특성치 미존재.");
+      return;
+    }
+    const CoCInvData = createGooglesheetData(
+      stats,
+      { hp, mp, sanity, damage },
+      skillPoint,
+      skills,
+    );
 
-        console.log("AppState")
-        console.log(AppState)
-        console.log(zeroStats)
-   }
-
-   function createGooglesheetData(): string {
-    if(!stats) return "캐릭터의 능력치가 존재하지 않습니다";
-
-    let data=""
-    const EOL = "\n"; //줄 바꾸기 end of line
-    const SEP = "\t"; // 탭하기 tap
-
-    data += "◆크툴루의 부름 7판 탐사자 생성" + EOL;
-    data +=  ["이름", "", "플레이어"].join(SEP) + EOL;
-    data += "직업" + EOL;
-    data +=  ["신장", "", "체중"].join(SEP) + EOL;
-    data +=  ["출생지", "", "국적","", "시대"].join(SEP) + EOL;
-    data += "나이" + EOL;
-    data += "외형" + EOL;
-    data += "성격" + EOL+ EOL;
-
-    data += "◆특성치" + EOL;
-    data +=  ["근력", "건강", "크기"].join(SEP) + EOL;
-
-    data += [
-      stats.str,stats.con,stats.siz].join(SEP) + EOL;
-    data +=  ["민첩성", "외모", "교육"].join(SEP) + EOL;
-
-    data += [
-      stats.dex,stats.app,stats.edu].join(SEP) + EOL ;
-    data +=  ["지능", "정신력", "행운"].join(SEP) + EOL;
-
-    data += [
-      stats.int,stats.pow,stats.luc].join(SEP) + EOL ;
-
-    data += "◆부수적 수치"+EOL;
-    data += ["체력", "마력", "이성", "근접전 피해 보너스"].join(SEP)+EOL;
-    data += [Math.floor(hp), mp, sanity, damage].join(SEP)+EOL;
-
-    data += "◆기능치(남은 기능 점수  : " + skillPoint + ")" + EOL;
-    data += ["명칭", "기본값", "투입 점수", "총점", "어려움(1/2)", "극단적(1/5)"].join(SEP) + EOL;
-
-    skills.forEach(skill => {
-      const total = skill.point + skill.base;
-      data += [
-        skill.name,
-        skill.base,
-        skill.point,
-        total,
-        Math.floor(total/2),
-        Math.floor(total/5)
-      ].join(SEP) + EOL;
-
-    });    
-　    data += "◆소지품"+EOL+EOL+EOL+EOL;
-    　data += "◆코코포리아 채팅 팔레트(아래의 수식을 복사하여 코코포리아 채팅 팔레트에 붙여넣기)"+EOL;
-
-       skills.forEach(skill => {
-        const total = skill.point + skill.base;
-        data += `CC<=${total}${SEP}[${skill.name}]` + EOL;
-    });
-
-
-
-      return data;
-   }
-
-   function copyToClipboard () {
-      const sheetData = createGooglesheetData();
-      const textarea = document.createElement('textarea');
-
-      textarea.value = sheetData;
-      textarea.style.position = 'fixed'; // 화면 밖으로 이동
-      document.body.appendChild(textarea);
-   
-      textarea.select();
-
-      try {
-        document.execCommand('copy');
-        alert('캐릭터 데이터가 클립보드에 복사되었습니다. \n 구글 시트의 A1 셀에서 ctrl +v를 입력하세요.');
-
-      } catch(err) {
-        alert('클립보드 복사에 실패했습니다.'); 
-      }
-      document.body.removeChild(textarea);
-   }
-
-
-
+    const textarea = document.createElement("textarea");
+    textarea.value = CoCInvData;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      console.log("클립보드에 복사됨");
+      alert(
+        "탐사자 정보가 클립보드에 복사됐습니다 \n빈 구글 시트의 A1셀에 ctrl + v를 입력하세요",
+      );
+    } catch (err) {
+      console.error("클립보드 복사 실패:", err);
+    }
+    document.body.removeChild(textarea);
+  }
 </script>
 
-<main><br><br><br><br><br>
-<div class="stats-grid"> 
-    <p>근력 <strong>{stats?.str ?? 'N/A'}</strong></p>
-    <p>건강 <strong>{stats?.con ?? 'N/A'}</strong></p>
-    <p>크기 <strong>{stats?.siz ?? 'N/A'}</strong></p>
-    <p>민첩성 <strong>{stats?.dex ?? 'N/A'}</strong></p>
-    <p>외모 <strong>{stats?.app ?? 'N/A'}</strong></p>
-    <p>교육 <strong>{stats?.edu ?? 'N/A'}</strong></p>
-    <p>지능 <strong>{stats?.int ?? 'N/A'}</strong></p>
-    <p>정신력 <strong>{stats?.pow ?? 'N/A'}</strong></p>
-    <p>행운 <strong>{stats?.luc ?? 'N/A'}</strong></p>
-</div>
-<hr>
-  <div class="derived-stats-grid"> 
- <p>체력 <strong>{Math.floor(hp)}</strong></p>
- <p>마력<strong>{mp}</strong></p>
- <p>이성 <strong>{sanity}</strong></p>
- <p>체구 피해보너스<strong>{damage}</strong></p>
- </div>
-<hr>
-<h3>기능</h3>
-<p class="skill-points-display">남은 기능 점수: <strong>{skillPoint}</strong></p>
-<div class="skill-grid-container"> 
-
+<main>
+  <br /><br /><br /><br /><br />
+  <div class="stats-grid">
+    <p>근력 <strong>{stats?.str ?? "N/A"}</strong></p>
+    <p>건강 <strong>{stats?.con ?? "N/A"}</strong></p>
+    <p>크기 <strong>{stats?.siz ?? "N/A"}</strong></p>
+    <p>민첩성 <strong>{stats?.dex ?? "N/A"}</strong></p>
+    <p>외모 <strong>{stats?.app ?? "N/A"}</strong></p>
+    <p>교육 <strong>{stats?.edu ?? "N/A"}</strong></p>
+    <p>지능 <strong>{stats?.int ?? "N/A"}</strong></p>
+    <p>정신력 <strong>{stats?.pow ?? "N/A"}</strong></p>
+    <p>행운 <strong>{stats?.luc ?? "N/A"}</strong></p>
+  </div>
+  <hr />
+  <div class="derived-stats-grid">
+    <p>체력 <strong>{Math.floor(hp)}</strong></p>
+    <p>마력<strong>{mp}</strong></p>
+    <p>이성 <strong>{sanity}</strong></p>
+    <p>체구 피해보너스<strong>{damage}</strong></p>
+  </div>
+  <hr />
+  <h3>기능</h3>
+  <p class="skill-points-display">
+    남은 기능 점수: <strong>{skillPoint}</strong>
+  </p>
+  <div class="skill-grid-container">
     {#each skills as skill, i}
       <div class="skill-grid-item">
-            <span class="skill-name">{skill.name} ({skill.base})</span> 
-            
-            <input 
-                type="number" 
-                min="0" 
-                max="{100 - skill.base}"
-                class="skill-input"
-                bind:value={skill.point}
-                on:input={() => adjustSkillPoint(i)} 
-            />
-            
-            <span class="skill-total-score">총점: {skill.point + skill.base}</span>
+        <span class="skill-name">{skill.name} ({skill.base})</span>
 
+        <input
+          type="number"
+          min="0"
+          max={100 - skill.base}
+          class="skill-input"
+          bind:value={skill.point}
+          on:input={() => adjustSkillPoint(i)}
+        />
+
+        <span class="skill-total-score">총점: {skill.point + skill.base}</span>
       </div>
     {/each}
-</div>
-<hr>
+  </div>
+  <hr />
 
-<button on:click={goBack}>다시 만들기</button>
-<button> 바로 만들기</button>
-<button on:click={copyToClipboard}> 구글 시트에 붙여넣기</button>
+  <button on:click={goBack}>다시 만들기</button>
+  <button> 바로 만들기</button>
+  <button on:click={copyToClipboard}> 구글 시트에 붙여넣기</button>
 </main>
 
-
 <style>
-    .stats-grid {
-        display: grid;
-        /* 3개의 열(column)을 만들고, 각 열이 동일한 공간(1fr)을 차지하도록 설정. */
-        grid-template-columns: 1fr 1fr 1fr; 
-        gap: 10px; 
-        margin-bottom: 20px;
-    }
+  .stats-grid {
+    display: grid;
+    /* 3개의 열(column)을 만들고, 각 열이 동일한 공간(1fr)을 차지하도록 설정. */
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-    .stats-grid p {
-        background-color: #70b5e7;
-        padding: 8px;
-        border-radius: 4px;
-        text-align: center;
-        margin: 0; 
-        font-size: 0.9em;
-        color: #fefeff;
-    }
-    
-    .stats-grid strong {
-        display: block; 
-        font-size: 1.2em;
-        color: #4247df; 
-    }
+  .stats-grid p {
+    background-color: #70b5e7;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+    margin: 0;
+    font-size: 0.9em;
+    color: #fefeff;
+  }
 
-    .derived-stats-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr; 
-        gap: 10px; 
-        margin-bottom: 20px;
-    }
+  .stats-grid strong {
+    display: block;
+    font-size: 1.2em;
+    color: #4247df;
+  }
 
-    .derived-stats-grid p {
-        background-color: #4084ed; 
-        padding: 8px;
-        border-radius: 4px;
-        text-align: center;
-        margin: 0;
-        font-size: 0.9em;
-        color: #ddd; 
-    }
-    
-    .derived-stats-grid strong {
-        display: block;
-        font-size: 1.2em;
-        color: #ddd; 
-    }
+  .derived-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-      .skill-points-display {
-        font-size: 1.1em;
-        font-weight: bold;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #ddd;
-        text-align: center;
-        margin-bottom: 15px;
-    }
+  .derived-stats-grid p {
+    background-color: #4084ed;
+    padding: 8px;
+    border-radius: 4px;
+    text-align: center;
+    margin: 0;
+    font-size: 0.9em;
+    color: #ddd;
+  }
 
-    .skill-grid-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr); 
-        gap: 8px;
-      
-        max-height: 220px; 
-        overflow-y: auto; 
-        padding: 5px; 
-        border: 1px solid #eee;
-        border-radius: 5px;
-    }
+  .derived-stats-grid strong {
+    display: block;
+    font-size: 1.2em;
+    color: #ddd;
+  }
 
-    .skill-grid-item {
-        display: flex; 
-        flex-direction: column; /* 세로로 쌓기 */
-        align-items: center;
-        text-align: center;
-        background-color: #f9f9f9;
-        padding: 5px;
-        border-radius: 4px;
-        font-size: 0.8em; 
-        color: #333;
-        border: 1px solid #ddd;
-    }
-  
-    .skill-name {
-        font-weight: bold;
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        max-width: 100%;
-        margin-bottom: 2px;
-    }
-    
-    
+  .skill-points-display {
+    font-size: 1.1em;
+    font-weight: bold;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+    text-align: center;
+    margin-bottom: 15px;
+  }
 
+  .skill-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+
+    max-height: 220px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+  }
+
+  .skill-grid-item {
+    display: flex;
+    flex-direction: column; /* 세로로 쌓기 */
+    align-items: center;
+    text-align: center;
+    background-color: #f9f9f9;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    color: #333;
+    border: 1px solid #ddd;
+  }
+
+  .skill-name {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    margin-bottom: 2px;
+  }
 </style>
