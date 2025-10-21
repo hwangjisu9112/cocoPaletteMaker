@@ -94,7 +94,7 @@ export function createGooglesheetData(
 }
 
 
-export function createCocoPalate(stats: Stats,
+export function createCocoPalette(stats: Stats,
     derivedStats: { hp: number; mp: number; sanity: number; damage: string },
     skillPoint: number,
     skills: Skill[]): string {

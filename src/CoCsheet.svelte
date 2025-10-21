@@ -1,7 +1,7 @@
 <script lang="ts">
   import { AppState } from "./store";
   import { INITIAL_SKILLS } from "./CoCskill";
-  import { createGooglesheetData } from "./CoCsheetStyle";
+  import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
   import { onMount } from "svelte";
 
   // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다
@@ -124,7 +124,7 @@
     console.log(zeroStats);
   }
 
-  function copyToClipboard(): void {
+  function copyToSheet(): void {
     if (!stats) {
       console.log("error : 특성치 미존재.");
       return;
@@ -145,6 +145,35 @@
       console.log("클립보드에 복사됨");
       alert(
         "탐사자 정보가 클립보드에 복사됐습니다 \n빈 구글 시트의 A1셀에 ctrl + v를 입력하세요",
+      );
+    } catch (err) {
+      console.error("클립보드 복사 실패:", err);
+    }
+    document.body.removeChild(textarea);
+  }
+
+  function copyToData(): void {
+    if (!stats) {
+      console.log("error : 특성치 미존재.");
+      return;
+    }
+
+    const CoCInvData = createCocoPalette(
+      stats,
+      { hp, mp, sanity, damage },
+      skillPoint,
+      skills,
+    );
+
+    const textarea = document.createElement("textarea");
+    textarea.value = CoCInvData;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      console.log("클립보드에 복사됨");
+      alert(
+        "탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아의 채팅 팔레트에 ctrl + v를 입력하세요"
       );
     } catch (err) {
       console.error("클립보드 복사 실패:", err);
@@ -174,7 +203,7 @@
     <p>체구 피해보너스<strong>{damage}</strong></p>
   </div>
   <hr />
-  <h3>기능</h3>
+  <h4>기능</h4>
   <p class="skill-points-display">
     남은 기능 점수: <strong>{skillPoint}</strong>
   </p>
@@ -199,8 +228,8 @@
   <hr />
 
   <button on:click={goBack}>다시 만들기</button>
-  <button> 바로 만들기</button>
-  <button on:click={copyToClipboard}> 구글 시트에 붙여넣기</button>
+  <button on:click={copyToData}> 코코포리아에 붙여넣기</button>
+  <button on:click={copyToSheet}> 구글 시트에 붙여넣기</button>
 </main>
 
 <style>
@@ -225,7 +254,7 @@
   .stats-grid strong {
     display: block;
     font-size: 1.2em;
-    color: #4247df;
+    color: #063a73;
   }
 
   .derived-stats-grid {
@@ -242,7 +271,7 @@
     text-align: center;
     margin: 0;
     font-size: 0.9em;
-    color: #ddd;
+    color: #fefeff;
   }
 
   .derived-stats-grid strong {
@@ -281,7 +310,7 @@
     padding: 5px;
     border-radius: 4px;
     font-size: 0.8em;
-    color: #333;
+    color: #063a73;
     border: 1px solid #ddd;
   }
 

@@ -137,7 +137,7 @@ function confirmStat(): void {
 {#if !$AppState.isConfirmed}
 
 <main on:mousemove={handleMouseMove}>
-  <h3> COCO Palate Maker </h3>
+  <h3> COCO Palette Maker </h3>
   <h2> 크툴루의 부름 탐사자 특성치 생성기 </h2>
 
   <button on:click={rollCOC}>특성치 생성</button>
