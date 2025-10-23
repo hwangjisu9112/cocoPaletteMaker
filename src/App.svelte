@@ -2,6 +2,7 @@
   import { AppState } from './store';
   import { StatDescriptions } from './CoCtooltip';
   import Result from './CoCsheet.svelte';
+  import image01 from './assets/image01.png'
 
 
 //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치 정의
@@ -137,7 +138,7 @@ function confirmStat(): void {
 {#if !$AppState.isConfirmed}
 
 <main on:mousemove={handleMouseMove}>
-  <h3> COCO Palette Maker </h3>
+  <img src= {image01} alt="Icon"  width="200">
   <h2> 크툴루의 부름 탐사자 특성치 생성기 </h2>
 
   <button on:click={rollCOC}>특성치 생성</button>
@@ -156,7 +157,7 @@ function confirmStat(): void {
   <p on:mouseover={(e) => mouseOver(e, 'luc')} on:mouseout={mouseOut}>행운 (LUCK): <strong>{CharacteristicsStatus.luc }</strong></p>
 </div>
 
-<button>사용 방법</button>
+<button class="guide-button">🤔 사용 방법</button>
 
 
 </main>
@@ -193,4 +194,9 @@ function confirmStat(): void {
     pointer-events: none; /* 툴팁이 마우스 이벤트를 가로채지 않도록 설정 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
+
+  .guide-button {
+    width: 250px
+  }
+  
 </style>

@@ -144,7 +144,7 @@
       document.execCommand("copy");
       console.log("클립보드에 복사됨");
       alert(
-        "탐사자 정보가 클립보드에 복사됐습니다 \n빈 구글 시트의 A1셀에 ctrl + v를 입력하세요",
+        "✅　탐사자 정보가 클립보드에 복사됐습니다 \n빈 구글 시트의 A1셀에 ctrl + v를 입력하세요",
       );
     } catch (err) {
       console.error("클립보드 복사 실패:", err);
@@ -173,7 +173,7 @@
       document.execCommand("copy");
       console.log("클립보드에 복사됨");
       alert(
-        "탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아의 채팅 팔레트에 ctrl + v를 입력하세요"
+        "🎨　탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아의 채팅 팔레트에 ctrl + v를 입력하세요"
       );
     } catch (err) {
       console.error("클립보드 복사 실패:", err);
@@ -184,6 +184,7 @@
 
 <main>
   <br /><br /><br /><br /><br />
+  <h4>탐사자 정보</h4>
   <div class="stats-grid">
     <p>근력 <strong>{stats?.str ?? "N/A"}</strong></p>
     <p>건강 <strong>{stats?.con ?? "N/A"}</strong></p>
@@ -202,7 +203,6 @@
     <p>이성 <strong>{sanity}</strong></p>
     <p>체구 피해보너스<strong>{damage}</strong></p>
   </div>
-  <hr />
   <h4>기능</h4>
   <p class="skill-points-display">
     남은 기능 점수: <strong>{skillPoint}</strong>
@@ -225,7 +225,7 @@
       </div>
     {/each}
   </div>
-  <hr />
+  <br>
 
   <button on:click={goBack}>다시 만들기</button>
   <button on:click={copyToData}> 코코포리아에 붙여넣기</button>
@@ -247,19 +247,19 @@
     border-radius: 4px;
     text-align: center;
     margin: 0;
-    font-size: 0.9em;
+    font-size: 1.0em;
     color: #fefeff;
   }
 
   .stats-grid strong {
     display: block;
-    font-size: 1.2em;
-    color: #063a73;
+    font-size: 1.5em;
+    color: #0F172A;
   }
 
   .derived-stats-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin-bottom: 20px;
   }
@@ -291,7 +291,7 @@
 
   .skill-grid-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 8px;
 
     max-height: 220px;
@@ -304,8 +304,9 @@
   .skill-grid-item {
     display: flex;
     flex-direction: column; /* 세로로 쌓기 */
-    align-items: center;
+    align-items: stretch;
     text-align: center;
+    justify-content: space-between;
     background-color: #f9f9f9;
     padding: 5px;
     border-radius: 4px;
