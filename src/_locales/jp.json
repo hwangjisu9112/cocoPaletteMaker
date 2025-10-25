@@ -1,0 +1,17 @@
+{
+  "title": "クトゥルフ神話TRPG 能力値 ジェネレータ",
+  "roll": "能力値 生成",
+  "reset": "能力値 初期化",
+  "confirm": "確定する",
+  "guide": "🤔 使用方",
+
+  "str": "筋力 (STR)",
+  "con": "体力 (CON)",
+  "siz": "体格 (SIZ)",
+  "dex": "敏捷性 (DEX)",
+  "app": "外見 (APP)",
+  "edu": "教育 (EDU)",
+  "int": "知性 (INT)",
+  "pow": "精神力 (POW)",
+  "luc": "幸運 (LUCK)"
+}

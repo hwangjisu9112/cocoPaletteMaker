@@ -3,6 +3,8 @@
   import { StatDescriptions } from './CoCtooltip';
   import Result from './CoCsheet.svelte';
   import image01 from './assets/image01.png'
+  import { _, locale } from 'svelte-i18n';
+  import './i18n.js';
 
 
 //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치 정의

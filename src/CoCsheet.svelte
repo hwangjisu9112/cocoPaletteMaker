@@ -2,7 +2,6 @@
   import { AppState } from "./store";
   import { INITIAL_SKILLS } from "./CoCskill";
   import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
-  import { onMount } from "svelte";
 
   // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다
   $: stats = $AppState.currentStats;

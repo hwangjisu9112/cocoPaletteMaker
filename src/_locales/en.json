@@ -1,0 +1,17 @@
+{
+  "title": "Call of Cthulhu Investigator Stat Generator",
+  "roll": "Roll Stats",
+  "reset": "Reset Stats",
+  "confirm": "Confirm",
+  "guide": "🤔 How to Use",
+
+  "str": "Strength (STR)",
+  "con": "Constitution (CON)",
+  "siz": "Size (SIZ)",
+  "dex": "Dexterity (DEX)",
+  "app": "Appearance (APP)",
+  "edu": "Education (EDU)",
+  "int": "Intelligence (INT)",
+  "pow": "Power (POW)",
+  "luc": "Luck (LUCK)"
+}
