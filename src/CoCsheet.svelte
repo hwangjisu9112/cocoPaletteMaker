@@ -2,6 +2,12 @@
   import { AppState } from "./store";
   import { INITIAL_SKILLS } from "./CoCskill";
   import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
+  import { _, locale, isLoading } from "svelte-i18n";
+  import "./i18n.js";
+
+  function switchLang(lang: string): void {
+    locale.set(lang);
+  }
 
   // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다
   $: stats = $AppState.currentStats;
@@ -172,7 +178,7 @@
       document.execCommand("copy");
       console.log("클립보드에 복사됨");
       alert(
-        "🎨　탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아의 채팅 팔레트에 ctrl + v를 입력하세요"
+        "🎨　탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아의 채팅 팔레트에 ctrl + v를 입력하세요",
       );
     } catch (err) {
       console.error("클립보드 복사 실패:", err);
@@ -182,7 +188,13 @@
 </script>
 
 <main>
-  <br /><br /><br /><br /><br />
+  <br /><br /><br /><br />
+  <div style="margin-top: 5px;">
+    <br /><br /><br /><br />
+    <button class="lang-btn" on:click={() => switchLang("kr")}>한국어</button>
+    <button class="lang-btn" on:click={() => switchLang("jp")}>日本語</button>
+    <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
+  </div>
   <h4>탐사자 정보</h4>
   <div class="stats-grid">
     <p>근력 <strong>{stats?.str ?? "N/A"}</strong></p>
@@ -224,7 +236,7 @@
       </div>
     {/each}
   </div>
-  <br>
+  <br />
 
   <button on:click={goBack}>다시 만들기</button>
   <button on:click={copyToData}> 코코포리아에 붙여넣기</button>
@@ -232,6 +244,22 @@
 </main>
 
 <style>
+  .lang-btn {
+    background-color: #555; /* 툴팁 배경색 #333보다 살짝 밝은 진한 회색 */
+    color: white; 
+    border: 1px solid #777;
+    margin: 0 5px; /* 버튼 사이에 간격 추가 */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s; /* 부드러운 전환 효과 */
+  }
+
+  .lang-switcher button:hover {
+    /* 마우스 오버 시 스타일: 툴팁 배경색 #333에 가깝게 어둡게 변경 */
+    background-color: #333; 
+    border-color: white; 
+  }
+
   .stats-grid {
     display: grid;
     /* 3개의 열(column)을 만들고, 각 열이 동일한 공간(1fr)을 차지하도록 설정. */
@@ -246,14 +274,14 @@
     border-radius: 4px;
     text-align: center;
     margin: 0;
-    font-size: 1.0em;
+    font-size: 1em;
     color: #fefeff;
   }
 
   .stats-grid strong {
     display: block;
     font-size: 1.5em;
-    color: #0F172A;
+    color: #0f172a;
   }
 
   .derived-stats-grid {
