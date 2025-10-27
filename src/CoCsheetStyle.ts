@@ -1,3 +1,5 @@
+import { get } from 'svelte/store';
+
 interface Stats {
     str: number; con: number; siz: number; dex: number; app: number;
     edu: number; int: number; pow: number; luc: number;
@@ -13,11 +15,13 @@ export function createGooglesheetData(
     stats: Stats,
     derivedStats: { hp: number; mp: number; sanity: number; damage: string },
     skillPoint: number,
-    skills: Skill[]
+    skills: Skill[],
+    getTranslation: (key: string) => string
 ): string {
-    if (!stats) return "캐릭터의 능력치가 존재하지 않습니다";
+    if (!stats) return getTranslation("error_no_stats");
 
-    let data = ""
+    const T = getTranslation;
+    let data = "";
     const EOL = "\n"; //줄 바꾸기 end of line
     const SEP = "\t"; // 탭하기 tap
 
@@ -63,30 +67,30 @@ export function createGooglesheetData(
             Math.floor(total / 5)
         ].join(SEP) + EOL;
     });
-    data += ["크툴루 신화", "0", "0", "0", "0", "0"].join(SEP) + EOL;
+    data += [T("skill_cthulhu_mythos"), "0", "0", "0", "0", "0"].join(SEP) + EOL;
 
     // 코코포리아 채팅 팔레트 
     data += EOL + "◆소지품" + EOL + EOL + EOL + EOL;
     data += "◆코코포리아 채팅 팔레트(아래의 수식을 복사하여 코코포리아 채팅 팔레트에 붙여넣기)" + EOL;
 
-    const statName = {
-        str: "근력", con: "건강", siz: "크기", dex: "민첩성", app: "외모",
-        edu: "교육", int: "지능", pow: "정신력", luc: "행운"
+    const statMap: { [key in keyof Stats]: string } = {
+        str: "str", con: "con", siz: "siz", dex: "dex", app: "app",
+        edu: "edu", int: "int", pow: "pow", luc: "luc"
     };
 
-    (Object.keys(statName) as (keyof typeof statName)[]).forEach(key => {
+    (Object.keys(statMap) as (keyof typeof statMap)[]).forEach(key => {
         const statValue = stats[key];
-        const statLabel = statName[key];
+        const statLabel = statMap[key];
         data += `CC<=${statValue}${SEP}[${statLabel} 판정]` + EOL;
     });
 
 
     skills.forEach(skill => {
         const totalSkills = skill.point + skill.base;
-        data += `CC<=${totalSkills}${SEP}[${skill.name}]` + EOL;
+        data += `CC<=${totalSkills}${SEP}[${T(skill.name)}]`
     });
 
-    data += `CC<=0 [크툴루 신화]` + EOL;
+    data += `CC<=0 [${T("skill_cthulhu_mythos")}]` + EOL;
     data += `CC<=${derivedStats.sanity}${SEP}[SAN]` + EOL;
     data += `${derivedStats.damage} + 1d3 ${SEP}[타격 - 비무장]` + EOL;
 
@@ -97,21 +101,24 @@ export function createGooglesheetData(
 export function createCocoPalette(stats: Stats,
     derivedStats: { hp: number; mp: number; sanity: number; damage: string },
     skillPoint: number,
-    skills: Skill[]): string {
-    if (!stats) return "캐릭터의 능력치가 존재하지 않습니다";
+    skills: Skill[],
+    getTranslation: (key: string) => string
+): string {
+    if (!stats) return getTranslation("error_no_stats");
 
+    const T = getTranslation;
     let data = ""
     const EOL = "\n"; //줄 바꾸기 end of line
     const SEP = "\t"; // 탭하기 tap
 
-    const statName = {
-        str: "근력", con: "건강", siz: "크기", dex: "민첩성", app: "외모",
-        edu: "교육", int: "지능", pow: "정신력", luc: "행운"
+    const statMap: { [key in keyof Stats]: string } = {
+        str: "str", con: "con", siz: "siz", dex: "dex", app: "app",
+        edu: "edu", int: "int", pow: "pow", luc: "luc"
     };
 
-    (Object.keys(statName) as (keyof typeof statName)[]).forEach(key => {
+    (Object.keys(statMap) as (keyof typeof statMap)[]).forEach(key => {
         const statValue = stats[key];
-        const statLabel = statName[key];
+        const statLabel = statMap[key];
         data += `CC<=${statValue}${SEP}[${statLabel} 판정]` + EOL;
     });
 
@@ -120,7 +127,7 @@ export function createCocoPalette(stats: Stats,
         data += `CC<=${total}${SEP}[${skill.name}]` + EOL;
     });
 
-    data += `CC<=0 [크툴루 신화]` + EOL;
+    data += `CC<=0 [${T("skill_cthulhu_mythos")}]` + EOL;
     data += `CC<=${derivedStats.sanity}${SEP}[SAN]` + EOL;
     data += `${derivedStats.damage} + 1d3 ${SEP}[타격 - 비무장]` + EOL;
 

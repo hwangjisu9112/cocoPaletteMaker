@@ -1,5 +1,6 @@
 <script lang="ts">
   import { AppState } from "./store";
+  import { get } from "svelte/store";
   import { INITIAL_SKILLS } from "./CoCskill";
   import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
   import { _, locale, isLoading } from "svelte-i18n";
@@ -139,6 +140,7 @@
       { hp, mp, sanity, damage },
       skillPoint,
       skills,
+      (key) => get(_)(key),
     );
 
     const textarea = document.createElement("textarea");
@@ -148,9 +150,7 @@
     try {
       document.execCommand("copy");
       console.log("클립보드에 복사됨");
-      alert(
-        "✅　탐사자 정보가 클립보드에 복사됐습니다 \n빈 구글 시트의 A1셀에 ctrl + v를 입력하세요",
-      );
+      alert(get(_)("alert_sheet_success"));
     } catch (err) {
       console.error("클립보드 복사 실패:", err);
     }
@@ -168,6 +168,7 @@
       { hp, mp, sanity, damage },
       skillPoint,
       skills,
+      (key) => get(_)(key),
     );
 
     const textarea = document.createElement("textarea");
@@ -177,9 +178,7 @@
     try {
       document.execCommand("copy");
       console.log("클립보드에 복사됨");
-      alert(
-        "🎨　탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아의 채팅 팔레트에 ctrl + v를 입력하세요",
-      );
+      alert(get(_)("alert_coco_success"));
     } catch (err) {
       console.error("클립보드 복사 실패:", err);
     }
@@ -195,33 +194,33 @@
     <button class="lang-btn" on:click={() => switchLang("jp")}>日本語</button>
     <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
   </div>
-  <h4>탐사자 정보</h4>
+  <h4>{$_("title_after_confirm")}</h4>
   <div class="stats-grid">
-    <p>근력 <strong>{stats?.str ?? "N/A"}</strong></p>
-    <p>건강 <strong>{stats?.con ?? "N/A"}</strong></p>
-    <p>크기 <strong>{stats?.siz ?? "N/A"}</strong></p>
-    <p>민첩성 <strong>{stats?.dex ?? "N/A"}</strong></p>
-    <p>외모 <strong>{stats?.app ?? "N/A"}</strong></p>
-    <p>교육 <strong>{stats?.edu ?? "N/A"}</strong></p>
-    <p>지능 <strong>{stats?.int ?? "N/A"}</strong></p>
-    <p>정신력 <strong>{stats?.pow ?? "N/A"}</strong></p>
-    <p>행운 <strong>{stats?.luc ?? "N/A"}</strong></p>
+    <p>{$_("str")}<strong>{stats?.str ?? "N/A"}</strong></p>
+    <p>{$_("con")} <strong>{stats?.con ?? "N/A"}</strong></p>
+    <p>{$_("siz")} <strong>{stats?.siz ?? "N/A"}</strong></p>
+    <p>{$_("dex")} <strong>{stats?.dex ?? "N/A"}</strong></p>
+    <p>{$_("app")} <strong>{stats?.app ?? "N/A"}</strong></p>
+    <p>{$_("edu")} <strong>{stats?.edu ?? "N/A"}</strong></p>
+    <p>{$_("int")} <strong>{stats?.int ?? "N/A"}</strong></p>
+    <p>{$_("pow")} <strong>{stats?.pow ?? "N/A"}</strong></p>
+    <p>{$_("luc")} <strong>{stats?.luc ?? "N/A"}</strong></p>
   </div>
   <hr />
   <div class="derived-stats-grid">
-    <p>체력 <strong>{Math.floor(hp)}</strong></p>
-    <p>마력<strong>{mp}</strong></p>
-    <p>이성 <strong>{sanity}</strong></p>
-    <p>체구 피해보너스<strong>{damage}</strong></p>
+    <p>{$_("hp")} <strong>{Math.floor(hp)}</strong></p>
+    <p>{$_("mp")}<strong>{mp}</strong></p>
+    <p>{$_("san")} <strong>{sanity}</strong></p>
+    <p>{$_("db")}<strong>{damage}</strong></p>
   </div>
-  <h4>기능</h4>
+  <h4>{$_("skill_describe")}</h4>
   <p class="skill-points-display">
-    남은 기능 점수: <strong>{skillPoint}</strong>
+    {$_("skill_remaining")}: <strong>{skillPoint}</strong>
   </p>
   <div class="skill-grid-container">
     {#each skills as skill, i}
       <div class="skill-grid-item">
-        <span class="skill-name">{skill.name} ({skill.base})</span>
+        <span class="skill-name">{$_(skill.name)} ({skill.base})</span>
 
         <input
           type="number"
@@ -232,32 +231,34 @@
           on:input={() => adjustSkillPoint(i)}
         />
 
-        <span class="skill-total-score">총점: {skill.point + skill.base}</span>
+        <span class="skill-total-score">Total: {skill.point + skill.base}</span>
       </div>
     {/each}
   </div>
   <br />
 
-  <button on:click={goBack}>다시 만들기</button>
-  <button on:click={copyToData}> 코코포리아에 붙여넣기</button>
-  <button on:click={copyToSheet}> 구글 시트에 붙여넣기</button>
+  <button on:click={goBack}>{$_("remake")}</button>
+  <button on:click={copyToData}>{$_("copyToCoco")}</button>
+  <button on:click={copyToSheet}>{$_("copyToSheet")}</button>
 </main>
 
 <style>
   .lang-btn {
     background-color: #555; /* 툴팁 배경색 #333보다 살짝 밝은 진한 회색 */
-    color: white; 
+    color: white;
     border: 1px solid #777;
     margin: 0 5px; /* 버튼 사이에 간격 추가 */
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s; /* 부드러운 전환 효과 */
+    transition:
+      background-color 0.2s,
+      border-color 0.2s; /* 부드러운 전환 효과 */
   }
 
   .lang-switcher button:hover {
     /* 마우스 오버 시 스타일: 툴팁 배경색 #333에 가깝게 어둡게 변경 */
-    background-color: #333; 
-    border-color: white; 
+    background-color: #333;
+    border-color: white;
   }
 
   .stats-grid {
