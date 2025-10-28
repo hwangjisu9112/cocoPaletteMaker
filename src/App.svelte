@@ -137,9 +137,13 @@
   {:else}
     <main on:mousemove={handleMouseMove}>
       <div style="margin-top: 5px;">
-         <br />
-        <button class="lang-btn" on:click={() => switchLang("kr")}>한국어</button>
-        <button class="lang-btn" on:click={() => switchLang("jp")}>日本語</button>
+        <br />
+        <button class="lang-btn" on:click={() => switchLang("kr")}
+          >한국어</button
+        >
+        <button class="lang-btn" on:click={() => switchLang("jp")}
+          >日本語</button
+        >
         <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
       </div>
       <img src={image01} alt="Icon" width="200" />
@@ -152,31 +156,31 @@
       <!-- svelte-ignore a11y_mouse_events_have_key_events -->
       <div class="stats-grid">
         <p on:mouseover={(e) => mouseOver(e, "str")} on:mouseout={mouseOut}>
-          {$_('str')}: <strong>{CharacteristicsStatus.str}</strong>
+          {$_("str")}: <strong>{CharacteristicsStatus.str}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "con")} on:mouseout={mouseOut}>
-          {$_('con')}: <strong>{CharacteristicsStatus.con}</strong>
+          {$_("con")}: <strong>{CharacteristicsStatus.con}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "siz")} on:mouseout={mouseOut}>
-         {$_('siz')}: <strong>{CharacteristicsStatus.siz}</strong>
+          {$_("siz")}: <strong>{CharacteristicsStatus.siz}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "dex")} on:mouseout={mouseOut}>
-          {$_('dex')}: <strong>{CharacteristicsStatus.dex}</strong>
+          {$_("dex")}: <strong>{CharacteristicsStatus.dex}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "app")} on:mouseout={mouseOut}>
-          {$_('app')}: <strong>{CharacteristicsStatus.app}</strong>
+          {$_("app")}: <strong>{CharacteristicsStatus.app}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "edu")} on:mouseout={mouseOut}>
-          {$_('edu')}: <strong>{CharacteristicsStatus.edu}</strong>
+          {$_("edu")}: <strong>{CharacteristicsStatus.edu}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "int")} on:mouseout={mouseOut}>
-         {$_('int')}: <strong>{CharacteristicsStatus.int}</strong>
+          {$_("int")}: <strong>{CharacteristicsStatus.int}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "pow")} on:mouseout={mouseOut}>
-         {$_('pow')}: <strong>{CharacteristicsStatus.pow}</strong>
+          {$_("pow")}: <strong>{CharacteristicsStatus.pow}</strong>
         </p>
         <p on:mouseover={(e) => mouseOver(e, "luc")} on:mouseout={mouseOut}>
-          {$_('luc')}: <strong>{CharacteristicsStatus.luc}</strong>
+          {$_("luc")}: <strong>{CharacteristicsStatus.luc}</strong>
         </p>
       </div>
 
@@ -194,8 +198,8 @@
 {/if}
 
 <style>
-    .lang-btn {
-      background-color: dimgray;
+  .lang-btn {
+    background-color: dimgray;
   }
 
   .stats-grid {

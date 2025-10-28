@@ -166,7 +166,6 @@
     const CoCInvData = createCocoPalette(
       stats,
       { hp, mp, sanity, damage },
-      skillPoint,
       skills,
       (key) => get(_)(key),
     );
@@ -187,14 +186,15 @@
 </script>
 
 <main>
-  <br /><br /><br /><br />
+  <br /><br /><br /><br /><br /><br /><br />
   <div style="margin-top: 5px;">
-    <br /><br /><br /><br />
+    <br /><br /><br /><br /><br />
     <button class="lang-btn" on:click={() => switchLang("kr")}>한국어</button>
     <button class="lang-btn" on:click={() => switchLang("jp")}>日本語</button>
     <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
   </div>
   <h4>{$_("title_after_confirm")}</h4>
+
   <div class="stats-grid">
     <p>{$_("str")}<strong>{stats?.str ?? "N/A"}</strong></p>
     <p>{$_("con")} <strong>{stats?.con ?? "N/A"}</strong></p>
@@ -236,29 +236,17 @@
     {/each}
   </div>
   <br />
-
+  <div>
+    <button on:click={copyToData}>{$_("copyToCoco")}</button>
+    <button on:click={copyToSheet}>{$_("copyToSheet")}</button>
+  </div>
+  <br />
   <button on:click={goBack}>{$_("remake")}</button>
-  <button on:click={copyToData}>{$_("copyToCoco")}</button>
-  <button on:click={copyToSheet}>{$_("copyToSheet")}</button>
 </main>
 
 <style>
   .lang-btn {
-    background-color: #555; /* 툴팁 배경색 #333보다 살짝 밝은 진한 회색 */
-    color: white;
-    border: 1px solid #777;
-    margin: 0 5px; /* 버튼 사이에 간격 추가 */
-    border-radius: 4px;
-    cursor: pointer;
-    transition:
-      background-color 0.2s,
-      border-color 0.2s; /* 부드러운 전환 효과 */
-  }
-
-  .lang-switcher button:hover {
-    /* 마우스 오버 시 스타일: 툴팁 배경색 #333에 가깝게 어둡게 변경 */
-    background-color: #333;
-    border-color: white;
+    background-color: dimgray;
   }
 
   .stats-grid {
@@ -319,7 +307,7 @@
 
   .skill-grid-container {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
 
     max-height: 220px;

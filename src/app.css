@@ -13,6 +13,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+  main {
+    /* 앱의 최대 너비를 고정합니다. (예: 350px 또는 400px) */
+    max-width: 400px;
+    margin: 0 auto; /* 중앙 정렬 (선택 사항) */
+    padding: 10px;
+  }
+
 a {
   font-weight: 500;
   color: #646cff;
