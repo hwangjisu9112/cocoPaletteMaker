@@ -80,14 +80,14 @@ export function createGooglesheetData(
     data += "◆" + T("section_cocorp_palette_title") + EOL;
 
     const statMap: { [key in keyof Stats]: string } = {
-        str: "stat_str", con: "stat_con", siz: "stat_siz", dex: "stat_dex", app: "stat_app",
-        edu: "stat_edu", int: "stat_int", pow: "stat_pow", luc: "stat_luc"
+        str: "str", con: "con", siz: "siz", dex: "dex", app: "app",
+        edu: "edu", int: "int", pow: "pow", luc: "luc"
     };
 
     (Object.keys(statMap) as (keyof Stats)[]).forEach(key => {
         const statValue = stats[key];
-        const statLabel = T(statMap[key]); // 💡 번역된 특성치 이름 사용
-        data += `CC<=${statValue}${SEP}[${statLabel} ${T("check_suffix")}]` + EOL; // '판정' 번역
+        const statLabel = T(statMap[key]); 
+        data += `CC<=${statValue}${SEP}[${statLabel} ${T("check_suffix")}]` + EOL; 
     });
 
 
@@ -118,8 +118,8 @@ export function createCocoPalette(
     const SEP = "\t";
 
     const statMap: { [key in keyof Stats]: string } = {
-        str: "stat_str", con: "stat_con", siz: "stat_siz", dex: "stat_dex", app: "stat_app",
-        edu: "stat_edu", int: "stat_int", pow: "stat_pow", luc: "stat_luc"
+        str: "str", con: "con", siz: "siz", dex: "dex", app: "app",
+        edu: "edu", int: "int", pow: "pow", luc: "luc"
     };
 
     (Object.keys(statMap) as (keyof Stats)[]).forEach(key => {

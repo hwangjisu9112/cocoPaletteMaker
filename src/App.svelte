@@ -184,7 +184,7 @@
         </p>
       </div>
 
-      <button class="guide-button">{$_("guide")}</button>
+      <button class="guide-button" on:click={() => window.open('https://posty.pe/zfi4g8', '_blank')}>{$_("guide")}</button>
     </main>
 
     {#if showTooltip}
@@ -224,6 +224,15 @@
   }
 
   .guide-button {
-    width: 250px;
-  }
+    padding:8px 15px 8px 15px;
+    min-width: 250;
+    height: auto;
+    box-sizing: border-box;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color:#5877f9;
+    border:2px solid #5877f9;
+    color:#ffffff;
+}
 </style>

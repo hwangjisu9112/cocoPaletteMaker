@@ -241,7 +241,7 @@
     <button on:click={copyToSheet}>{$_("copyToSheet")}</button>
   </div>
   <br />
-  <button on:click={goBack}>{$_("remake")}</button>
+  <button class="return-button" on:click={goBack}>{$_("remake")}</button>
 </main>
 
 <style>
@@ -339,4 +339,17 @@
     max-width: 100%;
     margin-bottom: 2px;
   }
+
+    .return-button {
+    padding:8px 15px 8px 15px;
+    min-width: 250;
+    height: auto;
+    box-sizing: border-box;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color:#5877f9;
+    border:2px solid #5877f9;
+    color:#ffffff;
+}
 </style>
