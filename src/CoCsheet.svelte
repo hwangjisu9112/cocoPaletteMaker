@@ -186,65 +186,82 @@
 </script>
 
 <main>
-  <br /><br /><br /><br /><br /><br /><br />
-  <div style="margin-top: 5px;">
-    <br /><br /><br /><br /><br />
-    <button class="lang-btn" on:click={() => switchLang("kr")}>한국어</button>
-    <button class="lang-btn" on:click={() => switchLang("jp")}>日本語</button>
-    <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
-  </div>
-  <h4>{$_("title_after_confirm")}</h4>
+  <div class="content-wrapper">
+    <br /><br /><br /><br /><br /><br /><br />
+    <div style="margin-top: 5px;">
+      <br /><br /><br /><br /><br />
+      <button class="lang-btn" on:click={() => switchLang("kr")}>한국어</button>
+      <button class="lang-btn" on:click={() => switchLang("jp")}>日本語</button>
+      <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
+    </div>
+    <h4>{$_("title_after_confirm")}</h4>
 
-  <div class="stats-grid">
-    <p>{$_("str")}<strong>{stats?.str ?? "N/A"}</strong></p>
-    <p>{$_("con")} <strong>{stats?.con ?? "N/A"}</strong></p>
-    <p>{$_("siz")} <strong>{stats?.siz ?? "N/A"}</strong></p>
-    <p>{$_("dex")} <strong>{stats?.dex ?? "N/A"}</strong></p>
-    <p>{$_("app")} <strong>{stats?.app ?? "N/A"}</strong></p>
-    <p>{$_("edu")} <strong>{stats?.edu ?? "N/A"}</strong></p>
-    <p>{$_("int")} <strong>{stats?.int ?? "N/A"}</strong></p>
-    <p>{$_("pow")} <strong>{stats?.pow ?? "N/A"}</strong></p>
-    <p>{$_("luc")} <strong>{stats?.luc ?? "N/A"}</strong></p>
-  </div>
-  <hr />
-  <div class="derived-stats-grid">
-    <p>{$_("hp")} <strong>{Math.floor(hp)}</strong></p>
-    <p>{$_("mp")}<strong>{mp}</strong></p>
-    <p>{$_("san")} <strong>{sanity}</strong></p>
-    <p>{$_("db")}<strong>{damage}</strong></p>
-  </div>
-  <h4>{$_("skill_describe")}</h4>
-  <p class="skill-points-display">
-    {$_("skill_remaining")}: <strong>{skillPoint}</strong>
-  </p>
-  <div class="skill-grid-container">
-    {#each skills as skill, i}
-      <div class="skill-grid-item">
-        <span class="skill-name">{$_(skill.name)} ({skill.base})</span>
+    <div class="stats-grid">
+      <p>{$_("str")}<strong>{stats?.str ?? "N/A"}</strong></p>
+      <p>{$_("con")} <strong>{stats?.con ?? "N/A"}</strong></p>
+      <p>{$_("siz")} <strong>{stats?.siz ?? "N/A"}</strong></p>
+      <p>{$_("dex")} <strong>{stats?.dex ?? "N/A"}</strong></p>
+      <p>{$_("app")} <strong>{stats?.app ?? "N/A"}</strong></p>
+      <p>{$_("edu")} <strong>{stats?.edu ?? "N/A"}</strong></p>
+      <p>{$_("int")} <strong>{stats?.int ?? "N/A"}</strong></p>
+      <p>{$_("pow")} <strong>{stats?.pow ?? "N/A"}</strong></p>
+      <p>{$_("luc")} <strong>{stats?.luc ?? "N/A"}</strong></p>
+    </div>
+    <hr />
+    <div class="derived-stats-grid">
+      <p>{$_("hp")} <strong>{Math.floor(hp)}</strong></p>
+      <p>{$_("mp")}<strong>{mp}</strong></p>
+      <p>{$_("san")} <strong>{sanity}</strong></p>
+      <p>{$_("db")}<strong>{damage}</strong></p>
+    </div>
+    <h4>{$_("skill_describe")}</h4>
+    <p class="skill-points-display">
+      {$_("skill_remaining")}: <strong>{skillPoint}</strong>
+    </p>
+    <div class="skill-grid-container">
+      {#each skills as skill, i}
+        <div class="skill-grid-item">
+          <span class="skill-name">{$_(skill.name)} ({skill.base})</span>
 
-        <input
-          type="number"
-          min="0"
-          max={100 - skill.base}
-          class="skill-input"
-          bind:value={skill.point}
-          on:input={() => adjustSkillPoint(i)}
-        />
+          <input
+            type="number"
+            min="0"
+            max={100 - skill.base}
+            class="skill-input"
+            bind:value={skill.point}
+            on:input={() => adjustSkillPoint(i)}
+          />
 
-        <span class="skill-total-score">Total: {skill.point + skill.base}</span>
-      </div>
-    {/each}
+          <span class="skill-total-score"
+            >Total: {skill.point + skill.base}</span
+          >
+        </div>
+      {/each}
+    </div>
+    <br />
+    <div>
+      <button on:click={copyToData}>{$_("copyToCoco")}</button>
+      <button on:click={copyToSheet}>{$_("copyToSheet")}</button>
+    </div>
+    <br />
+    <button class="return-button" on:click={goBack}>{$_("remake")}</button>
   </div>
-  <br />
-  <div>
-    <button on:click={copyToData}>{$_("copyToCoco")}</button>
-    <button on:click={copyToSheet}>{$_("copyToSheet")}</button>
-  </div>
-  <br />
-  <button class="return-button" on:click={goBack}>{$_("remake")}</button>
 </main>
 
 <style>
+  main {
+    display: flex;
+    justify-content: center; /* 가운데 배치 */
+  }
+
+  .content-wrapper {
+    width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .lang-btn {
+    background-color: dimgray;
+  }
   .lang-btn {
     background-color: dimgray;
   }
@@ -260,7 +277,7 @@
   .stats-grid p {
     background-color: #70b5e7;
     padding: 8px;
-    border-radius: 4px;
+    border-radius: 8px;
     text-align: center;
     margin: 0;
     font-size: 1em;
@@ -269,7 +286,7 @@
 
   .stats-grid strong {
     display: block;
-    font-size: 1.5em;
+    font-size: 1.4em;
     color: #0f172a;
   }
 
@@ -340,16 +357,16 @@
     margin-bottom: 2px;
   }
 
-    .return-button {
-    padding:8px 15px 8px 15px;
+  .return-button {
+    padding: 8px 15px 8px 15px;
     min-width: 250;
     height: auto;
     box-sizing: border-box;
     border-radius: 50px;
     font-size: 16px;
     font-weight: 600;
-    background-color:#5877f9;
-    border:2px solid #5877f9;
-    color:#ffffff;
-}
+    background-color: #5877f9;
+    border: 2px solid #5877f9;
+    color: #ffffff;
+  }
 </style>

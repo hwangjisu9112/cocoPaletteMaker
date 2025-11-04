@@ -2,7 +2,7 @@
   import { AppState } from "./store";
   import { StatDescriptions } from "./CoCtooltip";
   import Result from "./CoCsheet.svelte";
-  import image01 from "./assets/image01.png";
+  import image02 from "./assets/image02.png";
   import { _, locale, isLoading } from "svelte-i18n";
   import "./i18n.js";
 
@@ -99,7 +99,7 @@
   function mouseOver(event: MouseEvent, statKey: keyof Characteristics) {
     tooltipContent = StatDescriptions[statKey];
     showTooltip = true;
-    handleMouseMove(event); // 마우스 오버 시 바로 위치 설정
+    handleMouseMove(event);
   }
 
   function handleMouseMove(event: MouseEvent): void {
@@ -136,55 +136,63 @@
     </main>
   {:else}
     <main on:mousemove={handleMouseMove}>
-      <div style="margin-top: 5px;">
+      <div class="content-wrapper">
+        <div style="margin-top: 5px;">
+          <br />
+          <button class="lang-btn" on:click={() => switchLang("kr")}
+            >한국어</button
+          >
+          <button class="lang-btn" on:click={() => switchLang("jp")}
+            >日本語</button
+          >
+          <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button
+          >
+        </div>
         <br />
-        <button class="lang-btn" on:click={() => switchLang("kr")}
-          >한국어</button
+        <img src={image02} alt="Icon" width="100" />
+
+        <h2>{$_("title")}</h2>
+
+        <button on:click={rollCOC}>{$_("roll")}</button>
+        <button on:click={resetStats}>{$_("reset")}</button>
+        <button on:click={confirmStat}>{$_("confirm")}</button>
+        <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+        <div class="stats-grid">
+          <p on:mouseover={(e) => mouseOver(e, "str")} on:mouseout={mouseOut}>
+            {$_("str")}: <strong>{CharacteristicsStatus.str}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "con")} on:mouseout={mouseOut}>
+            {$_("con")}: <strong>{CharacteristicsStatus.con}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "siz")} on:mouseout={mouseOut}>
+            {$_("siz")}: <strong>{CharacteristicsStatus.siz}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "dex")} on:mouseout={mouseOut}>
+            {$_("dex")}: <strong>{CharacteristicsStatus.dex}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "app")} on:mouseout={mouseOut}>
+            {$_("app")}: <strong>{CharacteristicsStatus.app}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "edu")} on:mouseout={mouseOut}>
+            {$_("edu")}: <strong>{CharacteristicsStatus.edu}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "int")} on:mouseout={mouseOut}>
+            {$_("int")}: <strong>{CharacteristicsStatus.int}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "pow")} on:mouseout={mouseOut}>
+            {$_("pow")}: <strong>{CharacteristicsStatus.pow}</strong>
+          </p>
+          <p on:mouseover={(e) => mouseOver(e, "luc")} on:mouseout={mouseOut}>
+            {$_("luc")}: <strong>{CharacteristicsStatus.luc}</strong>
+          </p>
+        </div>
+
+        <button
+          class="guide-button"
+          on:click={() => window.open("https://posty.pe/zfi4g8", "_blank")}
+          >{$_("guide")}</button
         >
-        <button class="lang-btn" on:click={() => switchLang("jp")}
-          >日本語</button
-        >
-        <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
       </div>
-      <img src={image01} alt="Icon" width="200" />
-
-      <h2>{$_("title")}</h2>
-
-      <button on:click={rollCOC}>{$_("roll")}</button>
-      <button on:click={resetStats}>{$_("reset")}</button>
-      <button on:click={confirmStat}>{$_("confirm")}</button>
-      <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-      <div class="stats-grid">
-        <p on:mouseover={(e) => mouseOver(e, "str")} on:mouseout={mouseOut}>
-          {$_("str")}: <strong>{CharacteristicsStatus.str}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "con")} on:mouseout={mouseOut}>
-          {$_("con")}: <strong>{CharacteristicsStatus.con}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "siz")} on:mouseout={mouseOut}>
-          {$_("siz")}: <strong>{CharacteristicsStatus.siz}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "dex")} on:mouseout={mouseOut}>
-          {$_("dex")}: <strong>{CharacteristicsStatus.dex}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "app")} on:mouseout={mouseOut}>
-          {$_("app")}: <strong>{CharacteristicsStatus.app}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "edu")} on:mouseout={mouseOut}>
-          {$_("edu")}: <strong>{CharacteristicsStatus.edu}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "int")} on:mouseout={mouseOut}>
-          {$_("int")}: <strong>{CharacteristicsStatus.int}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "pow")} on:mouseout={mouseOut}>
-          {$_("pow")}: <strong>{CharacteristicsStatus.pow}</strong>
-        </p>
-        <p on:mouseover={(e) => mouseOver(e, "luc")} on:mouseout={mouseOut}>
-          {$_("luc")}: <strong>{CharacteristicsStatus.luc}</strong>
-        </p>
-      </div>
-
-      <button class="guide-button" on:click={() => window.open('https://posty.pe/zfi4g8', '_blank')}>{$_("guide")}</button>
     </main>
 
     {#if showTooltip}
@@ -198,6 +206,16 @@
 {/if}
 
 <style>
+  main {
+    display: flex;
+    justify-content: center; /* 가운데 배치 */
+  }
+
+  .content-wrapper {
+    width: 600px; 
+    margin: 0 auto;
+    text-align: center;
+  }
   .lang-btn {
     background-color: dimgray;
   }
@@ -224,15 +242,15 @@
   }
 
   .guide-button {
-    padding:8px 15px 8px 15px;
+    padding: 8px 15px 8px 15px;
     min-width: 250;
     height: auto;
     box-sizing: border-box;
     border-radius: 50px;
     font-size: 16px;
     font-weight: 600;
-    background-color:#5877f9;
-    border:2px solid #5877f9;
-    color:#ffffff;
-}
+    background-color: #5877f9;
+    border: 2px solid #5877f9;
+    color: #ffffff;
+  }
 </style>
