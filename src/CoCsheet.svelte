@@ -6,6 +6,11 @@
   import { _, locale, isLoading } from "svelte-i18n";
   import "./i18n.js";
 
+  /**
+   * 현재 화면의 표시 언어를 변경합니다.
+   *
+   * @param lang - 설정할 언어 코드
+   */
   function switchLang(lang: string): void {
     locale.set(lang);
   }
@@ -42,6 +47,9 @@
   }
 
   // 크툴루의 부름 탐사자 기능들에 대한 설명
+  /**
+   * 스킬 항목을 표현하는 자료 구조입니다.
+   */
   interface Skills {
     name: string;
     point: number;
@@ -80,6 +88,11 @@
     skillPoint = baseSkillPoint - totalInvested;
   }
 
+  /**
+   * 개별 스킬의 투자 포인트를 제한 범위 내에서 조정합니다.
+   *
+   * @param index - 조정할 스킬의 배열 인덱스
+   */
   function adjustSkillPoint(index: number): void {
     const skill = skills[index];
     let newInvestedPoint = Math.floor(skill.point) || 0;
@@ -107,6 +120,9 @@
     skills = skills;
   }
 
+  /**
+   * 능력치를 초기화하고 능력치 생성 화면으로 되돌아갑니다.
+   */
   function goBack(): void {
     // 탐사자의 특성치를 다시 초기화하고 특성치 생성 페이지로 복귀한다
     const zeroStats = {
@@ -130,6 +146,9 @@
     console.log(zeroStats);
   }
 
+  /**
+   * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
+   */
   function copyToSheet(): void {
     if (!stats) {
       console.log("error : 특성치 미존재.");
@@ -157,6 +176,9 @@
     document.body.removeChild(textarea);
   }
 
+  /**
+   * 코코포리아 채팅 팔레트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
+   */
   function copyToData(): void {
     if (!stats) {
       console.log("error : 특성치 미존재.");

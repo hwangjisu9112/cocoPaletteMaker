@@ -6,12 +6,20 @@
   import { _, locale, isLoading } from "svelte-i18n";
   import "./i18n.js";
 
+  /**
+   * 현재 애플리케이션의 표시 언어를 변경합니다.
+   *
+   * @param lang - 변경할 언어 코드
+   */
   function switchLang(lang: string): void {
     locale.set(lang);
   }
 
   //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치 정의
 
+  /**
+   * 탐사자의 기본 능력치를 나타냅니다.
+   */
   interface Characteristics {
     str: number;
     con: number;
@@ -42,6 +50,13 @@
 
   //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치를 무작위로 생성하는 func
 
+  /**
+   * 주사위를 반복 굴려 합산한 값을 계산합니다.
+   *
+   * @param times - 주사위를 굴리는 횟수
+   * @param value - 주사위 한 면의 최대값
+   * @returns 누적 합산된 주사위 결과
+   */
   function rollDie(times: number, value: number): number {
     let rollResult = 0;
 
@@ -51,6 +66,9 @@
     return rollResult;
   }
 
+  /**
+   * 크툴루 규칙에 따라 탐사자의 능력치를 새로 생성합니다.
+   */
   function rollCOC(): void {
     const rolledStr = rollDie(3, 6) * 5;
     const rolledCon = rollDie(3, 6) * 5;
@@ -96,12 +114,23 @@
   let tooltipX: number = 0;
   let tooltipY: number = 0;
 
+  /**
+   * 능력치 요소에 마우스를 올렸을 때 툴팁을 표시합니다.
+   *
+   * @param event - 마우스 이벤트 객체
+   * @param statKey - 설명을 표시할 능력치 키
+   */
   function mouseOver(event: MouseEvent, statKey: keyof Characteristics) {
     tooltipContent = StatDescriptions[statKey];
     showTooltip = true;
     handleMouseMove(event);
   }
 
+  /**
+   * 마우스 이동에 따라 툴팁 위치를 갱신합니다.
+   *
+   * @param event - 마우스 이벤트 객체
+   */
   function handleMouseMove(event: MouseEvent): void {
     if (showTooltip) {
       // 커서 위치에서 살짝 오른쪽/아래(15px)로 툴팁을 이동시켜 커서 가림 방지
@@ -110,11 +139,17 @@
     }
   }
 
+  /**
+   * 마우스가 능력치 요소에서 벗어났을 때 툴팁을 숨깁니다.
+   */
   function mouseOut(): void {
     showTooltip = false;
     tooltipContent = "";
   }
 
+  /**
+   * 생성된 능력치를 초기값으로 되돌립니다.
+   */
   function resetStats(): void {
     CharacteristicsStatus = zeroStats;
     AppState.update((s) => ({ ...s, currentStats: zeroStats }));
@@ -122,6 +157,9 @@
     console.log(CharacteristicsStatus);
   }
 
+  /**
+   * 현재 능력치를 확정하고 다음 단계로 진행합니다.
+   */
   function confirmStat(): void {
     AppState.update((s) => ({ ...s, isConfirmed: true }));
     console.log("확정 -> 다음 페이지 이동");

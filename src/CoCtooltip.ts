@@ -1,3 +1,6 @@
+/**
+ * 기본 특성치의 설명 문자열을 제공합니다.
+ */
 export const StatDescriptions: { [key: string]: string } = {
     str: "근력 (STR): 물건을 들거나, 붙잡는 근육의 힘.",
     con: "건강 (CON): 탐사자가 얼마나 튼튼하고 활기있는지를 표현.",
@@ -10,6 +13,9 @@ export const StatDescriptions: { [key: string]: string } = {
     luc: "행운 (LUCK): 운명 혹은 우연에 영향을 주는 수치.",
 };
 
+/**
+ * 특성치에서 파생되는 능력치별 설명 문자열을 제공합니다.
+ */
 export const subStatDescriptions: { [key: string]: string } = {
     hp: "HP: 물건을 들거나, 붙잡는 근육의 힘.",
     mp: "MP: 탐사자가 얼마나 튼튼하고 활기있는지를 표현.",

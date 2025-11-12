@@ -1,3 +1,6 @@
+/**
+ * 기능 정보를 표현하는 데이터 모델입니다.
+ */
 export interface Skill {
   name: string;
   point: number;
@@ -6,7 +9,9 @@ export interface Skill {
   motherTongue?: 'EDUCATION';
 }
 
-// 크툴루의 부름 탐사자 기능들의 초기 목록
+/**
+ * 크툴루의 부름 탐사자가 시작 시 보유하는 기본 기능 목록입니다.
+ */
 export const INITIAL_SKILLS: Skill[] = [
   { name: "skill_Appraise", point: 0, base: 5 },
   { name: "skill_Archaeology", point: 0, base: 1 },

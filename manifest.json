@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "cocoPaletteMaker",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "코코포리아 및 구글 시트와 연계할 수 있는 TRPG 캐릭터 생성기",
   "icons": {
     "16": "vite.svg",

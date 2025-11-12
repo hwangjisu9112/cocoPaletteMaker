@@ -1,6 +1,9 @@
 import { get } from 'svelte/store'; // 💡 get 함수를 사용하여 store의 값을 가져옵니다.
 
 
+/**
+ * 플레이어의 기본 능력치 값을 정의합니다.
+ */
 interface Stats {
     str: number; 
     con: number; 
@@ -15,11 +18,24 @@ interface Stats {
 }
 
 
+/**
+ * 개별 기술 항목의 값을 정의합니다.
+ */
 interface Skill {
     name: string;
     base: number;
     point: number;
 }
+/**
+ * 구글시트에 붙여넣기 위한 캐릭터 데이터를 생성합니다.
+ *
+ * @param stats - 플레이어의 기본 능력치 값
+ * @param derivedStats - 체력, 마력 등 파생 능력치 값
+ * @param skillPoint - 잔여 기술 포인트
+ * @param skills - 플레이어가 보유한 기술 목록
+ * @param getTranslation - 다국어 문자열을 반환하는 함수
+ * @returns 구글시트에 기록 가능한 탭 구분 문자열
+ */
 export function createGooglesheetData(
     stats: Stats,
     derivedStats: { hp: number; mp: number; sanity: number; damage: string },
@@ -47,7 +63,7 @@ export function createGooglesheetData(
     data += [T("str"), T("con"), T("siz")].join(SEP) + EOL;
     data += [stats.str, stats.con, stats.siz].join(SEP) + EOL;
 
-    data += [T("stat_dex"), T("app"), T("edu")].join(SEP) + EOL;
+    data += [T("dex"), T("app"), T("edu")].join(SEP) + EOL;
     data += [stats.dex, stats.app, stats.edu].join(SEP) + EOL;
 
     data += [T("int"), T("pow"), T("luc")].join(SEP) + EOL;
@@ -104,6 +120,15 @@ export function createGooglesheetData(
 }
 
 
+/**
+ * 코코포리아의 채팅 팔레트 매크로용 캐릭터 데이터를 생성합니다.
+ *
+ * @param stats - 플레이어의 기본 능력치 값
+ * @param derivedStats - 체력, 마력 등 파생 능력치 값
+ * @param skills - 플레이어가 보유한 기술 목록
+ * @param getTranslation - 다국어 문자열을 반환하는 함수
+ * @returns 코코팔레트에 붙여넣기 위한 탭 구분 문자열
+ */
 export function createCocoPalette(
     stats: Stats,
     derivedStats: { hp: number; mp: number; sanity: number; damage: string },
