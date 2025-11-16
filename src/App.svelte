@@ -227,7 +227,7 @@
 
         <button
           class="guide-button"
-          on:click={() => window.open("https://posty.pe/zfi4g8", "_blank")}
+          on:click={() => window.open("https://www.postype.com/@dmong0304/post/20879624", "_blank")}
           >{$_("guide")}</button
         >
       </div>

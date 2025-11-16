@@ -1,16 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "cocoPaletteMaker",
+  "name": "TRPG Character Maker",
   "version": "1.0.1",
   "description": "코코포리아 및 구글 시트와 연계할 수 있는 TRPG 캐릭터 생성기",
   "icons": {
-    "16": "vite.svg",
-    "48": "vite.svg",
-    "128": "vite.svg"
+    "16": "16image.png",
+    "48": "48image.png",
+    "128": "128image.png"
   },
   "action": {
     "default_popup": "index.html",
-    "default_icon": "vite.svg",
-    "default_title": "cocoPaletteMaker"
+    "default_icon": "16image.png",
+    "default_title": "TRPG Character Maker"
   }
 }
