@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { AppState } from "./store";
+  import { AppState } from "../store";
   import { get } from "svelte/store";
   import { INITIAL_SKILLS } from "./CoCskill";
   import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
@@ -137,7 +137,7 @@
       luc: 0,
     };
 
-    AppState.set({ currentStats: zeroStats, isConfirmed: false });
+    // AppState.set({ currentStats: zeroStats, isConfirmed: false });
 
     console.log("다시 만들기 수행 -> 생성 페이지로 복귀");
 
