@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { AppState } from "../store";
+  import { appState } from "../store.svelte";
   import { StatDescriptions } from "../CoCtooltip";
-  import Result from "./CoCsheet.svelte";
-  import image02 from "./assets/image02.png";
+  import image02 from "../assets/image02.png";
   import { _, locale, isLoading } from "svelte-i18n";
-  import "../i18n.js";
+  import "../i18n.ts";
+
+  let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
   /**
    * 현재 애플리케이션의 표시 언어를 변경합니다.
@@ -14,39 +15,6 @@
   function switchLang(lang: string): void {
     locale.set(lang);
   }
-
-  //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치 정의
-
-  /**
-   * 탐사자의 기본 능력치를 나타냅니다.
-   */
-  interface Characteristics {
-    str: number;
-    con: number;
-    siz: number;
-    dex: number;
-    app: number;
-    edu: number;
-    int: number;
-    pow: number;
-    luc: number;
-  }
-
-  const zeroStats: Characteristics = {
-    str: 0,
-    con: 0,
-    siz: 0,
-    dex: 0,
-    app: 0,
-    edu: 0,
-    int: 0,
-    pow: 0,
-    luc: 0,
-  };
-
-  let CharacteristicsStatus: Characteristics = zeroStats;
-
-  $: CharacteristicsStatus = $AppState.currentStats ?? zeroStats;
 
   //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치를 무작위로 생성하는 func
 
@@ -70,49 +38,23 @@
    * 크툴루 규칙에 따라 탐사자의 능력치를 새로 생성합니다.
    */
   function rollCOC(): void {
-    const rolledStr = rollDie(3, 6) * 5;
-    const rolledCon = rollDie(3, 6) * 5;
-    const rolledSiz = (rollDie(2, 6) + 6) * 5;
-    const rolledDex = rollDie(3, 6) * 5;
-    const rolledApp = rollDie(3, 6) * 5;
-    const rolledEdu = (rollDie(2, 6) + 6) * 5;
-    const rolledInt = (rollDie(2, 6) + 6) * 5;
-    const rolledPow = rollDie(3, 6) * 5;
-    const rolledLuc = rollDie(3, 6) * 5;
-
-    CharacteristicsStatus = {
-      str: rolledStr,
-      con: rolledCon,
-      siz: rolledSiz,
-      dex: rolledDex,
-      app: rolledApp,
-      edu: rolledEdu,
-      int: rolledInt,
-      pow: rolledPow,
-      luc: rolledLuc,
+    const newStats = {
+      str: rollDie(3, 6) * 5,
+      con: rollDie(3, 6) * 5,
+      siz: (rollDie(2, 6) + 6) * 5,
+      dex: rollDie(3, 6) * 5,
+      app: rollDie(3, 6) * 5,
+      edu: (rollDie(2, 6) + 6) * 5,
+      int: (rollDie(2, 6) + 6) * 5,
+      pow: rollDie(3, 6) * 5,
+      luc: rollDie(3, 6) * 5,
     };
-
-    const newStat = {
-      str: rolledStr,
-      con: rolledCon,
-      siz: rolledSiz,
-      dex: rolledDex,
-      app: rolledApp,
-      edu: rolledEdu,
-      int: rolledInt,
-      pow: rolledPow,
-      luc: rolledLuc,
-    };
-
-    AppState.update((s) => ({ ...s, currentStats: newStat }));
-
+    appState.setStats(newStats);
+    console.log(newStats);
     console.log("특성치 생성됨");
-    console.log(CharacteristicsStatus);
   }
-  let tooltipContent: string = "";
-  let showTooltip: boolean = false;
-  let tooltipX: number = 0;
-  let tooltipY: number = 0;
+
+  let tooltip = $state({ content: "", show: false, x: 0, y: 0 });
 
   /**
    * 능력치 요소에 마우스를 올렸을 때 툴팁을 표시합니다.
@@ -120,9 +62,9 @@
    * @param event - 마우스 이벤트 객체
    * @param statKey - 설명을 표시할 능력치 키
    */
-  function mouseOver(event: MouseEvent, statKey: keyof Characteristics) {
-    tooltipContent = StatDescriptions[statKey];
-    showTooltip = true;
+  function mouseOver(event: MouseEvent, statKey: string) {
+    tooltip.content = StatDescriptions[statKey];
+    tooltip.show = true;
     handleMouseMove(event);
   }
 
@@ -132,10 +74,10 @@
    * @param event - 마우스 이벤트 객체
    */
   function handleMouseMove(event: MouseEvent): void {
-    if (showTooltip) {
+    if (tooltip.show) {
       // 커서 위치에서 살짝 오른쪽/아래(15px)로 툴팁을 이동시켜 커서 가림 방지
-      tooltipX = event.clientX + 15;
-      tooltipY = event.clientY + 15;
+      tooltip.x = event.clientX + 15;
+      tooltip.y = event.clientY + 15;
     }
   }
 
@@ -143,105 +85,97 @@
    * 마우스가 능력치 요소에서 벗어났을 때 툴팁을 숨깁니다.
    */
   function mouseOut(): void {
-    showTooltip = false;
-    tooltipContent = "";
+    tooltip.show = false;
+    tooltip.content = "";
   }
 
   /**
-   * 생성된 능력치를 초기값으로 되돌립니다.
+   * 생성된 능력치를 초기값(0)으로 되돌립니다.
    */
-  function resetStats(): void {
-    CharacteristicsStatus = zeroStats;
-    AppState.update((s) => ({ ...s, currentStats: zeroStats }));
+  function resetCOC(): void {
+    const resetStats = {
+      str: 0,
+      con: 0,
+      siz: 0,
+      dex: 0,
+      app: 0,
+      edu: 0,
+      int: 0,
+      pow: 0,
+      luc: 0,
+    };
+    appState.reset();
+    console.log(resetStats);
     console.log("특성치 초기화됨");
-    console.log(CharacteristicsStatus);
-  }
-
-  /**
-   * 현재 능력치를 확정하고 다음 단계로 진행합니다.
-   */
-  function confirmStat(): void {
-    AppState.update((s) => ({ ...s, isConfirmed: true }));
-    console.log("확정 -> 다음 페이지 이동");
-    console.log(CharacteristicsStatus);
   }
 </script>
 
-{#if !$AppState.isConfirmed}
-  {#if $isLoading}
-    <main>
-      <p>언어 파일을 불러오는 중... (Loading translations...)</p>
-    </main>
-  {:else}
-    <main on:mousemove={handleMouseMove}>
-      <div class="content-wrapper">
-        <div style="margin-top: 5px;">
-          <br />
-          <button class="lang-btn" on:click={() => switchLang("kr")}
-            >한국어</button
-          >
-          <button class="lang-btn" on:click={() => switchLang("jp")}
-            >日本語</button
-          >
-          <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button
-          >
-        </div>
-        <br />
-        <img src={image02} alt="Icon" width="100" />
+<main onmousemove={handleMouseMove}>
+  <div class="content-wrapper">
+      <button onclick={() => onNavigate('main')}>M A I N</button>
 
-        <h2>{$_("title")}</h2>
+    <div style="margin-top: 5px;">
+      <br />
+      <button class="lang-btn" onclick={() => switchLang("kr")}>한국어</button>
+      <button class="lang-btn" onclick={() => switchLang("jp")}>日本語</button>
+      <button class="lang-btn" onclick={() => switchLang("en")}>ENG</button>
+    </div>
+    <br />
+    <img src={image02} alt="Icon" width="100" />
 
-        <button on:click={rollCOC}>{$_("roll")}</button>
-        <button on:click={resetStats}>{$_("reset")}</button>
-        <button on:click={confirmStat}>{$_("confirm")}</button>
-        <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-        <div class="stats-grid">
-          <p on:mouseover={(e) => mouseOver(e, "str")} on:mouseout={mouseOut}>
-            {$_("str")}: <strong>{CharacteristicsStatus.str}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "con")} on:mouseout={mouseOut}>
-            {$_("con")}: <strong>{CharacteristicsStatus.con}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "siz")} on:mouseout={mouseOut}>
-            {$_("siz")}: <strong>{CharacteristicsStatus.siz}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "dex")} on:mouseout={mouseOut}>
-            {$_("dex")}: <strong>{CharacteristicsStatus.dex}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "app")} on:mouseout={mouseOut}>
-            {$_("app")}: <strong>{CharacteristicsStatus.app}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "edu")} on:mouseout={mouseOut}>
-            {$_("edu")}: <strong>{CharacteristicsStatus.edu}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "int")} on:mouseout={mouseOut}>
-            {$_("int")}: <strong>{CharacteristicsStatus.int}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "pow")} on:mouseout={mouseOut}>
-            {$_("pow")}: <strong>{CharacteristicsStatus.pow}</strong>
-          </p>
-          <p on:mouseover={(e) => mouseOver(e, "luc")} on:mouseout={mouseOut}>
-            {$_("luc")}: <strong>{CharacteristicsStatus.luc}</strong>
-          </p>
-        </div>
+    <h2>{$_("CoCtitle")}</h2>
 
-        <button
-          class="guide-button"
-          on:click={() => window.open("https://www.postype.com/@dmong0304/post/20879624", "_blank")}
-          >{$_("guide")}</button
-        >
-      </div>
-    </main>
+        <button onclick={rollCOC}>{$_("roll")}</button>
+        <button onclick={resetCOC}>{$_("reset")}</button>
+        <button >{$_("confirm")}</button>
+    <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+    <div class="stats-grid">
+      <p onmouseover={(e) => mouseOver(e, "str")} onmouseout={mouseOut}>
+         {$_("str")}: <strong>{appState.currentStats.str}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "con")} onmouseout={mouseOut}>
+        {$_("con")}: <strong>{appState.currentStats.con}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "siz")} onmouseout={mouseOut}>
+        {$_("siz")}: <strong>{appState.currentStats.siz}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "dex")} onmouseout={mouseOut}>
+        {$_("dex")}:<strong>{appState.currentStats.dex}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "app")} onmouseout={mouseOut}>
+        {$_("app")}:<strong>{appState.currentStats.app}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "edu")} onmouseout={mouseOut}>
+        {$_("edu")}: <strong>{appState.currentStats.edu}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "int")} onmouseout={mouseOut}>
+        {$_("int")}: <strong>{appState.currentStats.int}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "pow")} onmouseout={mouseOut}>
+        {$_("pow")}: <strong>{appState.currentStats.pow}</strong>
+      </p>
+      <p onmouseover={(e) => mouseOver(e, "luc")} onmouseout={mouseOut}>
+        {$_("luc")}: <strong>{appState.currentStats.luc}</strong>
+      </p>
+    </div>
+  </div><br>
+  <div>
+    <button
+      class="guide-button"
+      onclick={() =>
+        window.open(
+          "https://www.postype.com/@dmong0304/post/20879624",
+          "_blank",
+        )}>guide</button
+    >
+  </div>
 
-    {#if showTooltip}
-      <div class="tooltip" style="left: {tooltipX}px; top: {tooltipY}px;">
-        {tooltipContent}
-      </div>
-    {/if}
+  {#if tooltip.show}
+    <div class="tooltip" style="left: {tooltip.x}px; top: {tooltip.y}px;">
+      {tooltip.content}
+    </div>
   {/if}
-{:else}
-  <Result />
-{/if}
+</main>
 
 <style>
   main {
@@ -250,7 +184,7 @@
   }
 
   .content-wrapper {
-    width: 600px; 
+    width: 600px;
     margin: 0 auto;
     text-align: center;
   }

@@ -1,5 +1,5 @@
-<script lang="ts">
-  import { AppState } from "../store";
+<!-- <script lang="ts">
+  import { appState } from "../store";
   import { get } from "svelte/store";
   import { INITIAL_SKILLS } from "./CoCskill";
   import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
@@ -123,28 +123,7 @@
   /**
    * 능력치를 초기화하고 능력치 생성 화면으로 되돌아갑니다.
    */
-  function goBack(): void {
-    // 탐사자의 특성치를 다시 초기화하고 특성치 생성 페이지로 복귀한다
-    const zeroStats = {
-      str: 0,
-      con: 0,
-      siz: 0,
-      dex: 0,
-      app: 0,
-      edu: 0,
-      int: 0,
-      pow: 0,
-      luc: 0,
-    };
 
-    // AppState.set({ currentStats: zeroStats, isConfirmed: false });
-
-    console.log("다시 만들기 수행 -> 생성 페이지로 복귀");
-
-    console.log("AppState");
-    console.log(AppState);
-    console.log(zeroStats);
-  }
 
   /**
    * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
@@ -391,4 +370,4 @@
     border: 2px solid #5877f9;
     color: #ffffff;
   }
-</style>
+</style> -->

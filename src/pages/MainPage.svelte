@@ -1,15 +1,8 @@
 <script lang="ts">
-  import { AppState } from "../store";
   import image02 from "../assets/image02.png";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
-  // 현재 페이지 상태 관리 (기본값: 'main')
-  let currentPage = $state("main");
-
-  function navigate(page: string) {
-    currentPage = page;
-  }
 </script>
 
 <main>
@@ -19,7 +12,7 @@
     <h2>TRPG Character Maker</h2>
     <h3>- Rules -</h3>
     <div class="button-container">
-      <button>
+      <button onclick={()=> onNavigate('CoCgen')}>
         <span>🌌</span>
         Call Of Cthulhu 7th
       </button>
@@ -36,7 +29,7 @@
 <style>
   main {
     display: flex;
-    justify-content: center; /* 가운데 배치 */
+    justify-content: center; 
   }
 
   .content-wrapper {
@@ -45,18 +38,6 @@
     text-align: center;
   }
 
-  .tooltip {
-    position: fixed; /* 뷰포트 기준으로 위치를 고정하여 다른 요소에 영향 미치지 않음 */
-    background-color: #333;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    white-space: nowrap;
-    z-index: 1000; /* 다른 요소 위에 표시 */
-    pointer-events: none; /* 툴팁이 마우스 이벤트를 가로채지 않도록 설정 */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
 
 
   .button-container {
