@@ -1,10 +1,12 @@
-<!-- <script lang="ts">
-  import { appState } from "../store";
+<script lang="ts">
+  import { appState } from "../store.svelte";
   import { get } from "svelte/store";
   import { INITIAL_SKILLS } from "./CoCskill";
   import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
   import { _, locale, isLoading } from "svelte-i18n";
-  import "./i18n.js";
+  import "../i18n.ts";
+
+  let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
   /**
    * 현재 화면의 표시 언어를 변경합니다.
@@ -14,25 +16,18 @@
   function switchLang(lang: string): void {
     locale.set(lang);
   }
+  let skills = $state(JSON.parse(JSON.stringify(INITIAL_SKILLS)));
 
-  // Store에서 확정된 크툴루의 부름 탐사자의 특성치를 연계한다
-  $: stats = $AppState.currentStats;
+  let hp = (appState.currentStats.siz + appState.currentStats.con) / 10;
+  let mp = appState.currentStats.pow / 5;
+  let sanity = appState.currentStats.pow;
+  let baseSkillPoint =
+    appState.currentStats.edu * 4 + appState.currentStats.int * 2;
 
-  // 탐사자의 특성치를 활용한 기타 능력치들을 생성한다
-  $: sanity = stats ? stats.pow : 0;
-  $: hp = stats ? (stats.siz + stats.con) / 10 : 0;
-  $: mp = stats ? stats.pow / 5 : 0;
+  let db = appState.currentStats.siz + appState.currentStats.str;
 
-  $: interest = stats ? stats.int * 2 : 0;
-  $: job = stats ? stats.edu * 4 : 0;
-
-  let skillPoint: number;
-  $: baseSkillPoint = interest + job;
-
-  $: db = stats ? stats.siz + stats.str : 0;
-
-  let damage: string = "0";
-  $: {
+  let damage = "0";
+  {
     if (db <= 64) {
       damage = "-2";
     } else if (db <= 84) {
@@ -58,85 +53,60 @@
     motherTongue?: "EDUCATION";
   }
 
-  let skills: Skills[] = JSON.parse(JSON.stringify(INITIAL_SKILLS));
+  $effect(() => {
+    const invDex = appState.currentStats.dex;
+    const invEdu = appState.currentStats.edu;
 
-  $: if (stats) {
-    const invDex = stats.dex;
-    const invMotherTongue = stats.edu;
+    const dodge = skills.find((s: { evade: string; }) => s.evade === "HALF_DEX");
+    if (dodge) dodge.base = Math.floor(invDex / 2);
 
-    const dodgeIndex = skills.findIndex((s) => s.evade === "HALF_DEX");
-    const native = skills.findIndex((s) => s.motherTongue === "EDUCATION");
+    const native = skills.find((s: { motherTongue: string; }) => s.motherTongue === "EDUCATION");
+    if (native) native.base = invEdu;
+  });
 
-    if (dodgeIndex !== -1) {
-      const basicDodge = Math.floor(invDex / 2);
-      skills[dodgeIndex].base = basicDodge;
-      skills = skills;
-      adjustSkillPoint(dodgeIndex);
-    }
-
-    if (native !== -1) {
-      const basicNative = invMotherTongue;
-      skills[native].base = basicNative;
-      skills = skills;
-      adjustSkillPoint(native);
-    }
-  }
-
-  $: {
-    const totalInvested = skills.reduce((sum, skill) => sum + skill.point, 0);
-
-    skillPoint = baseSkillPoint - totalInvested;
-  }
+  let totalInvested = $derived(
+    skills.reduce((sum: any, skill: { point: any; }) => sum + (skill.point || 0), 0),
+  );
+  let remainingSkillPoint = $derived(baseSkillPoint - totalInvested);
 
   /**
    * 개별 스킬의 투자 포인트를 제한 범위 내에서 조정합니다.
    *
    * @param index - 조정할 스킬의 배열 인덱스
    */
-  function adjustSkillPoint(index: number): void {
+  function adjustSkillPoint(index: number, newValue: number): void {
     const skill = skills[index];
-    let newInvestedPoint = Math.floor(skill.point) || 0;
+    let points = Math.floor(newValue) || 0;
 
-    if (newInvestedPoint < 0 || isNaN(newInvestedPoint)) {
-      newInvestedPoint = 0;
-    }
-    const maxInvestForSkill = 100 - skill.base;
-    if (newInvestedPoint > maxInvestForSkill) {
-      newInvestedPoint = maxInvestForSkill;
-    }
+    // 제한 로직
+    if (points < 0) points = 0;
+    const maxForThisSkill = 100 - skill.base;
+    if (points > maxForThisSkill) points = maxForThisSkill;
 
-    const totalInvestedOthers = skills.reduce(
-      (sum, s, i) => sum + (i === index ? 0 : s.point),
+    // 예산 체크 (현재 스킬을 제외한 다른 스킬들의 합)
+    const otherTotal = skills.reduce(
+      (sum: any, s: { point: number; }, i: number) => sum + (i === index ? 0 : s.point),
       0,
     );
+    const budgetLeft = baseSkillPoint - otherTotal;
 
-    const maxPointFromBudget = baseSkillPoint - totalInvestedOthers;
+    if (points > budgetLeft) points = Math.max(0, budgetLeft);
 
-    if (newInvestedPoint > maxPointFromBudget) {
-      newInvestedPoint = Math.max(0, maxPointFromBudget);
-    }
-
-    skill.point = newInvestedPoint;
-    skills = skills;
+    skill.point = points; // $state이므로 내부 값만 바꿔도 즉시 반응합니다.
   }
-
-  /**
-   * 능력치를 초기화하고 능력치 생성 화면으로 되돌아갑니다.
-   */
-
 
   /**
    * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
    */
   function copyToSheet(): void {
-    if (!stats) {
+    if (!appState.currentStats) {
       console.log("error : 특성치 미존재.");
       return;
     }
     const CoCInvData = createGooglesheetData(
-      stats,
+      appState.currentStats,
       { hp, mp, sanity, damage },
-      skillPoint,
+      remainingSkillPoint,
       skills,
       (key) => get(_)(key),
     );
@@ -159,13 +129,13 @@
    * 코코포리아 채팅 팔레트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
    */
   function copyToData(): void {
-    if (!stats) {
+    if (!appState.currentStats) {
       console.log("error : 특성치 미존재.");
       return;
     }
 
     const CoCInvData = createCocoPalette(
-      stats,
+      appState.currentStats,
       { hp, mp, sanity, damage },
       skills,
       (key) => get(_)(key),
@@ -188,25 +158,27 @@
 
 <main>
   <div class="content-wrapper">
-    <br /><br /><br /><br /><br /><br /><br />
+    <br /><br /><br />
     <div style="margin-top: 5px;">
-      <br /><br /><br /><br /><br />
-      <button class="lang-btn" on:click={() => switchLang("kr")}>한국어</button>
-      <button class="lang-btn" on:click={() => switchLang("jp")}>日本語</button>
-      <button class="lang-btn" on:click={() => switchLang("en")}>ENG</button>
+      <br />
+      <button onclick={() => onNavigate("main")}>M A I N</button>
+
+      <button class="lang-btn" onclick={() => switchLang("kr")}>한</button>
+      <button class="lang-btn" onclick={() => switchLang("jp")}>日</button>
+      <button class="lang-btn" onclick={() => switchLang("en")}>EN</button>
     </div>
     <h4>{$_("title_after_confirm")}</h4>
 
     <div class="stats-grid">
-      <p>{$_("str")}<strong>{stats?.str ?? "N/A"}</strong></p>
-      <p>{$_("con")} <strong>{stats?.con ?? "N/A"}</strong></p>
-      <p>{$_("siz")} <strong>{stats?.siz ?? "N/A"}</strong></p>
-      <p>{$_("dex")} <strong>{stats?.dex ?? "N/A"}</strong></p>
-      <p>{$_("app")} <strong>{stats?.app ?? "N/A"}</strong></p>
-      <p>{$_("edu")} <strong>{stats?.edu ?? "N/A"}</strong></p>
-      <p>{$_("int")} <strong>{stats?.int ?? "N/A"}</strong></p>
-      <p>{$_("pow")} <strong>{stats?.pow ?? "N/A"}</strong></p>
-      <p>{$_("luc")} <strong>{stats?.luc ?? "N/A"}</strong></p>
+      <p>{$_("str")}<strong>{appState.currentStats?.str ?? "N/A"}</strong></p>
+      <p>{$_("con")} <strong>{appState.currentStats?.con ?? "N/A"}</strong></p>
+      <p>{$_("siz")} <strong>{appState.currentStats?.siz ?? "N/A"}</strong></p>
+      <p>{$_("dex")} <strong>{appState.currentStats?.dex ?? "N/A"}</strong></p>
+      <p>{$_("app")} <strong>{appState.currentStats?.app ?? "N/A"}</strong></p>
+      <p>{$_("edu")} <strong>{appState.currentStats?.edu ?? "N/A"}</strong></p>
+      <p>{$_("int")} <strong>{appState.currentStats?.int ?? "N/A"}</strong></p>
+      <p>{$_("pow")} <strong>{appState.currentStats?.pow ?? "N/A"}</strong></p>
+      <p>{$_("luc")} <strong>{appState.currentStats?.luc ?? "N/A"}</strong></p>
     </div>
     <hr />
     <div class="derived-stats-grid">
@@ -217,7 +189,7 @@
     </div>
     <h4>{$_("skill_describe")}</h4>
     <p class="skill-points-display">
-      {$_("skill_remaining")}: <strong>{skillPoint}</strong>
+      {$_("skill_remaining")}: <strong>{remainingSkillPoint}</strong>
     </p>
     <div class="skill-grid-container">
       {#each skills as skill, i}
@@ -230,7 +202,7 @@
             max={100 - skill.base}
             class="skill-input"
             bind:value={skill.point}
-            on:input={() => adjustSkillPoint(i)}
+            oninput={() => adjustSkillPoint(i,parseInt(e.currentTarget.value))}
           />
 
           <span class="skill-total-score"
@@ -241,11 +213,10 @@
     </div>
     <br />
     <div>
-      <button on:click={copyToData}>{$_("copyToCoco")}</button>
-      <button on:click={copyToSheet}>{$_("copyToSheet")}</button>
+      <button onclick={copyToData}>{$_("copyToCoco")}</button>
+      <button onclick={copyToSheet}>{$_("copyToSheet")}</button>
     </div>
     <br />
-    <button class="return-button" on:click={goBack}>{$_("remake")}</button>
   </div>
 </main>
 
@@ -370,4 +341,4 @@
     border: 2px solid #5877f9;
     color: #ffffff;
   }
-</style> -->
+</style>

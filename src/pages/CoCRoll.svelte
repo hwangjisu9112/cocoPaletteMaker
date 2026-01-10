@@ -93,72 +93,60 @@
    * 생성된 능력치를 초기값(0)으로 되돌립니다.
    */
   function resetCOC(): void {
-    const resetStats = {
-      str: 0,
-      con: 0,
-      siz: 0,
-      dex: 0,
-      app: 0,
-      edu: 0,
-      int: 0,
-      pow: 0,
-      luc: 0,
-    };
     appState.reset();
-    console.log(resetStats);
     console.log("특성치 초기화됨");
   }
 </script>
 
 <main onmousemove={handleMouseMove}>
   <div class="content-wrapper">
-      <button onclick={() => onNavigate('main')}>M A I N</button>
-
     <div style="margin-top: 5px;">
       <br />
-      <button class="lang-btn" onclick={() => switchLang("kr")}>한국어</button>
-      <button class="lang-btn" onclick={() => switchLang("jp")}>日本語</button>
-      <button class="lang-btn" onclick={() => switchLang("en")}>ENG</button>
+      <button onclick={() => onNavigate("main")}>M A I N</button>
+
+      <button class="lang-btn" onclick={() => switchLang("kr")}>한</button>
+      <button class="lang-btn" onclick={() => switchLang("jp")}>日</button>
+      <button class="lang-btn" onclick={() => switchLang("en")}>EN</button>
     </div>
-    <br />
     <img src={image02} alt="Icon" width="100" />
 
     <h2>{$_("CoCtitle")}</h2>
 
-        <button onclick={rollCOC}>{$_("roll")}</button>
-        <button onclick={resetCOC}>{$_("reset")}</button>
-        <button >{$_("confirm")}</button>
-    <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-    <div class="stats-grid">
-      <p onmouseover={(e) => mouseOver(e, "str")} onmouseout={mouseOut}>
-         {$_("str")}: <strong>{appState.currentStats.str}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "con")} onmouseout={mouseOut}>
-        {$_("con")}: <strong>{appState.currentStats.con}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "siz")} onmouseout={mouseOut}>
-        {$_("siz")}: <strong>{appState.currentStats.siz}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "dex")} onmouseout={mouseOut}>
-        {$_("dex")}:<strong>{appState.currentStats.dex}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "app")} onmouseout={mouseOut}>
-        {$_("app")}:<strong>{appState.currentStats.app}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "edu")} onmouseout={mouseOut}>
-        {$_("edu")}: <strong>{appState.currentStats.edu}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "int")} onmouseout={mouseOut}>
-        {$_("int")}: <strong>{appState.currentStats.int}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "pow")} onmouseout={mouseOut}>
-        {$_("pow")}: <strong>{appState.currentStats.pow}</strong>
-      </p>
-      <p onmouseover={(e) => mouseOver(e, "luc")} onmouseout={mouseOut}>
-        {$_("luc")}: <strong>{appState.currentStats.luc}</strong>
-      </p>
-    </div>
-  </div><br>
+    <button onclick={rollCOC}>{$_("roll")}</button>
+    <button onclick={resetCOC}>{$_("reset")}</button>
+    <button onclick={() => onNavigate("CoCsht")}>{$_("confirm")}</button>
+      <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+      <div class="stats-grid">
+        <p onmouseover={(e) => mouseOver(e, "str")} onmouseout={mouseOut}>
+          {$_("str")}: <strong>{appState.currentStats.str}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "con")} onmouseout={mouseOut}>
+          {$_("con")}: <strong>{appState.currentStats.con}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "siz")} onmouseout={mouseOut}>
+          {$_("siz")}: <strong>{appState.currentStats.siz}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "dex")} onmouseout={mouseOut}>
+          {$_("dex")}:<strong>{appState.currentStats.dex}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "app")} onmouseout={mouseOut}>
+          {$_("app")}:<strong>{appState.currentStats.app}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "edu")} onmouseout={mouseOut}>
+          {$_("edu")}: <strong>{appState.currentStats.edu}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "int")} onmouseout={mouseOut}>
+          {$_("int")}: <strong>{appState.currentStats.int}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "pow")} onmouseout={mouseOut}>
+          {$_("pow")}: <strong>{appState.currentStats.pow}</strong>
+        </p>
+        <p onmouseover={(e) => mouseOver(e, "luc")} onmouseout={mouseOut}>
+          {$_("luc")}: <strong>{appState.currentStats.luc}</strong>
+        </p>
+      </div>
+  </div>
+  <br />
   <div>
     <button
       class="guide-button"
