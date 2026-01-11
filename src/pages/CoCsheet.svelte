@@ -57,15 +57,20 @@
     const invDex = appState.currentStats.dex;
     const invEdu = appState.currentStats.edu;
 
-    const dodge = skills.find((s: { evade: string; }) => s.evade === "HALF_DEX");
+    const dodge = skills.find((s: { evade: string }) => s.evade === "HALF_DEX");
     if (dodge) dodge.base = Math.floor(invDex / 2);
 
-    const native = skills.find((s: { motherTongue: string; }) => s.motherTongue === "EDUCATION");
+    const native = skills.find(
+      (s: { motherTongue: string }) => s.motherTongue === "EDUCATION",
+    );
     if (native) native.base = invEdu;
   });
 
   let totalInvested = $derived(
-    skills.reduce((sum: any, skill: { point: any; }) => sum + (skill.point || 0), 0),
+    skills.reduce(
+      (sum: any, skill: { point: any }) => sum + (skill.point || 0),
+      0,
+    ),
   );
   let remainingSkillPoint = $derived(baseSkillPoint - totalInvested);
 
@@ -85,7 +90,8 @@
 
     // 예산 체크 (현재 스킬을 제외한 다른 스킬들의 합)
     const otherTotal = skills.reduce(
-      (sum: any, s: { point: number; }, i: number) => sum + (i === index ? 0 : s.point),
+      (sum: any, s: { point: number }, i: number) =>
+        sum + (i === index ? 0 : s.point),
       0,
     );
     const budgetLeft = baseSkillPoint - otherTotal;
@@ -158,16 +164,16 @@
 
 <main>
   <div class="content-wrapper">
-    <br /><br /><br />
-    <div style="margin-top: 5px;">
-      <br />
-      <button onclick={() => onNavigate("main")}>M A I N</button>
-
-      <button class="lang-btn" onclick={() => switchLang("kr")}>한</button>
-      <button class="lang-btn" onclick={() => switchLang("jp")}>日</button>
-      <button class="lang-btn" onclick={() => switchLang("en")}>EN</button>
+    <br />
+    <div class="nav-row">
+      <button class="main-btn" onclick={() => onNavigate("main")}
+        >{$_("main_btn")}</button
+      >
+      <button class="lang-btn" onclick={() => switchLang("kr")}>한국어</button>
+      <button class="lang-btn" onclick={() => switchLang("jp")}>日本語</button>
+      <button class="lang-btn" onclick={() => switchLang("en")}>ENG</button>
     </div>
-    <h4>{$_("title_after_confirm")}</h4>
+    <h4>{$_("CoC_roll_result")}</h4>
 
     <div class="stats-grid">
       <p>{$_("str")}<strong>{appState.currentStats?.str ?? "N/A"}</strong></p>
@@ -202,7 +208,8 @@
             max={100 - skill.base}
             class="skill-input"
             bind:value={skill.point}
-            oninput={() => adjustSkillPoint(i,parseInt(e.currentTarget.value))}
+            oninput={(e) =>
+              adjustSkillPoint(i, parseInt(e.currentTarget.value))}
           />
 
           <span class="skill-total-score"
@@ -216,26 +223,33 @@
       <button onclick={copyToData}>{$_("copyToCoco")}</button>
       <button onclick={copyToSheet}>{$_("copyToSheet")}</button>
     </div>
-    <br />
   </div>
 </main>
 
 <style>
   main {
     display: flex;
-    justify-content: center; /* 가운데 배치 */
+    justify-content: center;
+    margin: 0;
   }
 
   .content-wrapper {
-    width: 600px;
+    width: 400px;
     margin: 0 auto;
     text-align: center;
   }
-  .lang-btn {
-    background-color: dimgray;
-  }
-  .lang-btn {
-    background-color: dimgray;
+
+  .content-wrapper button:not(.lang-btn) {
+    width: 100%; /* 부모인 content-wrapper 너비에 맞춤 */
+    max-width: 400px; /* 너무 길어지는 것을 방지 (원하는 크기로 조절) */
+    height: 50px; /* 높이도 고정하면 언어별 폰트 높이 차이를 무시할 수 있음 */
+    margin: 5px auto; /* 중앙 정렬 및 간격 */
+    display: block; /* 한 줄에 하나씩 배치되도록 설정 */
+
+    /* 텍스트가 길어져도 버튼 크기가 변하지 않게 함 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .stats-grid {
@@ -247,18 +261,18 @@
   }
 
   .stats-grid p {
-    background-color: #70b5e7;
+    background-color: #ebe2d6;
     padding: 8px;
     border-radius: 8px;
     text-align: center;
     margin: 0;
-    font-size: 1em;
-    color: #fefeff;
+    font-size: 1.2em;
+    color: #0f172a;
   }
 
   .stats-grid strong {
     display: block;
-    font-size: 1.4em;
+    font-size: 1.9em;
     color: #0f172a;
   }
 
@@ -270,13 +284,13 @@
   }
 
   .derived-stats-grid p {
-    background-color: #4084ed;
+    background-color: #274d60;
     padding: 8px;
     border-radius: 4px;
     text-align: center;
     margin: 0;
-    font-size: 0.9em;
-    color: #fefeff;
+    font-size: 1.2em;
+    color: #ebe2d6;
   }
 
   .derived-stats-grid strong {
@@ -286,7 +300,7 @@
   }
 
   .skill-points-display {
-    font-size: 1.1em;
+    font-size: 1.5em;
     font-weight: bold;
     padding-bottom: 10px;
     border-bottom: 2px solid #ddd;
@@ -299,7 +313,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
 
-    max-height: 220px;
+    max-height: 280px;
     overflow-y: auto;
     padding: 5px;
     border: 1px solid #eee;
@@ -312,10 +326,10 @@
     align-items: stretch;
     text-align: center;
     justify-content: space-between;
-    background-color: #f9f9f9;
+    background-color: #ebe2d6;
     padding: 5px;
     border-radius: 4px;
-    font-size: 0.8em;
+    font-size: 1.1em;
     color: #063a73;
     border: 1px solid #ddd;
   }
@@ -327,18 +341,5 @@
     text-overflow: ellipsis;
     max-width: 100%;
     margin-bottom: 2px;
-  }
-
-  .return-button {
-    padding: 8px 15px 8px 15px;
-    min-width: 250;
-    height: auto;
-    box-sizing: border-box;
-    border-radius: 50px;
-    font-size: 16px;
-    font-weight: 600;
-    background-color: #5877f9;
-    border: 2px solid #5877f9;
-    color: #ffffff;
   }
 </style>
