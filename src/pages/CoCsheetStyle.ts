@@ -160,7 +160,7 @@ export function createCocoPalette(
 
     data += `CC<=0 [${T("skill_cthulhu_mythos")}]` + EOL;
     data += `CC<=${derivedStats.sanity}${SEP}[${T("check_san")}]` + EOL;
-    data += `${derivedStats.damage} + 1d3 ${SEP}[${T("attack_unarmed")}]` + EOL;
+    data += `${derivedStats.damage}+1d3 ${SEP}[${T("attack_unarmed")}]` + EOL;
 
     return data;
 }

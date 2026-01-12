@@ -7,7 +7,6 @@
 
 <main>
   <div class="content-wrapper">
-    <br />
     <img src={image02} alt="Icon" width="100" />
     <h2 >TRPG Character Maker</h2>
       <button class="how-to-use-btn"
@@ -27,6 +26,8 @@
       </button>
 
     </div>
+        <h5 style="color:0C7075, opacity:0.4;">D.mong</h5>
+
   </div>
 
 

@@ -186,7 +186,6 @@
       <p>{$_("pow")} <strong>{appState.currentStats?.pow ?? "N/A"}</strong></p>
       <p>{$_("luc")} <strong>{appState.currentStats?.luc ?? "N/A"}</strong></p>
     </div>
-    <hr />
     <div class="derived-stats-grid">
       <p>{$_("hp")} <strong>{Math.floor(hp)}</strong></p>
       <p>{$_("mp")}<strong>{mp}</strong></p>
@@ -195,7 +194,9 @@
     </div>
     <h4>{$_("skill_describe")}</h4>
     <p class="skill-points-display">
-      {$_("skill_remaining")}: <strong>{remainingSkillPoint}</strong>
+      {$_("skill_remaining")}:{#key remainingSkillPoint}
+        <strong class="animate-pop">{remainingSkillPoint}</strong>
+      {/key}
     </p>
     <div class="skill-grid-container">
       {#each skills as skill, i}
@@ -341,5 +342,26 @@
     text-overflow: ellipsis;
     max-width: 100%;
     margin-bottom: 2px;
+  }
+
+  @keyframes stat-pop {
+    0% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    50% {
+      transform: scale(1.1);
+      filter: brightness(1.8); /* 밝게 빛남 */
+      color: #40ddb3;
+    }
+    100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+  }
+
+  .animate-pop {
+    display: inline-block; /* 크기 변화를 위해 인라인 블록 설정 */
+    animation: stat-pop 0.4s ease-out; /* 0.4초 동안 부드럽게 실행 */
   }
 </style>
