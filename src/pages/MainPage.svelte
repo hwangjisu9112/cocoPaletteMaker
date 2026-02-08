@@ -21,8 +21,14 @@
       <button onclick={()=> onNavigate('CoCgen')}>
        - Call Of Cthulhu 7th -
       </button>
+      <button onclick={()=> onNavigate('Insgen')}>
+      - inSANe - 
+      </button>
       <button>
-        준비중...
+      - emoklore - 
+      </button>
+       <button>
+      - 준비중 - 
       </button>
 
     </div>
