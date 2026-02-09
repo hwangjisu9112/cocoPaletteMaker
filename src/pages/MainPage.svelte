@@ -7,8 +7,8 @@
 
 <main>
   <div class="content-wrapper">
-    <img src={image02} alt="Icon" width="100" />
-    <h2 >TRPG Character Maker</h2>
+    <img src={image02} alt="Icon" width="200" />
+    <h2>TRPG Character Maker</h2>
       <button class="how-to-use-btn"
         onclick={() =>
           window.open(
@@ -16,7 +16,7 @@
             "_blank",
           )}>🤔 How to Use</button
       >
-    <h3>- Rules -</h3>
+    <h2>- Rules -</h2>
     <div class="button-container">
       <button onclick={()=> onNavigate('CoCgen')}>
        - Call Of Cthulhu 7th -
@@ -31,7 +31,7 @@
       - 준비중 - 
       </button>
 
-    </div>
+    </div><br><br><br><br>
         <h5 style="color:0C7075, opacity:0.4;">D.mong</h5>
 
   </div>

@@ -229,20 +229,22 @@
 
 <style>
   main {
+    max-width: 600px;
+
     display: flex;
     justify-content: center;
     margin: 0;
   }
 
   .content-wrapper {
-    width: 400px;
+    width: 600px;
     margin: 0 auto;
     text-align: center;
   }
 
   .content-wrapper button:not(.lang-btn) {
     width: 100%; /* 부모인 content-wrapper 너비에 맞춤 */
-    max-width: 400px; /* 너무 길어지는 것을 방지 (원하는 크기로 조절) */
+    max-width: 600px; /* 너무 길어지는 것을 방지 (원하는 크기로 조절) */
     height: 50px; /* 높이도 고정하면 언어별 폰트 높이 차이를 무시할 수 있음 */
     margin: 5px auto; /* 중앙 정렬 및 간격 */
     display: block; /* 한 줄에 하나씩 배치되도록 설정 */

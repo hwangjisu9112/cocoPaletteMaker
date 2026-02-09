@@ -181,8 +181,8 @@
 
 <style>
   main {
+    max-width: 400px;
     display: flex;
-    justify-content: center;
     margin: 0;
   }
 
