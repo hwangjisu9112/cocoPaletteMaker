@@ -240,6 +240,7 @@
     width: 600px;
     margin: 0 auto;
     text-align: center;
+    justify-content: center;
   }
 
   .content-wrapper button:not(.lang-btn) {

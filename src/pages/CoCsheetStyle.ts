@@ -2,7 +2,7 @@ import { get } from 'svelte/store'; // 💡 get 함수를 사용하여 store의 
 
 
 /**
- * 플레이어의 기본 능력치 값을 정의합니다.
+ * 탐사자의 기본 특성치 값을 정의합니다.
  */
 interface Stats {
     str: number; 
@@ -19,7 +19,7 @@ interface Stats {
 
 
 /**
- * 개별 기술 항목의 값을 정의합니다.
+ * 개별 기능 항목의 값을 정의합니다.
  */
 interface Skill {
     name: string;
@@ -27,7 +27,7 @@ interface Skill {
     point: number;
 }
 /**
- * 구글시트에 붙여넣기 위한 캐릭터 데이터를 생성합니다.
+ * 크툴루의 부름 탐사자 정보를 구글시트에 붙여넣기 위한 데이터를 생성합니다.
  *
  * @param stats - 플레이어의 기본 능력치 값
  * @param derivedStats - 체력, 마력 등 파생 능력치 값

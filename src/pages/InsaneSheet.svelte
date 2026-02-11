@@ -15,7 +15,33 @@
     locale.set(lang);
   }
 
-  //TRPG Call Of Cthulhu 7판(기본)의 탐사자 특성치를 무작위로 생성하는 func
+  /**
+   * 봉마인의 기본 능력치 값을 정의합니다.
+   */
+  interface Stats {
+    hp: number;
+    san: number;
+    weapon: number;
+    painkillers: number;
+    omamori: number;
+    curiosity: string;
+    fear: string;
+  }
+
+  // 초기값 설정
+  let initailAfflicted: Stats = {
+    hp: 6,
+    san: 6,
+    weapon: 0,
+    painkillers: 0,
+    omamori: 0,
+    curiosity: "폭력",
+    fear: "공포1",
+  };
+
+  //
+  const curiosityOptions = ["폭력", "정서", "지각", "기술", "과학", "괴이"];
+  const fearOptions = ["공포1 ", "공포 2", "공포 3 ", "공포 4"];
 
   /**
    * 주사위를 반복 굴려 합산한 값을 계산합니다.
@@ -91,16 +117,76 @@
     <br />
     <h2 class="page-title">inSANe 봉마인</h2>
     <div class="derived-stats-grid">
-      <p>HP</p>
-      <p>이성</p>
-      <p>무기</p>
-      <p>부적</p>
-      <p>진통제</p>
+      <div class="stat-item">
+        <p>HP</p>
+        <input
+          type="number"
+          bind:value={initailAfflicted.hp}
+          min="1"
+          max="6"
+          placeholder="0"
+        />
+      </div>
+      <div class="stat-item">
+        <p>이성</p>
+        <input
+          type="number"
+          bind:value={initailAfflicted.san}
+          min="1"
+          max="6"
+          placeholder="0"
+        />
+      </div>
+      <div class="stat-item">
+        <p>무기</p>
+        <input
+          type="number"
+          bind:value={initailAfflicted.weapon}
+          min="0"
+          max="2"
+          placeholder="0"
+        />
+      </div>
+      <div class="stat-item">
+        <p>진통제</p>
+        <input
+          type="number"
+          bind:value={initailAfflicted.painkillers}
+          min="0"
+          max="2"
+          placeholder="0"
+        />
+      </div>
+      <div class="stat-item">
+        <p>진통제</p>
+        <input
+          type="number"
+          bind:value={initailAfflicted.omamori}
+          min="0"
+          max="2"
+          placeholder="0"
+        />
+      </div>
     </div>
     <div class="derived-stats-grid-2">
-      <p>호기심</p>
-      <p>공포심</p>
-    </div><br>
+      <div class="stat-item">
+        <p>호기심</p>
+        <select bind:value={initailAfflicted.curiosity}>
+          {#each curiosityOptions as option}
+            <option value={option}>{option}</option>
+          {/each}
+        </select>
+      </div>
+
+      <div class="stat-item">
+        <p>공포심</p>
+        <select bind:value={initailAfflicted.fear}>
+          {#each fearOptions as option}
+            <option value={option}>{option}</option>
+          {/each}
+        </select>
+      </div>
+    </div>
     <div class="stats-container">
       <div class="category-column-1">
         <h3 class="category-title">◆</h3>
@@ -221,45 +307,9 @@
           <p><span>ability 11</span> <strong>12</strong></p>
         </div>
       </div>
-      <div class="stats-grid"></div>
     </div>
     <br />
 
-<div class="category-column">
-  <h3 class="category-title">어빌리티</h3>
-  
-  <div class="skill-list">
-    <div class="skill-item">
-      <div class="field">
-        <label>어빌리티명</label>
-        <input type="text" placeholder="어빌리티명을 입력하세요" />
-      </div>
-
-      <div class="field">
-        <label>속성</label>
-        <select>
-          <option value="physical">공격</option>
-          <option value="magic">서포트</option>
-          <option value="special">장비</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>설명</label>
-        <input type="text" placeholder="어빌리티 효과 설명" />
-      </div>
-
-      <div class="field">
-        <label>지정특기</label>
-        <input type="text" />
-      </div>
-    </div>
-    
-    </div>
-</div>
-
-
-    <br />
     <div class="result-btn">
       <button>{$_("copyToCoco")}</button>
       <button>{$_("copyToSheet")}</button>
@@ -342,10 +392,25 @@
     color: #ebe2d6;
   }
 
-  .derived-stats-grid strong {
-    display: block;
-    font-size: 1.2em;
-    color: #ddd;
+  /* 숫자 입력창 스타일 */
+  input[type="number"] {
+    width: 50px;
+    padding: 2px 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  /* 드롭다운 스타일 */
+  select {
+    width: 80%;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    background-color: #274d60;
   }
 
   @keyframes stat-pop {
@@ -367,7 +432,7 @@
   .ability-list p span,
   .ability-list p strong {
     padding: 6px 4px;
-    font-size: 1.0rem;
+    font-size: 1rem;
     text-align: center;
   }
 
@@ -394,19 +459,5 @@
     flex: 0 0 auto; /* 크기가 줄어들거나 늘어나지 않게 고정 */
     width: 120px; /* 각 열의 너비 */
     border: 1px solid #333;
-  }
-
-
-  .tooltip {
-    position: fixed; /* 뷰포트 기준으로 위치를 고정하여 다른 요소에 영향 미치지 않음 */
-    background-color: #333;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8em;
-    white-space: nowrap;
-    z-index: 1000; /* 다른 요소 위에 표시 */
-    pointer-events: none; /* 툴팁이 마우스 이벤트를 가로채지 않도록 설정 */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   }
 </style>

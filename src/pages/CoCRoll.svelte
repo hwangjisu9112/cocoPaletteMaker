@@ -35,7 +35,7 @@
   }
 
   /**
-   * 크툴루 규칙에 따라 탐사자의 능력치를 새로 생성합니다.
+   * 크툴루의 부름 규칙에 따라 탐사자의 특성치를 새로 생성합니다.
    */
   function rollCOC(): void {
     const newStats = {
@@ -57,7 +57,7 @@
   let tooltip = $state({ content: "", show: false, x: 0, y: 0 });
 
   /**
-   * 능력치 요소에 마우스를 올렸을 때 툴팁을 표시합니다.
+   * 특성치 요소에 마우스를 올렸을 때 툴팁을 표시합니다.
    *
    * @param event - 마우스 이벤트 객체
    * @param statKey - 설명을 표시할 능력치 키
