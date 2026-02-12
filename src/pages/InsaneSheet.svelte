@@ -1,10 +1,14 @@
 <script lang="ts">
   import { appState } from "../store.svelte";
-  import image02 from "../assets/image02.png";
-  import { _, locale } from "svelte-i18n";
+  import { _, json, locale, number } from "svelte-i18n";
   import "../i18n.ts";
+  import { INITIAL_CATEGORY, type Category } from "./InsaneSkill";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
+
+  let insaneCategory = $state<Category[]>(
+    JSON.parse(JSON.stringify(INITIAL_CATEGORY)),
+  );
 
   /**
    * 현재 애플리케이션의 표시 언어를 변경합니다.
@@ -44,19 +48,18 @@
   const fearOptions = ["공포1 ", "공포 2", "공포 3 ", "공포 4"];
 
   /**
-   * 주사위를 반복 굴려 합산한 값을 계산합니다.
-   *
-   * @param times - 주사위를 굴리는 횟수
-   * @param value - 주사위 한 면의 최대값
-   * @returns 누적 합산된 주사위 결과
+   * 클릭 핸들러: 특기 이름을 클릭 시 실행
+   * @param categoryIdx 카테고리 인덱스
+   * @param abilityIdx 능력치 인덱스
    */
-  function rollDie(times: number, value: number): number {
-    let rollResult = 0;
+  function adjustSkillValue(categoryIdx: number, skillIdx: number) {
+    const ability = insaneCategory[categoryIdx].skill[skillIdx];
 
-    for (let i = 0; i < times; i++) {
-      rollResult += Math.floor(Math.random() * value) + 1;
+    if (ability.base === 12) {
+      ability.base = 5;
+    } else {
+      ability.base = 12;
     }
-    return rollResult;
   }
 
   let tooltip = $state({ content: "", show: false, x: 0, y: 0 });
