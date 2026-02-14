@@ -28,7 +28,6 @@ export const INITIAL_CATEGORY: Category[] = [
             { name: "ins_skill_Stab", base: 12 },
             { name: "ins_skill_Shooting", base: 12 },
             { name: "ins_skill_War", base: 12, },
-            { name: "ins_skill_Shooting", base: 12 },
             { name: "ins_skill_Burial", base: 12 },
         ]
     }, {
@@ -62,7 +61,7 @@ export const INITIAL_CATEGORY: Category[] = [
             { name: "ins_skill_Shade", base: 12 },
         ]
     }, {
-        type: "ins_Technique",
+        type: "ins_technique",
         skill: [
             { name: "ins_skill_Decomposition", base: 12 },
             { name: "ins_skill_ElectroDevices", base: 12 },

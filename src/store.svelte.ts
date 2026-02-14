@@ -1,18 +1,18 @@
 import App from "./App.svelte";
 
 /**
- * 탐사자의 기본 특성치의 값 집합을 나타냅니다.
+ * 크툴루의 부름 탐사자의 기본 특성치의 값 집합을 나타냅니다.
  */
 interface CoCCharacteristics {
-    str: number;
-    con: number;
-    siz: number;
-    dex: number;
-    app: number;
-    edu: number;
-    int: number;
-    pow: number;
-    luc: number;
+  str: number;
+  con: number;
+  siz: number;
+  dex: number;
+  app: number;
+  edu: number;
+  int: number;
+  pow: number;
+  luc: number;
 }
 
 /**
@@ -45,3 +45,17 @@ class AppState {
  * 탐사자의 현재 상태와 확정 여부를 관리하는 Svelte 스토어입니다.
  */
 export const appState = new AppState();
+
+
+/**
+ * 인세인 봉마인의 기본 특성치의 값 집합을 나타냅니다.
+ */
+interface InsaneCharacteristics {
+  hp: number;
+  san: number;
+  weapon: number;
+  painkillers: number;
+  omamori: number;
+  curiosity: string;
+  fear: string;
+}

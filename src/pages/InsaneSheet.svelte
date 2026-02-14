@@ -28,8 +28,8 @@
     weapon: number;
     painkillers: number;
     omamori: number;
-    curiosity: string;
-    fear: string;
+    curiosity?: string;
+    fear?: string;
   }
 
   // 초기값 설정
@@ -39,12 +39,12 @@
     weapon: 0,
     painkillers: 0,
     omamori: 0,
-    curiosity: "폭력",
-    fear: "공포1",
+    curiosity: "-",
+    fear: "-",
   };
 
-  //
   const curiosityOptions = ["폭력", "정서", "지각", "기술", "과학", "괴이"];
+  // const curiosityOptions = insaneCategory[];
   const fearOptions = ["공포1 ", "공포 2", "공포 3 ", "공포 4"];
 
   /**
@@ -61,6 +61,7 @@
       ability.base = 12;
     }
   }
+
 
   let tooltip = $state({ content: "", show: false, x: 0, y: 0 });
 
@@ -118,7 +119,7 @@
       <button class="lang-btn" onclick={() => switchLang("en")}>ENG</button>
     </div>
     <br />
-    <h2 class="page-title">inSANe 봉마인</h2>
+    <h2 class="page-title">{$_("InS_result")}</h2>
     <div class="derived-stats-grid">
       <div class="stat-item">
         <p>HP</p>
@@ -190,133 +191,41 @@
         </select>
       </div>
     </div>
-    <div class="stats-container">
-      <div class="category-column-1">
-        <h3 class="category-title">◆</h3>
-        <div class="ability-list">
-          <p><strong>2</strong></p>
-          <p><strong>3</strong></p>
-          <p><strong>4</strong></p>
-          <p><strong>5</strong></p>
-          <p><strong>6</strong></p>
-          <p><strong>7</strong></p>
-          <p><strong>8</strong></p>
-          <p><strong>9</strong></p>
-          <p><strong>10</strong></p>
-          <p><strong>11</strong></p>
-          <p><strong>12</strong></p>
-        </div>
-      </div>
-      <div class="category-column">
-        <h3 class="category-title">1.폭력</h3>
-        <div class="ability-list">
-          <p><span>소각</span> <strong>12</strong></p>
-          <p><span>고문</span> <strong>12</strong></p>
-          <p><span>포박</span> <strong>12</strong></p>
-          <p><span>협박</span> <strong>12</strong></p>
-          <p><span>파괴</span> <strong>12</strong></p>
-          <p><span>구타</span> <strong>12</strong></p>
-          <p><span>절단</span> <strong>12</strong></p>
-          <p><span>찌르기</span> <strong>12</strong></p>
-          <p><span>사격</span> <strong>12</strong></p>
-          <p><span>전쟁</span> <strong>12</strong></p>
-          <p><span>매장</span> <strong>12</strong></p>
-        </div>
-      </div>
 
-      <div class="spacer"></div>
+    <div class="ability-table">
+      {#each insaneCategory as category, cIdx}
+        <div class="category-section">
+          <h3>{category.type}</h3>
+          <div class="ability-container">
+            {#each category.skill as ability, aIdx}
+              <div class="ability-item">
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <span
+                  class="ability-name"
+                  class:selected={ability.base === 5}
+                  onclick={() => adjustSkillValue(cIdx, aIdx)}
+                >
+                  {ability.name}
+                </span>
 
-      <div class="category-column">
-        <h3 class="category-title">2.정서</h3>
-        <div class="ability-list">
-          <p><span>ability 1</span> <strong>12</strong></p>
-          <p><span>ability 2</span> <strong>12</strong></p>
-          <p><span>ability 3</span> <strong>12</strong></p>
-          <p><span>ability 4</span> <strong>12</strong></p>
-          <p><span>ability 5</span> <strong>12</strong></p>
-          <p><span>ability 6</span> <strong>12</strong></p>
-          <p><span>ability 7</span> <strong>12</strong></p>
-          <p><span>ability 8</span> <strong>12</strong></p>
-          <p><span>ability 9</span> <strong>12</strong></p>
-          <p><span>ability 10</span> <strong>12</strong></p>
-          <p><span>ability 11</span> <strong>12</strong></p>
+                <strong
+                  class="ability-value"
+                  class:selected={ability.base === 5}
+                >
+                  {ability.base}
+                </strong>
+              </div>
+            {/each}
+          </div>
         </div>
-      </div>
-      <div class="spacer"></div>
-      <div class="category-column">
-        <h3 class="category-title">3.지각</h3>
-        <div class="ability-list">
-          <p><span>ability 1</span> <strong>12</strong></p>
-          <p><span>ability 2</span> <strong>12</strong></p>
-          <p><span>ability 3</span> <strong>12</strong></p>
-          <p><span>ability 4</span> <strong>12</strong></p>
-          <p><span>ability 5</span> <strong>12</strong></p>
-          <p><span>ability 6</span> <strong>12</strong></p>
-          <p><span>ability 7</span> <strong>12</strong></p>
-          <p><span>ability 8</span> <strong>12</strong></p>
-          <p><span>ability 9</span> <strong>12</strong></p>
-          <p><span>ability 10</span> <strong>12</strong></p>
-          <p><span>ability 11</span> <strong>12</strong></p>
-        </div>
-      </div>
-      <div class="spacer"></div>
-      <div class="category-column">
-        <h3 class="category-title">4.기술</h3>
-        <div class="ability-list">
-          <p><span>ability 1</span> <strong>12</strong></p>
-          <p><span>ability 2</span> <strong>12</strong></p>
-          <p><span>ability 3</span> <strong>12</strong></p>
-          <p><span>ability 4</span> <strong>12</strong></p>
-          <p><span>ability 5</span> <strong>12</strong></p>
-          <p><span>ability 6</span> <strong>12</strong></p>
-          <p><span>ability 7</span> <strong>12</strong></p>
-          <p><span>ability 8</span> <strong>12</strong></p>
-          <p><span>ability 9</span> <strong>12</strong></p>
-          <p><span>ability 10</span> <strong>12</strong></p>
-          <p><span>ability 11</span> <strong>12</strong></p>
-        </div>
-      </div>
-      <div class="spacer"></div>
-      <div class="category-column">
-        <h3 class="category-title">5.지식</h3>
-        <div class="ability-list">
-          <p><span>ability 1</span> <strong>12</strong></p>
-          <p><span>ability 2</span> <strong>12</strong></p>
-          <p><span>ability 3</span> <strong>12</strong></p>
-          <p><span>ability 4</span> <strong>12</strong></p>
-          <p><span>ability 5</span> <strong>12</strong></p>
-          <p><span>ability 6</span> <strong>12</strong></p>
-          <p><span>ability 7</span> <strong>12</strong></p>
-          <p><span>ability 8</span> <strong>12</strong></p>
-          <p><span>ability 9</span> <strong>12</strong></p>
-          <p><span>ability 10</span> <strong>12</strong></p>
-          <p><span>ability 11</span> <strong>12</strong></p>
-        </div>
-      </div>
-      <div class="spacer"></div>
-      <div class="category-column">
-        <h3 class="category-title">6.괴이</h3>
-        <div class="ability-list">
-          <p><span>ability 1</span> <strong>12</strong></p>
-          <p><span>ability 2</span> <strong>12</strong></p>
-          <p><span>ability 3</span> <strong>12</strong></p>
-          <p><span>ability 4</span> <strong>12</strong></p>
-          <p><span>ability 5</span> <strong>12</strong></p>
-          <p><span>ability 6</span> <strong>12</strong></p>
-          <p><span>ability 7</span> <strong>12</strong></p>
-          <p><span>ability 8</span> <strong>12</strong></p>
-          <p><span>ability 9</span> <strong>12</strong></p>
-          <p><span>ability 10</span> <strong>12</strong></p>
-          <p><span>ability 11</span> <strong>12</strong></p>
-        </div>
-      </div>
+      {/each}
     </div>
     <br />
 
     <div class="result-btn">
       <button>{$_("copyToCoco")}</button>
       <button>{$_("copyToSheet")}</button>
-      <button>초기화</button>
     </div>
   </div>
 </main>
@@ -363,14 +272,14 @@
 
   .derived-stats-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     gap: 10px;
     margin-bottom: 20px;
   }
 
   .derived-stats-grid-2 {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin-bottom: 20px;
   }
@@ -386,13 +295,13 @@
   }
 
   .derived-stats-grid-2 p {
-    background-color: #274d60;
+    background-color: #6da5c0;
     padding: 8px;
     border-radius: 4px;
     text-align: center;
     margin: 0;
     font-size: 1.2em;
-    color: #ebe2d6;
+    color: #012013;
   }
 
   /* 숫자 입력창 스타일 */
@@ -432,35 +341,71 @@
     }
   }
 
-  .ability-list p span,
-  .ability-list p strong {
-    padding: 6px 4px;
+  .ability-table {
+    display: flex;
+    flex-direction: row; /* 수평 정렬 */
+    gap: 12px;
+    padding: 20px;
+    width: 800px; /* 전체 너비 제한 */
+    overflow-x: auto; /* 내용이 넘칠 경우 가로 스크롤 허용 */
+    box-sizing: border-box;
+  }
+
+  .category-section {
+    flex: 1;
+    min-width: 160px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+  }
+
+  h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #333;
+    padding-bottom: 5px;
+    font-size: 1.25rem;
+    color: #1a1a1a;
+  }
+
+  .ability-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    padding: 2px 4px;
+  }
+
+  .ability-item:hover {
+    background-color: #f9f9f9;
+  }
+
+  .ability-name {
+    cursor: pointer;
     font-size: 1rem;
-    text-align: center;
+    color: #444;
+    transition: all 0.2s;
+    user-select: none;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 너무 긴 이름은 생략 처리 */
   }
 
-  .stats-container {
-    background-color: #ebe2d6;
-    color: #0f172a;
-    display: flex; /* 자식들을 가로로 나열 */
-    flex-direction: row; /* 기본값이 가로지만 명시적으로 설정 */
-    justify-content: center;
-    align-items: flex-start; /* 상단 기준 정렬 */
-    gap: 0; /* spacer가 있으므로 0으로 설정하거나 적절히 조절 */
-    margin-top: 20px;
-    width: 100%; /* 부모 너비에 꽉 차게 */
-    text-align: left;
+  /* 선택 상태(값 5)일 때의 스타일 */
+  .ability-name.selected {
+    color: #0ab9c9;
+    font-weight: bold;
   }
 
-  .category-column-1 {
-    flex: 0 0 auto; /* 크기가 줄어들거나 늘어나지 않게 고정 */
-    width: 12x; /* 각 열의 너비 */
-    border: 1px solid #333;
+  .ability-value {
+    font-family: monospace;
+    font-size: 1rem;
+    color: #666;
+    
   }
 
-  .category-column {
-    flex: 0 0 auto; /* 크기가 줄어들거나 늘어나지 않게 고정 */
-    width: 120px; /* 각 열의 너비 */
-    border: 1px solid #333;
+  .ability-value.selected {
+    color: #ef4444;
+    font-weight: bold;
   }
 </style>
