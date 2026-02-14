@@ -2,13 +2,9 @@
   import { appState } from "../store.svelte";
   import { _, json, locale, number } from "svelte-i18n";
   import "../i18n.ts";
-  import { INITIAL_CATEGORY, type Category } from "./InsaneSkill";
+  import { INITIAL_CATEGORY, type Category, type Skill } from "./InsaneSkill";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
-
-  let insaneCategory = $state<Category[]>(
-    JSON.parse(JSON.stringify(INITIAL_CATEGORY)),
-  );
 
   /**
    * 현재 애플리케이션의 표시 언어를 변경합니다.
@@ -44,24 +40,70 @@
   };
 
   const curiosityOptions = ["폭력", "정서", "지각", "기술", "과학", "괴이"];
-  // const curiosityOptions = insaneCategory[];
   const fearOptions = ["공포1 ", "공포 2", "공포 3 ", "공포 4"];
 
-  /**
-   * 클릭 핸들러: 특기 이름을 클릭 시 실행
-   * @param categoryIdx 카테고리 인덱스
-   * @param abilityIdx 능력치 인덱스
-   */
-  function adjustSkillValue(categoryIdx: number, skillIdx: number) {
-    const ability = insaneCategory[categoryIdx].skill[skillIdx];
-
-    if (ability.base === 12) {
-      ability.base = 5;
-    } else {
-      ability.base = 12;
-    }
+  // 현재 선택된 특기들의 위치 정보를 담는 타입 정의
+  interface SelectedPos {
+    cIdx: number;
+    sIdx: number;
   }
 
+  // 여러 특기를 선택할 수 있도록 배열로 상태 관리
+  // 컴파일 오류 방지를 위해 변수 선언 시 타입을 명확히 지정합니다.
+  let selectedPositions: SelectedPos[] = $state([]);
+
+  // 초기 데이터 설정
+  const categories: Category[] = INITIAL_CATEGORY;
+
+  /**
+   * 거리 기반 판정 수치를 계산하는 함수
+   * 여러 개의 선택된 특기 중 현재 위치에서 가장 가까운(최소값) 거리를 계산합니다.
+   */
+  function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
+    // 선택된 특기가 하나도 없으면 기본값 12
+    if (selectedPositions.length === 0) return skill.base;
+
+    // 현재 특기가 이미 습득(선택)된 특기라면 판정치는 5가 됩니다.
+    const isActuallySelected = selectedPositions.some(
+      (pos) => pos.cIdx === cIdx && pos.sIdx === sIdx,
+    );
+    if (isActuallySelected) return 5;
+
+    // 모든 선택된 특기로부터의 거리를 비교하여 가장 유리한(작은) 판정치를 찾습니다.
+    let minCalculatedValue = 12;
+
+    for (const pos of selectedPositions) {
+      // 인세인 규칙: 동일 카테고리(열) 내에서만 수직 거리를 계산합니다.
+      if (pos.cIdx === cIdx) {
+        const targetSkill = categories[pos.cIdx].skill[pos.sIdx];
+        const distance = Math.abs(targetSkill.index - skill.index);
+        const val = 5 + distance;
+        if (val < minCalculatedValue) {
+          minCalculatedValue = val;
+        }
+      }
+    }
+
+    // 결과값은 12를 초과할 수 없습니다.
+    return Math.min(minCalculatedValue, 12);
+  }
+
+  /**
+   * 스킬 클릭 핸들러 (다중 선택 및 토글 로직)
+   */
+  function handleSpecClick(cIdx: number, sIdx: number) {
+    const existingIdx = selectedPositions.findIndex(
+      (pos) => pos.cIdx === cIdx && pos.sIdx === sIdx,
+    );
+
+    if (existingIdx !== -1) {
+      // 이미 선택된 특기라면 배열에서 제거하여 선택 해제
+      selectedPositions = selectedPositions.filter((_, i) => i !== existingIdx);
+    } else {
+      // 새로운 특기라면 배열에 추가하여 습득 상태로 변경
+      selectedPositions = [...selectedPositions, { cIdx, sIdx }];
+    }
+  }
 
   let tooltip = $state({ content: "", show: false, x: 0, y: 0 });
 
@@ -192,37 +234,35 @@
       </div>
     </div>
 
-    <div class="ability-table">
-      {#each insaneCategory as category, cIdx}
+    <div class="specialty-table">
+      {#each categories as category, cIdx}
         <div class="category-section">
-          <h3>{category.type}</h3>
-          <div class="ability-container">
-            {#each category.skill as ability, aIdx}
-              <div class="ability-item">
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <span
-                  class="ability-name"
-                  class:selected={ability.base === 5}
-                  onclick={() => adjustSkillValue(cIdx, aIdx)}
-                >
-                  {ability.name}
-                </span>
+          <h3>{category.type.split("_").pop() || category.type}</h3>
+          <div class="skill-list">
+            {#each category.skill as skill, sIdx}
+              {@const displayValue = getSkillValue(cIdx, sIdx, skill)}
+              {@const isPicked = selectedPositions.some(
+                (p) => p.cIdx === cIdx && p.sIdx === sIdx,
+              )}
+              {@const isBonus = !isPicked && displayValue < 12}
 
-                <strong
-                  class="ability-value"
-                  class:selected={ability.base === 5}
-                >
-                  {ability.base}
-                </strong>
+              <!-- svelte-ignore a11y_click_events_have_key_events -->
+              <!-- svelte-ignore a11y_no_static_element_interactions -->
+              <div
+                class="skill-item"
+                class:selected={isPicked}
+                class:bonus={isBonus}
+                onclick={() => handleSpecClick(cIdx, sIdx)}
+              >
+                <span class="skill-name">{skill.name}</span>
+                <span class="skill-value">{displayValue}</span>
               </div>
             {/each}
           </div>
         </div>
       {/each}
+      <br />
     </div>
-    <br />
-
     <div class="result-btn">
       <button>{$_("copyToCoco")}</button>
       <button>{$_("copyToSheet")}</button>
@@ -341,7 +381,7 @@
     }
   }
 
-  .ability-table {
+  .specialty-table {
     display: flex;
     flex-direction: row; /* 수평 정렬 */
     gap: 12px;
@@ -353,11 +393,11 @@
 
   .category-section {
     flex: 1;
-    min-width: 160px;
+    min-width: 130px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    background: #fff;
+    background: #ebe2d6;
   }
 
   h3 {
@@ -368,44 +408,85 @@
     color: #1a1a1a;
   }
 
-  .ability-item {
+  .category-section {
+    flex: 0 0 120px;
+    border: 1px solid #ccc;
+    background-color: #ebe2d6;
+    color: #1a1a1a;
+
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h3 {
+    margin: 0;
+    padding: 8px;
+    font-size: 0.85rem;
+    text-align: center;
+    background-color: #333;
+    color: #fff;
+  }
+
+  .skill-list {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+  }
+
+  .skill-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
-    padding: 2px 4px;
-  }
-
-  .ability-item:hover {
-    background-color: #f9f9f9;
-  }
-
-  .ability-name {
+    padding: 4px 6px;
+    margin-bottom: 2px;
     cursor: pointer;
-    font-size: 1rem;
-    color: #444;
-    transition: all 0.2s;
-    user-select: none;
-    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    border-radius: 2px;
+    transition: background-color 0.15s;
+    border-bottom: 1px solid #eee;
+  }
+
+  .skill-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .skill-name {
+    font-size: 1.2rem;
+    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* 너무 긴 이름은 생략 처리 */
+    text-overflow: ellipsis;
   }
 
-  /* 선택 상태(값 5)일 때의 스타일 */
-  .ability-name.selected {
-    color: #0ab9c9;
-    font-weight: bold;
-  }
-
-  .ability-value {
+  .skill-value {
     font-family: monospace;
-    font-size: 1rem;
-    color: #666;
-    
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #777;
   }
 
-  .ability-value.selected {
-    color: #ef4444;
+  .skill-item.active {
+    background-color: #fee2e2;
+    border-color: #ef4444;
+  }
+  .skill-item.active .skill-name,
+  .skill-item.active .skill-value {
+    color: #b91c1c;
     font-weight: bold;
+  }
+
+  .skill-item.highlight {
+    background-color: #eff6ff;
+  }
+  .skill-item.highlight .skill-name,
+  .skill-item.highlight .skill-value {
+    color: #1d4ed8;
+  }
+
+  .main-wrapper::-webkit-scrollbar {
+    height: 6px;
+  }
+  .main-wrapper::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
   }
 </style>
