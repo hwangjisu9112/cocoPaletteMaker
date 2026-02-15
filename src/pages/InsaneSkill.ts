@@ -51,7 +51,7 @@ export const INITIAL_CATEGORY: Category[] = [
         skill: [
             { name: "ins_skill_Pain", base: 12, index: 1 },
             { name: "ins_skill_Sensuality", base: 12, index: 2 },
-            { name: "ins_skill_Touch ", base: 12, index: 3 },
+            { name: "ins_skill_Touch", base: 12, index: 3 },
             { name: "ins_skill_Smell", base: 12, index: 4 },
             { name: "ins_skill_Taste", base: 12, index: 5 },
             { name: "ins_skill_Sound", base: 12, index: 6 },
@@ -62,7 +62,7 @@ export const INITIAL_CATEGORY: Category[] = [
             { name: "ins_skill_Shade", base: 12, index: 11 },
         ]
     }, {
-        type: "ins_technique",
+        type: "ins_Technique",
         skill: [
             { name: "ins_skill_Decomposition", base: 12, index: 1 },
             { name: "ins_skill_ElectroDevices", base: 12, index: 2 },
@@ -80,7 +80,7 @@ export const INITIAL_CATEGORY: Category[] = [
     , {
         type: "ins_Knowledge",
         skill: [
-            { name: "ins_skill_Physics", base: 1, index: 1 },
+            { name: "ins_skill_Physics", base: 12, index: 1 },
             { name: "ins_skill_Mathematics", base: 12, index: 2 },
             { name: "ins_skill_Chemistry", base: 12, index: 3 },
             { name: "ins_skill_Biology", base: 12, index: 4 },

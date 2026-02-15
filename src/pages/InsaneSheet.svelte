@@ -42,7 +42,7 @@
   const curiosityOptions = ["폭력", "정서", "지각", "기술", "과학", "괴이"];
   const fearOptions = ["공포1 ", "공포 2", "공포 3 ", "공포 4"];
 
-  // 현재 선택된 특기들의 위치 정보를 담는 타입 정의
+  // 현재 선택된 특기들의 위치 정보를 담는 타입 정의(cIdx=열 정보, sIdx=행 정보)
   interface SelectedPos {
     cIdx: number;
     sIdx: number;
@@ -63,7 +63,7 @@
     // 선택된 특기가 하나도 없으면 기본값 12
     if (selectedPositions.length === 0) return skill.base;
 
-    // 현재 특기가 이미 습득(선택)된 특기라면 판정치는 5가 됩니다.
+    // 현재 특기가 선택된 특기라면 판정치는 5가 됩니다.
     const isActuallySelected = selectedPositions.some(
       (pos) => pos.cIdx === cIdx && pos.sIdx === sIdx,
     );
@@ -73,7 +73,7 @@
     let minCalculatedValue = 12;
 
     for (const pos of selectedPositions) {
-      // 인세인 규칙: 동일 카테고리(열) 내에서만 수직 거리를 계산합니다.
+      // 인세인 규칙: 동일 카테고리(열) 내에서 수직 거리를 계산합니다.
       if (pos.cIdx === cIdx) {
         const targetSkill = categories[pos.cIdx].skill[pos.sIdx];
         const distance = Math.abs(targetSkill.index - skill.index);
@@ -84,7 +84,7 @@
       }
     }
 
-    // 결과값은 12를 초과할 수 없습니다.
+    // 결과값은 12를 초과할 수 없다
     return Math.min(minCalculatedValue, 12);
   }
 
@@ -105,51 +105,10 @@
     }
   }
 
-  let tooltip = $state({ content: "", show: false, x: 0, y: 0 });
 
-  //   /**
-  //    * 능력치 요소에 마우스를 올렸을 때 툴팁을 표시합니다.
-  //    *
-  //    * @param event - 마우스 이벤트 객체
-  //    * @param statKey - 설명을 표시할 능력치 키
-  //    */
-  //   function mouseOver(event: MouseEvent, statKey: string) {
-  //     tooltip.content = StatDescriptions[statKey];
-  //     tooltip.show = true;
-  //     handleMouseMove(event);
-  //   }
-
-  /**
-   * 마우스 이동에 따라 툴팁 위치를 갱신합니다.
-   *
-   * @param event - 마우스 이벤트 객체
-   */
-  function handleMouseMove(event: MouseEvent): void {
-    if (tooltip.show) {
-      // 커서 위치에서 살짝 오른쪽/아래(15px)로 툴팁을 이동시켜 커서 가림 방지
-      tooltip.x = event.clientX + 15;
-      tooltip.y = event.clientY + 15;
-    }
-  }
-
-  /**
-   * 마우스가 능력치 요소에서 벗어났을 때 툴팁을 숨깁니다.
-   */
-  function mouseOut(): void {
-    tooltip.show = false;
-    tooltip.content = "";
-  }
-
-  /**
-   * 생성된 능력치를 초기값(0)으로 되돌립니다.
-   */
-  function resetIns(): void {
-    appState.reset();
-    console.log("특성치 초기화됨");
-  }
 </script>
 
-<main onmousemove={handleMouseMove}>
+<main>
   <div class="content-wrapper">
     <br />
     <div class="nav-row">
@@ -237,7 +196,7 @@
     <div class="specialty-table">
       {#each categories as category, cIdx}
         <div class="category-section">
-          <h3>{category.type.split("_").pop() || category.type}</h3>
+          <h3>{$_(category.type)}</h3>
           <div class="skill-list">
             {#each category.skill as skill, sIdx}
               {@const displayValue = getSkillValue(cIdx, sIdx, skill)}
@@ -254,7 +213,7 @@
                 class:bonus={isBonus}
                 onclick={() => handleSpecClick(cIdx, sIdx)}
               >
-                <span class="skill-name">{skill.name}</span>
+                <span class="skill-name">{$_(skill.name)}</span>
                 <span class="skill-value">{displayValue}</span>
               </div>
             {/each}
@@ -464,29 +423,4 @@
     color: #777;
   }
 
-  .skill-item.active {
-    background-color: #fee2e2;
-    border-color: #ef4444;
-  }
-  .skill-item.active .skill-name,
-  .skill-item.active .skill-value {
-    color: #b91c1c;
-    font-weight: bold;
-  }
-
-  .skill-item.highlight {
-    background-color: #eff6ff;
-  }
-  .skill-item.highlight .skill-name,
-  .skill-item.highlight .skill-value {
-    color: #1d4ed8;
-  }
-
-  .main-wrapper::-webkit-scrollbar {
-    height: 6px;
-  }
-  .main-wrapper::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 10px;
-  }
 </style>
