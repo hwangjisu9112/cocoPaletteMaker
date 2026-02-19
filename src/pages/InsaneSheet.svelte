@@ -29,18 +29,15 @@
   }
 
   // 초기값 설정
-  let initailAfflicted: Stats = {
+  let initialAfflicted: Stats = $state({
     hp: 6,
     san: 6,
     weapon: 0,
     painkillers: 0,
     omamori: 0,
-    curiosity: "-",
+    curiosity: "",
     fear: "-",
-  };
-
-  const curiosityOptions = ["폭력", "정서", "지각", "기술", "과학", "괴이"];
-  const fearOptions = ["공포1 ", "공포 2", "공포 3 ", "공포 4"];
+  });
 
   // 현재 선택된 특기들의 위치 정보를 담는 타입 정의(cIdx=열 정보, sIdx=행 정보)
   interface SelectedPos {
@@ -54,6 +51,8 @@
 
   // 초기 데이터 설정
   const categories: Category[] = INITIAL_CATEGORY;
+
+  const fearOptions = categories.flatMap((cat) => cat.skill);
 
   /**
    * 거리 기반 판정 수치를 계산하는 함수
@@ -104,8 +103,6 @@
       selectedPositions = [...selectedPositions, { cIdx, sIdx }];
     }
   }
-
-
 </script>
 
 <main>
@@ -123,10 +120,10 @@
     <h2 class="page-title">{$_("InS_result")}</h2>
     <div class="derived-stats-grid">
       <div class="stat-item">
-        <p>HP</p>
+        <p>체력</p>
         <input
           type="number"
-          bind:value={initailAfflicted.hp}
+          bind:value={initialAfflicted.hp}
           min="1"
           max="6"
           placeholder="0"
@@ -136,7 +133,7 @@
         <p>이성</p>
         <input
           type="number"
-          bind:value={initailAfflicted.san}
+          bind:value={initialAfflicted.san}
           min="1"
           max="6"
           placeholder="0"
@@ -146,7 +143,7 @@
         <p>무기</p>
         <input
           type="number"
-          bind:value={initailAfflicted.weapon}
+          bind:value={initialAfflicted.weapon}
           min="0"
           max="2"
           placeholder="0"
@@ -156,7 +153,7 @@
         <p>진통제</p>
         <input
           type="number"
-          bind:value={initailAfflicted.painkillers}
+          bind:value={initialAfflicted.painkillers}
           min="0"
           max="2"
           placeholder="0"
@@ -166,7 +163,7 @@
         <p>진통제</p>
         <input
           type="number"
-          bind:value={initailAfflicted.omamori}
+          bind:value={initialAfflicted.omamori}
           min="0"
           max="2"
           placeholder="0"
@@ -176,18 +173,18 @@
     <div class="derived-stats-grid-2">
       <div class="stat-item">
         <p>호기심</p>
-        <select bind:value={initailAfflicted.curiosity}>
-          {#each curiosityOptions as option}
-            <option value={option}>{option}</option>
+        <select bind:value={initialAfflicted.curiosity}>
+          {#each categories as category}
+            <option value={category.type}>{$_(category.type)}</option>
           {/each}
         </select>
       </div>
 
       <div class="stat-item">
         <p>공포심</p>
-        <select bind:value={initailAfflicted.fear}>
+        <select bind:value={initialAfflicted.fear}>
           {#each fearOptions as option}
-            <option value={option}>{option}</option>
+            <option value={option.name}>{$_(option.name)}</option>
           {/each}
         </select>
       </div>
@@ -195,7 +192,10 @@
 
     <div class="specialty-table">
       {#each categories as category, cIdx}
-        <div class="category-section">
+        <div
+          class="category-section"
+          class:highlighted={initialAfflicted.curiosity === category.type}
+        >
           <h3>{$_(category.type)}</h3>
           <div class="skill-list">
             {#each category.skill as skill, sIdx}
@@ -324,22 +324,6 @@
     background-color: #274d60;
   }
 
-  @keyframes stat-pop {
-    0% {
-      transform: scale(1);
-      filter: brightness(1);
-    }
-    50% {
-      transform: scale(1.1);
-      filter: brightness(1.8); /* 밝게 빛남 */
-      color: #40ddb3;
-    }
-    100% {
-      transform: scale(1);
-      filter: brightness(1);
-    }
-  }
-
   .specialty-table {
     display: flex;
     flex-direction: row; /* 수평 정렬 */
@@ -357,6 +341,12 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     background: #ebe2d6;
+  }
+
+  .category-section.highlighted {
+    border-color: #19d4c1;
+    box-shadow: 0 14px 14px rgba(223, 178, 99, 0.4);
+    background: #f59e0b;
   }
 
   h3 {
@@ -422,5 +412,4 @@
     font-size: 1.2rem;
     color: #777;
   }
-
 </style>
