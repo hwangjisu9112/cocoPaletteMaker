@@ -42,7 +42,7 @@ class AppState {
 
 
 /**
- * 탐사자의 현재 상태와 확정 여부를 관리하는 Svelte 스토어입니다.
+ * coc 탐사자의 현재 상태와 확정 여부를 관리하는 Svelte 스토어입니다.
  */
 export const appState = new AppState();
 

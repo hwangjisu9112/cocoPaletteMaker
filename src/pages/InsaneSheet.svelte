@@ -3,6 +3,7 @@
   import { _, json, locale, number } from "svelte-i18n";
   import "../i18n.ts";
   import { INITIAL_CATEGORY, type Category, type Skill } from "./InsaneSkill";
+  import { passive } from "svelte/legacy";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
@@ -72,16 +73,30 @@
     let minCalculatedValue = 12;
 
     for (const pos of selectedPositions) {
+      const SourceCtgr = categories[pos.cIdx];
+
+      let horizonDistance = Math.abs(pos.cIdx - cIdx) * 2;
+      const targetSkill = categories[pos.cIdx].skill[pos.sIdx];
+      const verticalDistance = Math.abs(targetSkill.index - skill.index);
+
+      if (
+        horizonDistance > 0 &&
+        initialAfflicted.curiosity === SourceCtgr.type
+      ) {
+        horizonDistance -= 1;
+      }
+
       // 인세인 규칙: 동일 카테고리(열) 내에서 수직 거리를 계산합니다.
-      if (pos.cIdx === cIdx) {
-        const targetSkill = categories[pos.cIdx].skill[pos.sIdx];
-        const distance = Math.abs(targetSkill.index - skill.index);
-        const val = 5 + distance;
-        if (val < minCalculatedValue) {
-          minCalculatedValue = val;
-        }
+      // 최종 판정치 = 기본 성공치(5) + 수평 거리 + 수직 거리
+      const totalDistance = horizonDistance + verticalDistance;
+      const val = 5 + totalDistance;
+
+      if (val < minCalculatedValue) {
+        minCalculatedValue = val;
       }
     }
+
+    console.log("봉마인 스탯 : " + initialAfflicted);
 
     // 결과값은 12를 초과할 수 없다
     return Math.min(minCalculatedValue, 12);
