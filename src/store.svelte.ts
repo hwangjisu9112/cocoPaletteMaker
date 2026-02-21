@@ -59,3 +59,29 @@ interface InsaneCharacteristics {
   curiosity: string;
   fear: string;
 }
+
+/**
+ * 애플리케이션 전역 상태 구조를 정의합니다.
+ */
+class AppStateIns {
+  // $state 룬으로 반응형 상태 선언
+  currentStats = $state<InsaneCharacteristics>({
+    hp: 0, san: 0, weapon: 0, painkillers: 0, omamori: 0, curiosity: "-", fear:"-"
+  });
+  isConfirmed = $state(false);
+
+  // 상태 업데이트 메서드
+  setStats(newStats: InsaneCharacteristics) {
+    this.currentStats = newStats;
+  }
+
+  confirm() {
+    this.isConfirmed = true;
+  }
+
+}
+
+/**
+ * inSANe 봉마인의 현재 상태와 확정 여부를 관리하는 Svelte 스토어입니다.
+ */
+export const appStateIns = new AppStateIns();

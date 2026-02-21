@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { appState } from "../store.svelte";
+  import { appStateIns } from "../store.svelte";
   import { _, json, locale, number } from "svelte-i18n";
   import "../i18n.ts";
   import { INITIAL_CATEGORY, type Category, type Skill } from "./InsaneSkill";
+  import { createGooglesheetData } from "./InsaneSheetStyle";
+
   import { passive } from "svelte/legacy";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
@@ -14,6 +16,22 @@
    */
   function switchLang(lang: string): void {
     locale.set(lang);
+  }
+
+  // svelte-ignore non_reactive_update
+  let expandedIndex: number | null = null;
+
+  /**
+   * 클릭한 카드의 인덱스를 받아 토글합니다.
+   */
+  function toggleDescription(index: number) {
+    if (expandedIndex === index) {
+      expandedIndex = null; // 이미 열려있으면 닫기
+      console.log("expandedIndex : " + expandedIndex);
+    } else {
+      expandedIndex = index; // 닫혀있으면 해당 인덱스 열기
+      console.log("expandedIndex : " + expandedIndex);
+    }
   }
 
   /**
@@ -28,6 +46,32 @@
     curiosity?: string;
     fear?: string;
   }
+
+  interface Ability {
+    name: string;
+    type: string;
+    specified?: string;
+    description?: string;
+  }
+
+  let abilities: Ability[] = [
+    {
+      name: "기본공격",
+      type: "공격",
+      specified: "-",
+      description: "목표 1명을 선택해서 대미지를 입힙니다.",
+    },
+    {
+      name: "전장이동",
+      type: "서포트",
+      specified: "-",
+      description: "캐릭터 전원이 다음 라운드에 플롯 변경을 합니다.",
+    },
+    { name: "", type: "공격", specified: "", description: "" },
+    { name: "", type: "공격", specified: "", description: "" },
+  ];
+
+  const abType = ["공격", "서포트", "장비"];
 
   // 초기값 설정
   let initialAfflicted: Stats = $state({
@@ -132,17 +176,12 @@
       <button class="lang-btn" onclick={() => switchLang("en")}>ENG</button>
     </div>
     <br />
-    <h2 class="page-title">{$_("InS_result")}</h2>
+    <h3 class="page-title">{$_("InS_result")}</h3>
+
     <div class="derived-stats-grid">
       <div class="stat-item">
         <p>체력</p>
-        <input
-          type="number"
-          bind:value={initialAfflicted.hp}
-          min="1"
-          max="6"
-          placeholder="0"
-        />
+        <input type="number" bind:value={initialAfflicted.hp} min="1" max="6" />
       </div>
       <div class="stat-item">
         <p>이성</p>
@@ -151,7 +190,6 @@
           bind:value={initialAfflicted.san}
           min="1"
           max="6"
-          placeholder="0"
         />
       </div>
       <div class="stat-item">
@@ -161,7 +199,15 @@
           bind:value={initialAfflicted.weapon}
           min="0"
           max="2"
-          placeholder="0"
+        />
+      </div>
+      <div class="stat-item">
+        <p>부적</p>
+        <input
+          type="number"
+          bind:value={initialAfflicted.omamori}
+          min="0"
+          max="2"
         />
       </div>
       <div class="stat-item">
@@ -171,47 +217,36 @@
           bind:value={initialAfflicted.painkillers}
           min="0"
           max="2"
-          placeholder="0"
-        />
-      </div>
-      <div class="stat-item">
-        <p>진통제</p>
-        <input
-          type="number"
-          bind:value={initialAfflicted.omamori}
-          min="0"
-          max="2"
-          placeholder="0"
         />
       </div>
     </div>
+
     <div class="derived-stats-grid-2">
-      <div class="stat-item">
-        <p>호기심</p>
-        <select bind:value={initialAfflicted.curiosity}>
+      <div class="inline-group">
+        <p class="label-blue">호기심</p>
+        <select bind:value={initialAfflicted.curiosity} class="cf-select">
           {#each categories as category}
             <option value={category.type}>{$_(category.type)}</option>
           {/each}
         </select>
       </div>
 
-      <div class="stat-item">
-        <p>공포심</p>
-        <select bind:value={initialAfflicted.fear}>
+      <div class="inline-group">
+        <p class="label-blue">공포심</p>
+        <select bind:value={initialAfflicted.fear} class="cf-select">
           {#each fearOptions as option}
             <option value={option.name}>{$_(option.name)}</option>
           {/each}
         </select>
       </div>
     </div>
-
     <div class="specialty-table">
       {#each categories as category, cIdx}
         <div
           class="category-section"
           class:highlighted={initialAfflicted.curiosity === category.type}
         >
-          <h3>{$_(category.type)}</h3>
+          <h3 class="category-h3">{$_(category.type)}</h3>
           <div class="skill-list">
             {#each category.skill as skill, sIdx}
               {@const displayValue = getSkillValue(cIdx, sIdx, skill)}
@@ -228,7 +263,9 @@
                 class:bonus={isBonus}
                 onclick={() => handleSpecClick(cIdx, sIdx)}
               >
-                <span class="skill-name">{$_(skill.name)}</span>
+                <span class="skill-name" class:highlighted={isPicked}
+                  >{$_(skill.name)}</span
+                >
                 <span class="skill-value">{displayValue}</span>
               </div>
             {/each}
@@ -237,9 +274,57 @@
       {/each}
       <br />
     </div>
-    <div class="result-btn">
-      <button>{$_("copyToCoco")}</button>
-      <button>{$_("copyToSheet")}</button>
+    <h3>어빌리티 리스트</h3>
+
+    <div class="ability-section">
+      <div class="ability-header">
+        <div class="header-item name">어빌리티</div>
+        <div class="header-item type">타입</div>
+        <div class="header-item skill">지정 특기</div>
+      </div>
+      <div class="ability-list">
+        {#each abilities as ability, i}
+          <div class="ability-card">
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <div
+              class="ability-row"
+              onclick={() => toggleDescription(i)}
+              role="button"
+              tabindex="0"
+            >
+              <input class="input-name" type="text" bind:value={ability.name} />
+
+              <select class="select-type" bind:value={ability.type}>
+                {#each abType as type}
+                  <option value={type}>{type}</option>
+                {/each}
+              </select>
+
+              <select class="input-skill" bind:value={ability.specified}>
+                {#each fearOptions as option}
+                  <option value={option.name}>{$_(option.name)}</option>
+                {/each}
+              </select>
+
+              <span class="toggle-icon">{expandedIndex === i ? "▲" : "▼"}</span>
+            </div>
+
+            <div class="desc-row" hidden={expandedIndex !== i}>
+              <textarea
+                bind:value={ability.description}
+                placeholder="어빌리티의 효과를 입력하세요"
+              ></textarea>
+            </div>
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    <div>
+      <div>
+        <button>{$_("copyToCoco")}</button>
+        <button>{$_("copyToSheet")}</button>
+      </div>
     </div>
   </div>
 </main>
@@ -284,59 +369,82 @@
     white-space: nowrap;
   }
 
-  .derived-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
+  .derived-stats-grid,
   .derived-stats-grid-2 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* 항목 간 간격 살짝 축소 */
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto 20px auto;
   }
 
-  .derived-stats-grid p {
+  /* 상단 5개 아이템: 라벨과 입력창을 한 줄(row)로 배치 */
+  .stat-item {
+    display: flex;
+    flex: 1; /* 5개가 800px을 균등하게 나눔 */
+    align-items: center;
     background-color: #274d60;
-    padding: 8px;
     border-radius: 4px;
-    text-align: center;
-    margin: 0;
-    font-size: 1.2em;
+    overflow: hidden;
+    height: 30px;
+  }
+
+  .stat-item p {
+    flex: 1;
     color: #ebe2d6;
-  }
-
-  .derived-stats-grid-2 p {
-    background-color: #6da5c0;
-    padding: 8px;
-    border-radius: 4px;
-    text-align: center;
     margin: 0;
-    font-size: 1.2em;
-    color: #012013;
-  }
-
-  /* 숫자 입력창 스타일 */
-  input[type="number"] {
-    width: 50px;
-    padding: 2px 5px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    text-align: center;
     font-size: 0.9rem;
+    text-align: center;
+    white-space: nowrap;
+    padding: 0 5px;
   }
 
-  /* 드롭다운 스타일 */
-  select {
-    width: 80%;
-    padding: 2px;
+  .stat-item input[type="number"] {
+    width: 50px; /* 입력창 크기 최적화 */
+    height: 100%;
+    border: none;
+    border-left: 1px solid #1a3542;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    background-color: #ebe2d6;
+    color: #333;
+    outline: none;
+  }
+
+  /* 하단 2개 아이템 (기존 스타일 유지 및 정렬 보정) */
+  .inline-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    height: 30px;
+  }
+
+  .label-blue {
+    background-color: #294d61;
+    color: #d7cdcd;
+    height: 20px;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    min-width: 100px;
+    text-align: center;
+  }
+
+  .cf-select {
+    flex: 1;
+    height: 100%;
     border: 1px solid #ccc;
-    border-radius: 3px;
-    font-size: 0.85rem;
+    border-radius: 4px;
+    background-color: #1a1a1a;
+    color: #ccc;
+    font-size: 1.1rem;
+
+    padding: 0 10px;
     cursor: pointer;
-    background-color: #274d60;
   }
 
   .specialty-table {
@@ -351,7 +459,7 @@
 
   .category-section {
     flex: 1;
-    min-width: 130px;
+    min-width: 120px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -359,16 +467,14 @@
   }
 
   .category-section.highlighted {
-    border-color: #19d4c1;
-    box-shadow: 0 14px 14px rgba(223, 178, 99, 0.4);
     background: #f59e0b;
   }
 
-  h3 {
+  .category-h3 {
     margin-top: 0;
     border-bottom: 2px solid #333;
     padding-bottom: 5px;
-    font-size: 1.25rem;
+    font-size: 1rem;
     color: #1a1a1a;
   }
 
@@ -381,15 +487,6 @@
     border-radius: 4px;
     display: flex;
     flex-direction: column;
-  }
-
-  h3 {
-    margin: 0;
-    padding: 8px;
-    font-size: 0.85rem;
-    text-align: center;
-    background-color: #333;
-    color: #fff;
   }
 
   .skill-list {
@@ -415,16 +512,147 @@
   }
 
   .skill-name {
-    font-size: 1.2rem;
+    font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
+  .skill-name.highlighted {
+    text-decoration: none;
+    display: inline;
+    box-shadow: inset 0 -8px 0 #40ddb3;
+  }
+
   .skill-value {
     font-family: monospace;
     font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #777;
+  }
+
+  .ability-section {
+    max-width: 800px;
+    margin: 20px auto;
+    width: 100%;
+  }
+
+  .ability-header {
+    display: flex;
+    background-color: #274d60;
+    color: white;
+    padding: 5px 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
+    text-align: center;
+  }
+
+  .header-item.name {
+    flex: 1;
+  }
+  .header-item.type {
+    flex: 1;
+  }
+  .header-item.skill {
+    flex: 1;
+  }
+  .header-item {
+    padding: 0 5px;
+  }
+
+  .ability-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ability-card {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    height: 20px;
+  }
+
+  .ability-section {
+    max-width: 800px;
+  }
+
+  .ability-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-top: none;
+  }
+  .ability-card {
+    border-bottom: 1px solid #eee;
+    background-color: #ebe2d6;
+    transition: background-color 0.2s;
+  }
+
+  .ability-row {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .ability-section input,
+  .ability-section select {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 1rem;
+  }
+
+  .input-name {
+    flex: 1;
+    display: flex;
+  }
+  .select-type {
+    flex: 0.5;
+  }
+  .input-skill {
+    flex: 1;
+  }
+
+  .toggle-icon {
+    font-size: 0.7rem;
+    color: #999;
+    width: 20px;
+    text-align: center;
+  }
+
+  .desc-row {
+    padding: 8px 12px;
+    background-color: #ebe2d6;
+    border-top: 1px dashed #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .desc-row textarea {
+    width: 100%;
+    height: 30px; /* 높이 조절 */
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    font-size: 0.85rem;
+  }
+
+  /* hidden 속성이 붙은 요소는 확실하게 숨김 처리 */
+  [hidden] {
+    display: none !important;
+  }
+  .desc-row {
+    padding: 8px 12px;
+    border-top: 1px dashed #ddd;
+    /* hidden이 아닐 때만 보임 */
   }
 </style>
