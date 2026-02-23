@@ -12,6 +12,7 @@ export interface Category {
     skill: Skill[];
 }
 
+
 /**
  * 인세인 봉마인이 사용 가능한 특기의 목록입니다.
  */

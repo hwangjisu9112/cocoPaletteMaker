@@ -26,7 +26,8 @@
 
   let db = appState.currentStats.siz + appState.currentStats.str;
 
-  let damage = "0";
+  // svelte-ignore non_reactive_update
+    let damage = "0";
   {
     if (db <= 64) {
       damage = "-2";

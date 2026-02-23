@@ -109,7 +109,7 @@ export function createGooglesheetData(
 
     skills.forEach(skill => {
         const totalSkills = skill.point + skill.base;
-        data += `CC<=${totalSkills}${SEP}[${T(skill.name)}]` + EOL; // 💡 번역된 스킬 이름 사용
+        data += `CC<=${totalSkills}${SEP}[${T(skill.name)}]` + EOL; 
     });
 
     data += `CC<=0 [${T("skill_cthulhu_mythos")}]` + EOL;

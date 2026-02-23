@@ -1,13 +1,13 @@
 <script lang="ts">
   import { appStateIns } from "../store.svelte";
+  import { get } from "svelte/store";
   import { _, json, locale, number } from "svelte-i18n";
   import "../i18n.ts";
   import { INITIAL_CATEGORY, type Category, type Skill } from "./InsaneSkill";
   import { createGooglesheetData } from "./InsaneSheetStyle";
 
   import { passive } from "svelte/legacy";
-
-  let { onNavigate }: { onNavigate: (page: string) => void } = $props();
+  import app from "../main";
 
   /**
    * 현재 애플리케이션의 표시 언어를 변경합니다.
@@ -17,6 +17,29 @@
   function switchLang(lang: string): void {
     locale.set(lang);
   }
+
+  let { onNavigate }: { onNavigate: (page: string) => void } = $props();
+
+  // 초기값 설정
+  let initialAfflicted: Stats = $state({
+    hp: 0,
+    san: 0,
+    weapon: 0,
+    painkillers: 0,
+    omamori: 0,
+    curiosity: "",
+    fear: "-",
+  });
+
+  let skills = $state(JSON.parse(JSON.stringify(INITIAL_CATEGORY)));
+
+  let hp = appStateIns.currentStats.hp;
+  let san = appStateIns.currentStats.san;
+  let weapon = appStateIns.currentStats.weapon;
+  let painkillers = appStateIns.currentStats.painkillers;
+  let omamori = appStateIns.currentStats.omamori;
+  let curiosity = appStateIns.currentStats.curiosity;
+  let fear = appStateIns.currentStats.fear;
 
   // svelte-ignore non_reactive_update
   let expandedIndex = $state<number | null>(null);
@@ -43,9 +66,19 @@
     weapon: number;
     painkillers: number;
     omamori: number;
-    curiosity?: string;
-    fear?: string;
+    curiosity: string;
+    fear: string;
   }
+
+  let stats = $state<Stats>({
+    hp: appStateIns.currentStats.hp || 6,
+    san: appStateIns.currentStats.san || 6,
+    weapon: appStateIns.currentStats.weapon || 0,
+    painkillers: appStateIns.currentStats.painkillers || 0,
+    omamori: appStateIns.currentStats.omamori || 0,
+    curiosity: appStateIns.currentStats.curiosity || "폭력",
+    fear: appStateIns.currentStats.fear || "소각",
+  });
 
   interface Ability {
     name: string;
@@ -72,17 +105,6 @@
   ];
 
   const abType = ["공격", "서포트", "장비"];
-
-  // 초기값 설정
-  let initialAfflicted: Stats = $state({
-    hp: 6,
-    san: 6,
-    weapon: 0,
-    painkillers: 0,
-    omamori: 0,
-    curiosity: "",
-    fear: "-",
-  });
 
   // 현재 선택된 특기들의 위치 정보를 담는 타입 정의(cIdx=열 정보, sIdx=행 정보)
   interface SelectedPos {
@@ -140,8 +162,6 @@
       }
     }
 
-    console.log("봉마인 스탯 : " + initialAfflicted);
-
     // 결과값은 12를 초과할 수 없다
     return Math.min(minCalculatedValue, 12);
   }
@@ -162,6 +182,45 @@
       selectedPositions = [...selectedPositions, { cIdx, sIdx }];
     }
     console.log("Selected Position 변경됨 ~ :", selectedPositions);
+  }
+
+  /**
+   * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
+   */
+  function copyToSheet(): void {
+    appStateIns.setStats({ ...stats });
+
+    const afflictedData = createGooglesheetData(
+      appStateIns.currentStats,
+      {
+        hp: stats.hp,
+        san: stats.san,
+        weapon: stats.weapon,
+        painkillers: stats.painkillers,
+        omamori: stats.omamori,
+        curiosity: stats.curiosity,
+        fear: stats.fear,
+      },
+      categories.flatMap((c) => c.skill), // 전체 스킬 리스트 전달
+      abilities,
+      (key) => get(_)(key),
+    );
+    const textarea = document.createElement("textarea");
+    textarea.value = afflictedData;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      console.log("클립보드 복합 완료:", stats);
+      alert(
+        get(_)("alert_sheet_success", {
+          default: "클립보드에 복사되었습니다.",
+        }),
+      );
+    } catch (err) {
+      console.error("복사 실패:", err);
+    }
+    document.body.removeChild(textarea);
   }
 </script>
 
@@ -330,7 +389,7 @@
     <div>
       <div>
         <button>{$_("copyToCoco")}</button>
-        <button>{$_("copyToSheet")}</button>
+        <button onclick={copyToSheet}>{$_("copyToSheet")}</button>
       </div>
     </div>
   </div>
@@ -535,12 +594,12 @@
   }
 
   .skill-name.fear {
-    color: #f40505;
+    color: #b017de;
     text-shadow:
       0 0 10px #fff,
       0 0 20px #fff,
       0 0 30px #e60073,
-      0 0 40px #e60073;
+      0 0 40px #9108d6;
   }
 
   .skill-value {
