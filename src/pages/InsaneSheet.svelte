@@ -19,7 +19,7 @@
   }
 
   // svelte-ignore non_reactive_update
-  let expandedIndex: number | null = null;
+  let expandedIndex = $state<number | null>(null);
 
   /**
    * 클릭한 카드의 인덱스를 받아 토글합니다.
@@ -161,6 +161,7 @@
       // 새로운 특기라면 배열에 추가하여 습득 상태로 변경
       selectedPositions = [...selectedPositions, { cIdx, sIdx }];
     }
+    console.log("Selected Position 변경됨 ~ :", selectedPositions);
   }
 </script>
 
@@ -263,7 +264,10 @@
                 class:bonus={isBonus}
                 onclick={() => handleSpecClick(cIdx, sIdx)}
               >
-                <span class="skill-name" class:highlighted={isPicked}
+                <span
+                  class="skill-name"
+                  class:highlighted={isPicked}
+                  class:fear={skill.name === initialAfflicted.fear}
                   >{$_(skill.name)}</span
                 >
                 <span class="skill-value">{displayValue}</span>
@@ -281,6 +285,7 @@
         <div class="header-item name">어빌리티</div>
         <div class="header-item type">타입</div>
         <div class="header-item skill">지정 특기</div>
+        <div class="header-item dsc">설명</div>
       </div>
       <div class="ability-list">
         {#each abilities as ability, i}
@@ -306,7 +311,9 @@
                 {/each}
               </select>
 
-              <span class="toggle-icon">{expandedIndex === i ? "▲" : "▼"}</span>
+              <span class="toggle-icon"
+                >{expandedIndex === i ? "⬆️" : "⬇️"}</span
+              >
             </div>
 
             <div class="desc-row" hidden={expandedIndex !== i}>
@@ -459,7 +466,8 @@
 
   .category-section {
     flex: 1;
-    min-width: 120px;
+    min-width: 90px;
+    max-width: 100px;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -467,7 +475,7 @@
   }
 
   .category-section.highlighted {
-    background: #f59e0b;
+    background: #eea830;
   }
 
   .category-h3 {
@@ -519,9 +527,20 @@
   }
 
   .skill-name.highlighted {
-    text-decoration: none;
-    display: inline;
-    box-shadow: inset 0 -8px 0 #40ddb3;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 50%,
+      #40ddb3 15%
+    );
+  }
+
+  .skill-name.fear {
+    color: #f40505;
+    text-shadow:
+      0 0 10px #fff,
+      0 0 20px #fff,
+      0 0 30px #e60073,
+      0 0 40px #e60073;
   }
 
   .skill-value {
@@ -540,22 +559,30 @@
   .ability-header {
     display: flex;
     background-color: #274d60;
-    color: white;
+    color: #40ddb3;
     padding: 5px 12px;
-    font-size: 0.85rem;
+    font-size: 1.2rem;
     font-weight: bold;
     border-radius: 4px 4px 0 0;
-    text-align: center;
+    text-align: left;
   }
 
   .header-item.name {
-    flex: 1;
+    text-align: left;
+    flex: 0.93;
   }
   .header-item.type {
-    flex: 1;
+    text-align: left;
+    flex: 0.3;
   }
   .header-item.skill {
-    flex: 1;
+    text-align: left;
+    flex: 0.2;
+  }
+
+  .header-item.dsc {
+    text-align: right;
+    flex: 0.1;
   }
   .header-item {
     padding: 0 5px;
@@ -570,27 +597,22 @@
   .ability-card {
     background-color: #f0f0f0;
     border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 12px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    height: 20px;
-  }
-
-  .ability-section {
-    max-width: 800px;
+    height: auto;
+    min-height: 15px; /* 최소 높이만 지정 */
+    position: relative;
   }
 
   .ability-list {
     display: flex;
     flex-direction: column;
-    border: 1px solid #ddd;
     border-top: none;
   }
   .ability-card {
-    border-bottom: 1px solid #eee;
     background-color: #ebe2d6;
     transition: background-color 0.2s;
   }
@@ -598,55 +620,35 @@
   .ability-row {
     display: flex;
     align-items: center;
-    padding: 6px 10px;
     gap: 8px;
-    cursor: pointer;
   }
 
   .ability-section input,
   .ability-section select {
-    border: 1px solid #ccc;
+    border: 1px solid #000000;
     border-radius: 3px;
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 
   .input-name {
     flex: 1;
-    display: flex;
   }
   .select-type {
-    flex: 0.5;
+    flex: 0.3;
   }
   .input-skill {
-    flex: 1;
+    width: 20px;
+    flex: 0.3;
   }
 
   .toggle-icon {
-    font-size: 0.7rem;
-    color: #999;
+    font-size: 1.2rem;
+    color: #000000;
     width: 20px;
     text-align: center;
   }
 
-  .desc-row {
-    padding: 8px 12px;
-    background-color: #ebe2d6;
-    border-top: 1px dashed #ddd;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .desc-row textarea {
-    width: 100%;
-    height: 30px; /* 높이 조절 */
-    padding: 6px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    resize: none;
-    font-size: 0.85rem;
-  }
-
-  /* hidden 속성이 붙은 요소는 확실하게 숨김 처리 */
+  /* hidden 속성이 붙은 요소는 숨김 처리 */
   [hidden] {
     display: none !important;
   }
@@ -654,5 +656,23 @@
     padding: 8px 12px;
     border-top: 1px dashed #ddd;
     /* hidden이 아닐 때만 보임 */
+  }
+
+  .desc-row {
+    padding: 8px 12px;
+    background-color: rgb(162, 150, 133);
+    border-top: 1px dashed #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .desc-row textarea {
+    width: 100%;
+    height: 70px;
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    font-size: 0.85rem;
   }
 </style>

@@ -49,6 +49,13 @@ export function createGooglesheetData(
 
 
     data += "◆" + EOL;
+    data += [T("label_name"), "", T("label_player")].join(SEP) + EOL;
+    data += T("label_job") + EOL;
+    data += T("label_age") + EOL;
+    data += T("hp"), "", T("san") + EOL;
+    data += T("weapon"), "", T("painkillers"), "", T("omamori") + EOL;
+    data += T("curiosity"), "", T("fear") + EOL;
+
 
     return data;
 }
