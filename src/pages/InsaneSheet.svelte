@@ -20,26 +20,28 @@
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
-  // 초기값 설정
-  let initialAfflicted: Stats = $state({
-    hp: 0,
-    san: 0,
-    weapon: 0,
-    painkillers: 0,
-    omamori: 0,
-    curiosity: "",
-    fear: "-",
-  });
+  interface Stats {
+    hp: number;
+    san: number;
+    weapon: number;
+    painkillers: number;
+    omamori: number;
+    curiosity: string;
+    fear: string;
+  }
 
+  // 초기값 설정
   let skills = $state(JSON.parse(JSON.stringify(INITIAL_CATEGORY)));
 
-  let hp = appStateIns.currentStats.hp;
-  let san = appStateIns.currentStats.san;
-  let weapon = appStateIns.currentStats.weapon;
-  let painkillers = appStateIns.currentStats.painkillers;
-  let omamori = appStateIns.currentStats.omamori;
-  let curiosity = appStateIns.currentStats.curiosity;
-  let fear = appStateIns.currentStats.fear;
+  let stats = $state<Stats>({
+    hp: appStateIns.currentStats.hp || 6,
+    san: appStateIns.currentStats.san || 6,
+    weapon: appStateIns.currentStats.weapon || 0,
+    painkillers: appStateIns.currentStats.painkillers || 0,
+    omamori: appStateIns.currentStats.omamori || 0,
+    curiosity: appStateIns.currentStats.curiosity || "폭력",
+    fear: appStateIns.currentStats.fear || "소각",
+  });
 
   // svelte-ignore non_reactive_update
   let expandedIndex = $state<number | null>(null);
@@ -60,25 +62,6 @@
   /**
    * 봉마인의 기본 능력치 값을 정의합니다.
    */
-  interface Stats {
-    hp: number;
-    san: number;
-    weapon: number;
-    painkillers: number;
-    omamori: number;
-    curiosity: string;
-    fear: string;
-  }
-
-  let stats = $state<Stats>({
-    hp: appStateIns.currentStats.hp || 6,
-    san: appStateIns.currentStats.san || 6,
-    weapon: appStateIns.currentStats.weapon || 0,
-    painkillers: appStateIns.currentStats.painkillers || 0,
-    omamori: appStateIns.currentStats.omamori || 0,
-    curiosity: appStateIns.currentStats.curiosity || "폭력",
-    fear: appStateIns.currentStats.fear || "소각",
-  });
 
   interface Ability {
     name: string;
@@ -87,7 +70,7 @@
     description?: string;
   }
 
-  let abilities: Ability[] = [
+  let abilities = $state<Ability[]>([
     {
       name: "기본공격",
       type: "공격",
@@ -100,9 +83,9 @@
       specified: "-",
       description: "캐릭터 전원이 다음 라운드에 플롯 변경을 합니다.",
     },
-    { name: "", type: "공격", specified: "", description: "" },
-    { name: "", type: "공격", specified: "", description: "" },
-  ];
+    { name: "", type: "-", specified: "", description: "" },
+    { name: "", type: "-", specified: "", description: "" },
+  ]);
 
   const abType = ["공격", "서포트", "장비"];
 
@@ -145,10 +128,7 @@
       const targetSkill = categories[pos.cIdx].skill[pos.sIdx];
       const verticalDistance = Math.abs(targetSkill.index - skill.index);
 
-      if (
-        horizonDistance > 0 &&
-        initialAfflicted.curiosity === SourceCtgr.type
-      ) {
+      if (horizonDistance > 0 && stats.curiosity === SourceCtgr.type) {
         horizonDistance -= 1;
       }
 
@@ -190,28 +170,37 @@
   function copyToSheet(): void {
     appStateIns.setStats({ ...stats });
 
+    const selectedSkills = categories.flatMap((category, cIdx) => 
+      category.skill.map((skill, sIdx) => {
+        const value = getSkillValue(cIdx, sIdx, skill);
+        const isPicked = selectedPositions.some(p => p.cIdx === cIdx && p.sIdx === sIdx);
+        
+        return {
+          ...skill,
+          value: value,
+          base: value, 
+          isPicked: isPicked 
+        };
+      })
+    );
+
+    // 인자 전달 시 현재 $state인 stats와 abilities를 그대로 전달
     const afflictedData = createGooglesheetData(
-      appStateIns.currentStats,
-      {
-        hp: stats.hp,
-        san: stats.san,
-        weapon: stats.weapon,
-        painkillers: stats.painkillers,
-        omamori: stats.omamori,
-        curiosity: stats.curiosity,
-        fear: stats.fear,
-      },
-      categories.flatMap((c) => c.skill), // 전체 스킬 리스트 전달
-      abilities,
+      stats,
+      { ...stats },
+      selectedSkills,
+      abilities, // $state로 관리되는 최신 배열
       (key) => get(_)(key),
     );
+
     const textarea = document.createElement("textarea");
     textarea.value = afflictedData;
     document.body.appendChild(textarea);
     textarea.select();
     try {
       document.execCommand("copy");
-      console.log("클립보드 복합 완료:", stats);
+      console.log("클립보드 복사 완료:", stats);
+      console.log(afflictedData); 
       alert(
         get(_)("alert_sheet_success", {
           default: "클립보드에 복사되었습니다.",
@@ -241,50 +230,30 @@
     <div class="derived-stats-grid">
       <div class="stat-item">
         <p>체력</p>
-        <input type="number" bind:value={initialAfflicted.hp} min="1" max="6" />
+        <input type="number" bind:value={stats.hp} min="1" max="6" />
       </div>
       <div class="stat-item">
         <p>이성</p>
-        <input
-          type="number"
-          bind:value={initialAfflicted.san}
-          min="1"
-          max="6"
-        />
+        <input type="number" bind:value={stats.san} min="1" max="6" />
       </div>
       <div class="stat-item">
         <p>무기</p>
-        <input
-          type="number"
-          bind:value={initialAfflicted.weapon}
-          min="0"
-          max="2"
-        />
+        <input type="number" bind:value={stats.weapon} min="0" max="2" />
       </div>
       <div class="stat-item">
         <p>부적</p>
-        <input
-          type="number"
-          bind:value={initialAfflicted.omamori}
-          min="0"
-          max="2"
-        />
+        <input type="number" bind:value={stats.omamori} min="0" max="2" />
       </div>
       <div class="stat-item">
         <p>진통제</p>
-        <input
-          type="number"
-          bind:value={initialAfflicted.painkillers}
-          min="0"
-          max="2"
-        />
+        <input type="number" bind:value={stats.painkillers} min="0" max="2" />
       </div>
     </div>
 
     <div class="derived-stats-grid-2">
       <div class="inline-group">
         <p class="label-blue">호기심</p>
-        <select bind:value={initialAfflicted.curiosity} class="cf-select">
+        <select bind:value={stats.curiosity} class="cf-select">
           {#each categories as category}
             <option value={category.type}>{$_(category.type)}</option>
           {/each}
@@ -293,7 +262,7 @@
 
       <div class="inline-group">
         <p class="label-blue">공포심</p>
-        <select bind:value={initialAfflicted.fear} class="cf-select">
+        <select bind:value={stats.fear} class="cf-select">
           {#each fearOptions as option}
             <option value={option.name}>{$_(option.name)}</option>
           {/each}
@@ -304,7 +273,7 @@
       {#each categories as category, cIdx}
         <div
           class="category-section"
-          class:highlighted={initialAfflicted.curiosity === category.type}
+          class:highlighted={stats.curiosity === category.type}
         >
           <h3 class="category-h3">{$_(category.type)}</h3>
           <div class="skill-list">
@@ -326,8 +295,7 @@
                 <span
                   class="skill-name"
                   class:highlighted={isPicked}
-                  class:fear={skill.name === initialAfflicted.fear}
-                  >{$_(skill.name)}</span
+                  class:fear={skill.name === stats.fear}>{$_(skill.name)}</span
                 >
                 <span class="skill-value">{displayValue}</span>
               </div>

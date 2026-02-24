@@ -180,5 +180,12 @@
   "ins_skill_TheEnd": "종말",
   "ins_skill_Dream": "꿈",
   "ins_skill_Underground": "지저",
-  "ins_skill_Cosmic": "우주"
+  "ins_skill_Cosmic": "우주",
+
+
+  "ability_name" : "어빌리티명",
+  "ability_type" : "타입",
+  "ability_specified" : "지정특기",
+  "ability_description" : "설명"
+
 }
