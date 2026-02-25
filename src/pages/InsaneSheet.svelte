@@ -4,7 +4,7 @@
   import { _, json, locale, number } from "svelte-i18n";
   import "../i18n.ts";
   import { INITIAL_CATEGORY, type Category, type Skill } from "./InsaneSkill";
-  import { createGooglesheetData } from "./InsaneSheetStyle";
+  import { createGooglesheetData, createCocoPalette } from "./InsaneSheetStyle";
 
   import { passive } from "svelte/legacy";
   import app from "../main";
@@ -75,7 +75,7 @@
       name: "기본공격",
       type: "공격",
       specified: "-",
-      description: "목표 1명을 선택해서 대미지를 입힙니다.",
+      description: "목표 1명을 선택해서 명중판정을 성공하고 목표가 회피판정을 실패 시 1D6의 대미지를 입힙니다.",
     },
     {
       name: "전장이동",
@@ -88,6 +88,7 @@
   ]);
 
   const abType = ["공격", "서포트", "장비"];
+  let nonOption = "-";
 
   // 현재 선택된 특기들의 위치 정보를 담는 타입 정의(cIdx=열 정보, sIdx=행 정보)
   interface SelectedPos {
@@ -102,7 +103,7 @@
   // 초기 데이터 설정
   const categories: Category[] = INITIAL_CATEGORY;
 
-  const fearOptions = categories.flatMap((cat) => cat.skill);
+  let fearOptions = categories.flatMap((cat) => cat.skill);
 
   /**
    * 거리 기반 판정 수치를 계산하는 함수
@@ -164,27 +165,38 @@
     console.log("Selected Position 변경됨 ~ :", selectedPositions);
   }
 
+  function afflictedValidation() {
+    if (stats.weapon + stats.painkillers + stats.omamori <= 1) {
+      console.log(stats.weapon + stats.painkillers + stats.omamori);
+      console.log("부적, 무기, 진통제의 양이 너무 적습니다");
+    } else if (stats.weapon + stats.painkillers + stats.omamori >= 3) {
+      console.log(stats.weapon + stats.painkillers + stats.omamori);
+      console.log("부적, 무기, 진통제의 양이 너무 많습니다");
+    }
+  }
+
   /**
    * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
    */
   function copyToSheet(): void {
     appStateIns.setStats({ ...stats });
 
-    const selectedSkills = categories.flatMap((category, cIdx) => 
+    const selectedSkills = categories.flatMap((category, cIdx) =>
       category.skill.map((skill, sIdx) => {
         const value = getSkillValue(cIdx, sIdx, skill);
-        const isPicked = selectedPositions.some(p => p.cIdx === cIdx && p.sIdx === sIdx);
-        
+        const isPicked = selectedPositions.some(
+          (p) => p.cIdx === cIdx && p.sIdx === sIdx,
+        );
+
         return {
           ...skill,
           value: value,
-          base: value, 
-          isPicked: isPicked 
+          base: value,
+          isPicked: isPicked,
         };
-      })
+      }),
     );
 
-    // 인자 전달 시 현재 $state인 stats와 abilities를 그대로 전달
     const afflictedData = createGooglesheetData(
       stats,
       { ...stats },
@@ -200,7 +212,8 @@
     try {
       document.execCommand("copy");
       console.log("클립보드 복사 완료:", stats);
-      console.log(afflictedData); 
+      console.log("복사된 값");
+      console.log(afflictedData);
       alert(
         get(_)("alert_sheet_success", {
           default: "클립보드에 복사되었습니다.",
@@ -211,9 +224,59 @@
     }
     document.body.removeChild(textarea);
   }
+
+
+  function copyToData(): void {
+    appStateIns.setStats({ ...stats });
+
+    const selectedSkills = categories.flatMap((category, cIdx) =>
+      category.skill.map((skill, sIdx) => {
+        const value = getSkillValue(cIdx, sIdx, skill);
+        const isPicked = selectedPositions.some(
+          (p) => p.cIdx === cIdx && p.sIdx === sIdx,
+        );
+
+        return {
+          ...skill,
+          value: value,
+          base: value,
+          isPicked: isPicked,
+        };
+      }),
+    );
+
+    const afflictedData = createCocoPalette(
+      stats,
+      { ...stats },
+      selectedSkills,
+      abilities, // $state로 관리되는 최신 배열
+      (key) => get(_)(key),
+    );
+
+    const textarea = document.createElement("textarea");
+    textarea.value = afflictedData;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      console.log("클립보드 복사 완료:", stats);
+      console.log("복사된 값");
+      console.log(afflictedData);
+      alert(
+        get(_)("alert_sheet_success", {
+          default: "클립보드에 복사되었습니다.",
+        }),
+      );
+    } catch (err) {
+      console.error("복사 실패:", err);
+    }
+    document.body.removeChild(textarea);
+  }
+  
 </script>
 
 <main>
+<br />
   <div class="content-wrapper">
     <br />
     <div class="nav-row">
@@ -356,8 +419,8 @@
 
     <div>
       <div>
-        <button>{$_("copyToCoco")}</button>
-        <button onclick={copyToSheet}>{$_("copyToSheet")}</button>
+        <button onclick={copyToData} style="width:600px">{$_("copyToCoco")}</button>
+        <button onclick={copyToSheet} style="width:600px">{$_("copyToSheet")}</button>
       </div>
     </div>
   </div>

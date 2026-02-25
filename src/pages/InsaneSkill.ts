@@ -7,6 +7,7 @@ export interface Skill {
     index: number;
 }
 
+
 export interface Category {
     type: string;
     skill: Skill[];
