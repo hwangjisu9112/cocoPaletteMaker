@@ -75,7 +75,8 @@
       name: "기본공격",
       type: "공격",
       specified: "-",
-      description: "목표 1명을 선택해서 명중판정을 성공하고 목표가 회피판정을 실패 시 1D6의 대미지를 입힙니다.",
+      description:
+        "목표 1명을 선택해서 명중판정을 성공하고 목표가 회피판정을 실패 시 1D6의 대미지를 입힙니다.",
     },
     {
       name: "전장이동",
@@ -165,7 +166,7 @@
     console.log("Selected Position 변경됨 ~ :", selectedPositions);
   }
 
-  function afflictedValidation() {
+  function validateAfflicted() {
     if (stats.weapon + stats.painkillers + stats.omamori <= 1) {
       console.log(stats.weapon + stats.painkillers + stats.omamori);
       console.log("부적, 무기, 진통제의 양이 너무 적습니다");
@@ -225,7 +226,6 @@
     document.body.removeChild(textarea);
   }
 
-
   function copyToData(): void {
     appStateIns.setStats({ ...stats });
 
@@ -263,7 +263,7 @@
       console.log("복사된 값");
       console.log(afflictedData);
       alert(
-        get(_)("alert_sheet_success", {
+        get(_)("alert_coco_success", {
           default: "클립보드에 복사되었습니다.",
         }),
       );
@@ -272,13 +272,11 @@
     }
     document.body.removeChild(textarea);
   }
-  
 </script>
 
 <main>
-<br />
   <div class="content-wrapper">
-    <br />
+    <br /><br /><br /><br />
     <div class="nav-row">
       <button class="main-btn" onclick={() => onNavigate("main")}
         >{$_("main_btn")}</button
@@ -369,7 +367,6 @@
       <br />
     </div>
     <h3>어빌리티 리스트</h3>
-
     <div class="ability-section">
       <div class="ability-header">
         <div class="header-item name">어빌리티</div>
@@ -381,12 +378,7 @@
         {#each abilities as ability, i}
           <div class="ability-card">
             <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <div
-              class="ability-row"
-              onclick={() => toggleDescription(i)}
-              role="button"
-              tabindex="0"
-            >
+            <div class="ability-row">
               <input class="input-name" type="text" bind:value={ability.name} />
 
               <select class="select-type" bind:value={ability.type}>
@@ -401,8 +393,11 @@
                 {/each}
               </select>
 
-              <span class="toggle-icon"
-                >{expandedIndex === i ? "⬆️" : "⬇️"}</span
+              <span
+                class="toggle-icon"
+                onclick={() => toggleDescription(i)}
+                role="button"
+                tabindex="0">{expandedIndex === i ? "⬆️" : "⬇️"}</span
               >
             </div>
 
@@ -419,8 +414,12 @@
 
     <div>
       <div>
-        <button onclick={copyToData} style="width:600px">{$_("copyToCoco")}</button>
-        <button onclick={copyToSheet} style="width:600px">{$_("copyToSheet")}</button>
+        <button onclick={copyToData} style="width:600px"
+          >{$_("copyToCoco")}</button
+        >
+        <button onclick={copyToSheet} style="width:600px"
+          >{$_("copyToSheet")}</button
+        >
       </div>
     </div>
   </div>
