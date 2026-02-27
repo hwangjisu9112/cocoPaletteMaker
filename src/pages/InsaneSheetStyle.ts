@@ -139,41 +139,15 @@ export function createCocoPalette(
     let data = ""
     const EOL = "\n";
     const SEP = "\t";
-    data += "◆" + EOL;
-    data += [T("label_name"), "", T("label_player"), ""].join(SEP) + EOL;
-    data += [T("label_job"), ""].join(SEP) + EOL;
-    data += [T("label_age"), ""].join(SEP) + EOL + EOL;
 
-
-    data += [T("hp"), derivedStats.hp, T("curiosity"), T(derivedStats.curiosity)].join(SEP) + EOL;
-    data += [T("san"), derivedStats.san, T("fear"), T(derivedStats.fear)].join(SEP) + EOL;
+    data += [T("hp"), derivedStats.hp].join(SEP) + EOL;
+    data += [T("san"), derivedStats.san].join(SEP) + EOL;
     data += [T("weapon"), derivedStats.weapon].join(SEP) + EOL;
     data += [T("painkillers"), derivedStats.painkillers].join(SEP) + EOL;
-    data += [T("omamori"), derivedStats.omamori].join(SEP) + EOL + EOL;
-
-    const categories = [T("ins_Violence"), T("ins_Emotion"), T("ins_Sense"), T("ins_Technique"), T("ins_Knowledge"), T("ins_Strange")];
-    data += "◆" + EOL;
-    data += categories.map(cat => T(cat)).join(SEP + SEP) + EOL;
-
-    for (let row = 0; row < 11; row++) {
-        let rowData: string[] = [];
-        for (let col = 0; col < 6; col++) {
-            const skillIdx = col * 11 + row;
-            const skill = skills[skillIdx];
-            if (skill) {
-                // [특기명] [판정치] 형식으로 탭 구분
-                rowData.push(T(skill.name));
-                rowData.push(skill.current?.toString() || skill.base.toString());
-            } else {
-                rowData.push("");
-                rowData.push("");
-            }
-        }
-        data += rowData.join(SEP) + EOL;
-    }
+    data += [T("omamori"), derivedStats.omamori].join(SEP) + EOL;
+    data += [T("fear"), derivedStats.fear].join(SEP) + EOL;
+    data += [T("curiosity"), derivedStats.curiosity].join(SEP) + EOL;
     data += EOL;
-    // 5. 채팅 팔레트 (전체 특기)
-    data += EOL + "◆" + T("section_cocorp_palette_title") + EOL;
     skills.forEach(skill => {
         const val = skill.current || skill.base;
         data += `2d6>=${val} ${SEP} [${T(skill.name)} 판정]` + EOL;

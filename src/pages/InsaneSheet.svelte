@@ -54,7 +54,7 @@
       expandedIndex = null; // 이미 열려있으면 닫기
       console.log("expandedIndex : " + expandedIndex);
     } else {
-      expandedIndex = index; // 닫혀있으면 해당 인덱스 열기
+      expandedIndex = index;
       console.log("expandedIndex : " + expandedIndex);
     }
   }
@@ -89,7 +89,6 @@
   ]);
 
   const abType = ["공격", "서포트", "장비"];
-  let nonOption = "-";
 
   // 현재 선택된 특기들의 위치 정보를 담는 타입 정의(cIdx=열 정보, sIdx=행 정보)
   interface SelectedPos {
@@ -166,16 +165,6 @@
     console.log("Selected Position 변경됨 ~ :", selectedPositions);
   }
 
-  function validateAfflicted() {
-    if (stats.weapon + stats.painkillers + stats.omamori <= 1) {
-      console.log(stats.weapon + stats.painkillers + stats.omamori);
-      console.log("부적, 무기, 진통제의 양이 너무 적습니다");
-    } else if (stats.weapon + stats.painkillers + stats.omamori >= 3) {
-      console.log(stats.weapon + stats.painkillers + stats.omamori);
-      console.log("부적, 무기, 진통제의 양이 너무 많습니다");
-    }
-  }
-
   /**
    * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
    */
@@ -197,6 +186,20 @@
         };
       }),
     );
+
+    if (selectedPositions.length != 6) {
+      alert(
+        "규칙 상 특기는 6개를 권장합니다. 현재 선택한 특기 수 : " +
+          selectedPositions.length,
+      );
+    }
+
+    if (
+      stats.weapon + stats.painkillers + stats.omamori !=2
+    ) {
+      console.log(stats.weapon + stats.painkillers + stats.omamori);
+      alert("부적, 무기, 진통제의 합은 2를 권장합니다.");
+    }
 
     const afflictedData = createGooglesheetData(
       stats,
@@ -244,6 +247,20 @@
         };
       }),
     );
+
+    if (selectedPositions.length != 6) {
+      alert(
+        "규칙 상 특기는 6개를 권장합니다. 현재 선택한 특기 수 : " +
+          selectedPositions.length,
+      );
+    }
+
+    if (
+      stats.weapon + stats.painkillers + stats.omamori !=2
+    ) {
+      console.log(stats.weapon + stats.painkillers + stats.omamori);
+      alert("부적, 무기, 진통제의 합은 2를 권장합니다.");
+    }
 
     const afflictedData = createCocoPalette(
       stats,
