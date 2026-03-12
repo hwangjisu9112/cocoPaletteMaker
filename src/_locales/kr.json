@@ -99,16 +99,13 @@
   "check_suffix": "판정",
   "check_san": "SAN",
   "attack_unarmed": "타격 - 비무장",
-
-
   "weapon": "무기",
   "painkillers": "진통제",
   "omamori": "부적",
   "curiosity": "호기심",
   "fear": "공포심",
-
-
-  "InS_result": "인세인 봉마인 정보 & 특기 리스트",
+  "InS_result": "인세인 봉마인 정보",
+  "specialty_list": "특기 리스트",
   "ins_Violence": "1. 폭력",
   "ins_skill_Incineration": "소각",
   "ins_skill_Torture": "고문",
@@ -181,11 +178,10 @@
   "ins_skill_Dream": "꿈",
   "ins_skill_Underground": "지저",
   "ins_skill_Cosmic": "우주",
-
-
-  "ability_name" : "어빌리티명",
-  "ability_type" : "타입",
-  "ability_specified" : "지정특기",
-  "ability_description" : "설명"
-
+  "ability_list": "어빌리티 리스트",
+  "ability_name": "어빌리티명",
+  "ability_type": "타입",
+  "ability_specified": "지정특기",
+  "ability_description": "설명",
+  "ability_explain": "설명을 입력하세요"
 }

@@ -38,6 +38,8 @@
     margin: 0;
   }
 
+  
+
   .content-wrapper {
     width: 500px;
     padding: 40px;

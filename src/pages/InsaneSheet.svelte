@@ -70,25 +70,37 @@
     description?: string;
   }
 
+  const abil_1_melee = "기본공격";
+  const abil_1_meleeDesc = "목표 1명을 선택해서 명중판정을 성공하고 목표가 회피판정을 실패 시 1D6의 대미지를 입힙니다.";
+  const abil_2_bpmove = "전장이동";
+  const abil_2_bpmoveDesc = "캐릭터 전원이 다음 라운드에 플롯 변경을 합니다.";
+
+  const abil_tp_atk = "공격";
+  const abil_tp_spt = "서포트";
+  const abil_tp_gear = "장비";
+
+
+
+
   let abilities = $state<Ability[]>([
     {
-      name: "기본공격",
-      type: "공격",
+      name: abil_1_melee,
+      type: abil_tp_atk,
       specified: "-",
       description:
-        "목표 1명을 선택해서 명중판정을 성공하고 목표가 회피판정을 실패 시 1D6의 대미지를 입힙니다.",
+        abil_1_meleeDesc,
     },
     {
-      name: "전장이동",
-      type: "서포트",
+      name: abil_2_bpmove,
+      type: abil_tp_spt,
       specified: "-",
-      description: "캐릭터 전원이 다음 라운드에 플롯 변경을 합니다.",
+      description: abil_2_bpmoveDesc,
     },
     { name: "", type: "-", specified: "", description: "" },
     { name: "", type: "-", specified: "", description: "" },
   ]);
 
-  const abType = ["공격", "서포트", "장비"];
+  const abType = [abil_tp_atk, abil_tp_spt, abil_tp_gear];
 
   // 현재 선택된 특기들의 위치 정보를 담는 타입 정의(cIdx=열 정보, sIdx=행 정보)
   interface SelectedPos {
@@ -194,9 +206,7 @@
       );
     }
 
-    if (
-      stats.weapon + stats.painkillers + stats.omamori !=2
-    ) {
+    if (stats.weapon + stats.painkillers + stats.omamori != 2) {
       console.log(stats.weapon + stats.painkillers + stats.omamori);
       alert("부적, 무기, 진통제의 합은 2를 권장합니다.");
     }
@@ -255,9 +265,7 @@
       );
     }
 
-    if (
-      stats.weapon + stats.painkillers + stats.omamori !=2
-    ) {
+    if (stats.weapon + stats.painkillers + stats.omamori != 2) {
       console.log(stats.weapon + stats.painkillers + stats.omamori);
       alert("부적, 무기, 진통제의 합은 2를 권장합니다.");
     }
@@ -307,30 +315,30 @@
 
     <div class="derived-stats-grid">
       <div class="stat-item">
-        <p>체력</p>
+        <p>HP</p>
         <input type="number" bind:value={stats.hp} min="1" max="6" />
       </div>
       <div class="stat-item">
-        <p>이성</p>
+        <p>SAN</p>
         <input type="number" bind:value={stats.san} min="1" max="6" />
       </div>
       <div class="stat-item">
-        <p>무기</p>
+        <p>{$_("weapon")}</p>
         <input type="number" bind:value={stats.weapon} min="0" max="2" />
       </div>
       <div class="stat-item">
-        <p>부적</p>
+        <p>{$_("omamori")}</p>
         <input type="number" bind:value={stats.omamori} min="0" max="2" />
       </div>
       <div class="stat-item">
-        <p>진통제</p>
+        <p>{$_("painkillers")}</p>
         <input type="number" bind:value={stats.painkillers} min="0" max="2" />
       </div>
     </div>
 
     <div class="derived-stats-grid-2">
       <div class="inline-group">
-        <p class="label-blue">호기심</p>
+        <p class="label-blue">{$_("curiosity")}</p>
         <select bind:value={stats.curiosity} class="cf-select">
           {#each categories as category}
             <option value={category.type}>{$_(category.type)}</option>
@@ -339,7 +347,7 @@
       </div>
 
       <div class="inline-group">
-        <p class="label-blue">공포심</p>
+        <p class="label-blue">{$_("fear")}</p>
         <select bind:value={stats.fear} class="cf-select">
           {#each fearOptions as option}
             <option value={option.name}>{$_(option.name)}</option>
@@ -347,6 +355,7 @@
         </select>
       </div>
     </div>
+    <h3>{$_("specialty_list")}</h3>
     <div class="specialty-table">
       {#each categories as category, cIdx}
         <div
@@ -383,13 +392,13 @@
       {/each}
       <br />
     </div>
-    <h3>어빌리티 리스트</h3>
+    <h3>{$_("ability_list")}</h3>
     <div class="ability-section">
       <div class="ability-header">
-        <div class="header-item name">어빌리티</div>
-        <div class="header-item type">타입</div>
-        <div class="header-item skill">지정 특기</div>
-        <div class="header-item dsc">설명</div>
+        <div class="header-item name">{$_("ability_name")}</div>
+        <div class="header-item type">{$_("ability_type")}</div>
+        <div class="header-item skill">{$_("ability_specified")}</div>
+        <div class="header-item dsc">{$_("ability_description")}</div>
       </div>
       <div class="ability-list">
         {#each abilities as ability, i}
@@ -421,7 +430,7 @@
             <div class="desc-row" hidden={expandedIndex !== i}>
               <textarea
                 bind:value={ability.description}
-                placeholder="어빌리티의 효과를 입력하세요"
+                placeholder={$_("ability_explain")}
               ></textarea>
             </div>
           </div>
@@ -447,18 +456,18 @@
     display: flex;
     justify-content: center;
     margin: 0;
-    width: 800px;
+    width: 700px;
   }
 
   .content-wrapper {
-    width: 800px;
+    width: 700px;
     padding: 20px;
     text-align: center;
   }
 
   .content-wrapper button:not(.lang-btn) {
     width: 100%; /* 부모인 content-wrapper 너비에 맞춤 */
-    max-width: 800px; /* 너무 길어지는 것을 방지 (원하는 크기로 조절) */
+    max-width: 700px; /* 너무 길어지는 것을 방지 (원하는 크기로 조절) */
     height: 50px; /* 높이도 고정하면 언어별 폰트 높이 차이를 무시할 수 있음 */
     margin: 5px auto; /* 중앙 정렬 및 간격 */
     display: block; /* 한 줄에 하나씩 배치되도록 설정 */
@@ -471,7 +480,7 @@
 
   .page-title {
     width: 100%; /* 부모인 content-wrapper 너비에 맞춤 */
-    max-width: 800px; /* 너무 길어지는 것을 방지 (원하는 크기로 조절) */
+    max-width: 700px; /* 너무 길어지는 것을 방지 (원하는 크기로 조절) */
     height: 50px; /* 높이도 고정하면 언어별 폰트 높이 차이를 무시할 수 있음 */
     margin: 5px auto; /* 중앙 정렬 및 간격 */
     display: block; /* 한 줄에 하나씩 배치되도록 설정 */
@@ -488,7 +497,7 @@
     justify-content: center;
     align-items: center;
     gap: 10px; /* 항목 간 간격 살짝 축소 */
-    max-width: 800px;
+    max-width: 700px;
     width: 100%;
     margin: 0 auto 20px auto;
   }
@@ -496,7 +505,7 @@
   /* 상단 5개 아이템: 라벨과 입력창을 한 줄(row)로 배치 */
   .stat-item {
     display: flex;
-    flex: 1; /* 5개가 800px을 균등하게 나눔 */
+    flex: 1; /* 5개가 700px을 균등하게 나눔 */
     align-items: center;
     background-color: #274d60;
     border-radius: 4px;
@@ -543,7 +552,7 @@
     padding: 8px 15px;
     border-radius: 4px;
     font-weight: bold;
-    min-width: 100px;
+    min-width: 90px;
     text-align: center;
   }
 
@@ -565,7 +574,7 @@
     flex-direction: row; /* 수평 정렬 */
     gap: 12px;
     padding: 20px;
-    width: 800px; /* 전체 너비 제한 */
+    width: 700px; /* 전체 너비 제한 */
     overflow-x: auto; /* 내용이 넘칠 경우 가로 스크롤 허용 */
     box-sizing: border-box;
   }
@@ -626,7 +635,7 @@
   }
 
   .skill-name {
-    font-size: 1rem;
+    font-size: 0.9rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -652,12 +661,12 @@
   .skill-value {
     font-family: monospace;
     font-weight: bold;
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #777;
   }
 
   .ability-section {
-    max-width: 800px;
+    max-width: 700px;
     margin: 20px auto;
     width: 100%;
   }
