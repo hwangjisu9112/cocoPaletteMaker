@@ -1,9 +1,9 @@
 {
   "manifest_version": 4,
   "name": "TRPG Character Maker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "permissions": [ "tabs" ],
-  "description": "코코포리아 및 구글 시트와 연계할 수 있는 TRPG 캐릭터 생성기",
+  "description": "TRPG Character Generator that can be associated with Cocoporia and Google Sheets",
   "icons": {
     "16": "16image.png",
     "48": "48image.png",

@@ -189,19 +189,21 @@
   "ability_type" : "タイプ",
   "ability_specified" : "指定特技",
   "ability_description" : "説明",
-  "ability_explain": "説明を作成ください。"
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+  "ability_explain": "説明を作成ください。",
+  "ability_melee": "基本攻撃",
+  "abil_meleeDesc": "攻撃が成功すると、目標に1D6点のダメージを与える。",
+  "ability_relocation": "戦場移動",
+  "abil_reloca_desc": "次のラウンドの「ラウンドの開始時」に、戦闘に参加しているキャラクター全員はプロットを行う。",
+  "abil_tp_atk": "攻撃",
+  "abil_tp_spt": "サポート",
+  "abil_tp_gear": "装備",
+  "random": "ランダム",
+  "alert_ins_item": "☠️ お守り、武器、鎮痛剤の合計は'2'を推奨します。",
+  "alert_ins_spec": "☠️  初期の特技は6つを推奨します。 現在の特技数："
 }
+
+
+
+
+
+

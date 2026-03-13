@@ -60,11 +60,11 @@ export function createGooglesheetData(
     data += [T("label_age"), ""].join(SEP) + EOL + EOL;
 
     // 2. 상태 및 아이템 정보
-    data += [T("hp"), derivedStats.hp, T("curiosity"), T(derivedStats.curiosity)].join(SEP) + EOL;
-    data += [T("san"), derivedStats.san, T("fear"), T(derivedStats.fear)].join(SEP) + EOL;
-    data += [T("weapon"), derivedStats.weapon].join(SEP) + EOL;
-    data += [T("painkillers"), derivedStats.painkillers].join(SEP) + EOL;
-    data += [T("omamori"), derivedStats.omamori].join(SEP) + EOL + EOL;
+    data += [T("hp"), derivedStats.hp, T("curiosity"), T(derivedStats.curiosity), "플레이어간 관계"].join(SEP) + EOL;
+    data += [T("san"), derivedStats.san, T("fear"), T(derivedStats.fear), "인물_1", " ", "감정", "", "거처", " "].join(SEP) + EOL;
+    data += [T("weapon"), derivedStats.weapon, " ", " ", "인물_2", " ", "감정", "", "거처", " "].join(SEP) + EOL;
+    data += [T("painkillers"), derivedStats.painkillers, " ", " ", "인물_3", " ", "감정", "", "거처", " "].join(SEP) + EOL;
+    data += [T("omamori"), derivedStats.omamori, " ", " ", "인물_4", " ", "감정", "", "거처", " "].join(SEP) + EOL + EOL;
 
     // 3. 특기 판정표
     const categories = [T("ins_Violence"), T("ins_Emotion"), T("ins_Sense"), T("ins_Technique"), T("ins_Knowledge"), T("ins_Strange")];
@@ -91,14 +91,14 @@ export function createGooglesheetData(
     // 4. 어빌리티 정보 및 판정 수식
     data += [T("ability_name"), T("ability_type"), T("ability_specified"), T("ability_description")].join(SEP) + EOL;
 
-    abilities.forEach(abi => {
-        if (abi.name) {
+    abilities.forEach(ab => {
+        if (ab.name) {
             // 4-1. 기본 정보 출력
             data += [
-                abi.name,
-                abi.type,
-                abi.specified ? T(abi.specified) : "-",
-                abi.description || ""
+                ab.name,
+                ab.type,
+                ab.specified ? T(ab.specified) : "-",
+                ab.description || ""
             ].join(SEP) + EOL;
 
         }
@@ -106,13 +106,24 @@ export function createGooglesheetData(
 
     // 5. 채팅 팔레트 (전체 특기)
     data += EOL + "◆" + T("section_cocorp_palette_title") + EOL;
-    skills.forEach(skill => {
-        const val = skill.current || skill.base;
-        data += `2d6>=${val} ${SEP} [${T(skill.name)} 판정]` + EOL;
-        if (skill.name === derivedStats.fear) {
-            data += `2d6-2>=${val} ${SEP} [공포심 판정 : ${T(skill.name)}]` + EOL;
+    skills.forEach(sk => {
+        const val = sk.current || sk.base;
+        data += `2d6>=${val} ${SEP} [${T(sk.name)}]` + EOL;
+        if (sk.name === derivedStats.fear) {
+            data += `2d6-2>=${val} ${SEP} [FEAR : ${T(sk.name)}]` + EOL;
         }
     });
+
+    abilities.forEach(ab => {
+        const abilityMatch = skills.find(s => s.name === ab.specified);
+        if (abilityMatch) {
+            const val = abilityMatch.current || abilityMatch.base;
+            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜《 ${ab.specified} 》｜${ab.description}` + EOL;;
+        } else {
+            data += `【${ab.name}】｜${ab.type}｜《 ${ab.specified}》｜${ab.description}\n`;
+        }
+    });
+
     return data;
 }
 
@@ -145,15 +156,27 @@ export function createCocoPalette(
     data += [T("weapon"), derivedStats.weapon].join(SEP) + EOL;
     data += [T("painkillers"), derivedStats.painkillers].join(SEP) + EOL;
     data += [T("omamori"), derivedStats.omamori].join(SEP) + EOL;
-    data += [T("fear"), derivedStats.fear].join(SEP) + EOL;
-    data += [T("curiosity"), derivedStats.curiosity].join(SEP) + EOL;
+    data += [T("fear"), T(derivedStats.fear)].join(SEP) + EOL;
+    data += [T("curiosity"), T(derivedStats.curiosity)].join(SEP) + EOL;
     data += EOL;
-    skills.forEach(skill => {
-        const val = skill.current || skill.base;
-        data += `2d6>=${val} ${SEP} [${T(skill.name)} 판정]` + EOL;
-        if (skill.name === derivedStats.fear) {
-            data += `2d6-2>=${val} ${SEP} [공포심 판정 : ${T(skill.name)}]` + EOL;
+    skills.forEach(sk => {
+        const val = sk.current || sk.base;
+        data += `2d6>=${val} ${SEP} [${T(sk.name)}]` + EOL;
+        if (sk.name === derivedStats.fear) {
+            data += `2d6-2>=${val} ${SEP} [FEAR : ${T(sk.name)}]` + EOL;
         }
     });
+
+    abilities.forEach(ab => {
+        const abilityMatch = skills.find(s => s.name === ab.specified);
+        if (abilityMatch) {
+            const val = abilityMatch.current || abilityMatch.base;
+            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜《 ${ab.specified} 》｜${ab.description}` + EOL;;
+        } else {
+            data += `【${ab.name}】｜${ab.type}｜《 ${ab.specified} 》｜${ab.description}\n`;
+        }
+    });
+
+
     return data;
 }

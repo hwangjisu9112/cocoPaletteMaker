@@ -183,5 +183,16 @@
   "ability_type": "타입",
   "ability_specified": "지정특기",
   "ability_description": "설명",
-  "ability_explain": "설명을 입력하세요"
+  "ability_explain": "설명을 입력하세요",
+  "ability_melee": "기본공격",
+  "abil_meleeDesc": "목표 1명을 선택해서 명중판정을 성공하고 목표가 회피판정을 실패 시 1D6의 대미지를 입힙니다.",
+  "ability_relocation": "전장이동",
+  "abil_reloca_desc": "캐릭터 전원이 다음 라운드에 플롯 변경을 합니다.",
+  "abil_tp_atk": "공격",
+  "abil_tp_spt": "서포트",
+  "abil_tp_gear": "장비",
+  "random": "무작위",
+  "alert_ins_item": "☠️ 부적, 무기, 진통제의 합은 '2'를 권장합니다.",
+  "alert_ins_spec": "☠️ 봉마인 초기 특기는 6개를 권장합니다. 현재 특기 수 : "
+
 }

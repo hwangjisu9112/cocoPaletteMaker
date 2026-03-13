@@ -70,31 +70,27 @@
     description?: string;
   }
 
-  const abil_1_melee = "기본공격";
-  const abil_1_meleeDesc = "목표 1명을 선택해서 명중판정을 성공하고 목표가 회피판정을 실패 시 1D6의 대미지를 입힙니다.";
-  const abil_2_bpmove = "전장이동";
-  const abil_2_bpmoveDesc = "캐릭터 전원이 다음 라운드에 플롯 변경을 합니다.";
+  let ability_melee = $_("ability_melee");
+  let abil_melee_desc = $_("abil_meleeDesc");
+  let ability_relocation = $_("ability_relocation");
+  let abil_reloca_desc = $_("abil_reloca_desc");
 
-  const abil_tp_atk = "공격";
-  const abil_tp_spt = "서포트";
-  const abil_tp_gear = "장비";
-
-
-
+  let abil_tp_atk = $_("abil_tp_atk");
+  let abil_tp_spt = $_("abil_tp_spt");
+  let abil_tp_gear = $_("abil_tp_gear");
 
   let abilities = $state<Ability[]>([
     {
-      name: abil_1_melee,
+      name: ability_melee,
       type: abil_tp_atk,
       specified: "-",
-      description:
-        abil_1_meleeDesc,
+      description: abil_melee_desc,
     },
     {
-      name: abil_2_bpmove,
+      name: ability_relocation,
       type: abil_tp_spt,
       specified: "-",
-      description: abil_2_bpmoveDesc,
+      description: abil_reloca_desc,
     },
     { name: "", type: "-", specified: "", description: "" },
     { name: "", type: "-", specified: "", description: "" },
@@ -201,14 +197,14 @@
 
     if (selectedPositions.length != 6) {
       alert(
-        "규칙 상 특기는 6개를 권장합니다. 현재 선택한 특기 수 : " +
+        $_("alert_ins_spec")  +
           selectedPositions.length,
       );
     }
 
     if (stats.weapon + stats.painkillers + stats.omamori != 2) {
       console.log(stats.weapon + stats.painkillers + stats.omamori);
-      alert("부적, 무기, 진통제의 합은 2를 권장합니다.");
+      alert($_("alert_ins_item"));
     }
 
     const afflictedData = createGooglesheetData(
@@ -260,14 +256,14 @@
 
     if (selectedPositions.length != 6) {
       alert(
-        "규칙 상 특기는 6개를 권장합니다. 현재 선택한 특기 수 : " +
+        $_("alert_ins_spec") +
           selectedPositions.length,
       );
     }
 
     if (stats.weapon + stats.painkillers + stats.omamori != 2) {
       console.log(stats.weapon + stats.painkillers + stats.omamori);
-      alert("부적, 무기, 진통제의 합은 2를 권장합니다.");
+      alert($_("alert_ins_item"));
     }
 
     const afflictedData = createCocoPalette(
@@ -297,6 +293,8 @@
     }
     document.body.removeChild(textarea);
   }
+
+
 </script>
 
 <main>
@@ -311,7 +309,7 @@
       <button class="lang-btn" onclick={() => switchLang("en")}>ENG</button>
     </div>
     <br />
-    <h3 class="page-title">{$_("InS_result")}</h3>
+    <h2 class="page-title">{$_("InS_result")}</h2>
 
     <div class="derived-stats-grid">
       <div class="stat-item">
@@ -414,6 +412,8 @@
               </select>
 
               <select class="input-skill" bind:value={ability.specified}>
+                <option value="-"> - </option>
+                <option value="random">{$_("random")}</option>
                 {#each fearOptions as option}
                   <option value={option.name}>{$_(option.name)}</option>
                 {/each}
