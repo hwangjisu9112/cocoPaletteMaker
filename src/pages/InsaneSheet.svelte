@@ -195,6 +195,16 @@
       }),
     );
 
+       let strangeSpe = selectedPositions.filter(p => p.cIdx === 5).length;
+    let maximumSan = 6 - strangeSpe;
+
+        if (stats.san > maximumSan) {
+      alert(
+        $_("alert_ins_san") + strangeSpe
+      );
+    }
+
+
     if (selectedPositions.length != 6) {
       alert(
         $_("alert_ins_spec")  +
@@ -253,6 +263,16 @@
         };
       }),
     );
+    
+    let strangeSpe = selectedPositions.filter(p => p.cIdx === 5).length;
+    let maximumSan = 6 - strangeSpe;
+
+        if (stats.san > maximumSan) {
+      alert(
+        $_("alert_ins_san") + strangeSpe
+      );
+    }
+
 
     if (selectedPositions.length != 6) {
       alert(
@@ -306,7 +326,6 @@
       >
       <button class="lang-btn" onclick={() => switchLang("kr")}>한국어</button>
       <button class="lang-btn" onclick={() => switchLang("jp")}>日本語</button>
-      <button class="lang-btn" onclick={() => switchLang("en")}>ENG</button>
     </div>
     <br />
     <h2 class="page-title">{$_("InS_result")}</h2>

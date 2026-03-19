@@ -69,7 +69,7 @@ export function createGooglesheetData(
     // 3. 특기 판정표
     const categories = [T("ins_Violence"), T("ins_Emotion"), T("ins_Sense"), T("ins_Technique"), T("ins_Knowledge"), T("ins_Strange")];
     data += "◆" + EOL;
-    data += categories.join(SEP + SEP) + EOL;
+    data += categories.join(SEP) + EOL;
 
     for (let row = 0; row < 11; row++) {
         let rowData: string[] = [];
@@ -118,9 +118,9 @@ export function createGooglesheetData(
         const abilityMatch = skills.find(s => s.name === ab.specified);
         if (abilityMatch) {
             const val = abilityMatch.current || abilityMatch.base;
-            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜《 ${ab.specified} 》｜${ab.description}` + EOL;;
+            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜ ${ab.specified}｜${ab.description}` + EOL;;
         } else {
-            data += `【${ab.name}】｜${ab.type}｜《 ${ab.specified}》｜${ab.description}\n`;
+            data += `【${ab.name}】｜${ab.type}｜ ${ab.specified}｜${ab.description}\n`;
         }
     });
 
@@ -171,9 +171,9 @@ export function createCocoPalette(
         const abilityMatch = skills.find(s => s.name === ab.specified);
         if (abilityMatch) {
             const val = abilityMatch.current || abilityMatch.base;
-            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜《 ${ab.specified} 》｜${ab.description}` + EOL;;
+            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜ ${ab.specified} ｜${ab.description}` + EOL;;
         } else {
-            data += `【${ab.name}】｜${ab.type}｜《 ${ab.specified} 》｜${ab.description}\n`;
+            data += `【${ab.name}】｜${ab.type}｜ ${ab.specified} ｜${ab.description}\n`;
         }
     });
 
