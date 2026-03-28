@@ -195,21 +195,15 @@
       }),
     );
 
-       let strangeSpe = selectedPositions.filter(p => p.cIdx === 5).length;
+    let strangeSpe = selectedPositions.filter((p) => p.cIdx === 5).length;
     let maximumSan = 6 - strangeSpe;
 
-        if (stats.san > maximumSan) {
-      alert(
-        $_("alert_ins_san") + strangeSpe
-      );
+    if (stats.san > maximumSan) {
+      alert($_("alert_ins_san") + strangeSpe);
     }
 
-
     if (selectedPositions.length != 6) {
-      alert(
-        $_("alert_ins_spec")  +
-          selectedPositions.length,
-      );
+      alert($_("alert_ins_spec") + selectedPositions.length);
     }
 
     if (stats.weapon + stats.painkillers + stats.omamori != 2) {
@@ -263,22 +257,16 @@
         };
       }),
     );
-    
-    let strangeSpe = selectedPositions.filter(p => p.cIdx === 5).length;
+
+    let strangeSpe = selectedPositions.filter((p) => p.cIdx === 5).length;
     let maximumSan = 6 - strangeSpe;
 
-        if (stats.san > maximumSan) {
-      alert(
-        $_("alert_ins_san") + strangeSpe
-      );
+    if (stats.san > maximumSan) {
+      alert($_("alert_ins_san") + strangeSpe);
     }
 
-
     if (selectedPositions.length != 6) {
-      alert(
-        $_("alert_ins_spec") +
-          selectedPositions.length,
-      );
+      alert($_("alert_ins_spec") + selectedPositions.length);
     }
 
     if (stats.weapon + stats.painkillers + stats.omamori != 2) {
@@ -313,8 +301,6 @@
     }
     document.body.removeChild(textarea);
   }
-
-
 </script>
 
 <main>
@@ -332,24 +318,24 @@
 
     <div class="derived-stats-grid">
       <div class="stat-item">
-        <p>HP</p>
-        <input type="number" bind:value={stats.hp} min="1" max="6" />
+        <p>{$_("ins_hp")}</p>
+        <input type="number" bind:value={stats.hp} min="1" max="10" />
       </div>
       <div class="stat-item">
-        <p>SAN</p>
-        <input type="number" bind:value={stats.san} min="1" max="6" />
-      </div>
-      <div class="stat-item">
-        <p>{$_("weapon")}</p>
-        <input type="number" bind:value={stats.weapon} min="0" max="2" />
-      </div>
-      <div class="stat-item">
-        <p>{$_("omamori")}</p>
-        <input type="number" bind:value={stats.omamori} min="0" max="2" />
+        <p>{$_("ins_san")}</p>
+        <input type="number" bind:value={stats.san} min="1" max="10" />
       </div>
       <div class="stat-item">
         <p>{$_("painkillers")}</p>
-        <input type="number" bind:value={stats.painkillers} min="0" max="2" />
+        <input type="number" bind:value={stats.painkillers} min="0" max="3" />
+      </div>
+      <div class="stat-item">
+        <p>{$_("weapon")}</p>
+        <input type="number" bind:value={stats.weapon} min="0" max="3" />
+      </div>
+      <div class="stat-item">
+        <p>{$_("omamori")}</p>
+        <input type="number" bind:value={stats.omamori} min="0" max="3" />
       </div>
     </div>
 

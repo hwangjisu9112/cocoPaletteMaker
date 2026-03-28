@@ -19,8 +19,10 @@
   "mp": "MP",
   "san": "Sanity",
   "db": "DB",
-  "skill_describe": "機能",
+  "skill_describe": "機能ポイント",
   "skill_remaining": "残り点数",
+  "skill_job": "職業機能: ",
+  "skill_interested": "関心機能: ",
   "skill_Appraise": "鑑定",
   "skill_Archaeology": "考古学",
   "skill_Science()": "科学()",
@@ -68,7 +70,6 @@
   "skill_Navigate": "ナビゲート",
   "skill_Accounting": "経理",
   "skill_Dodge": "回避",
-  "skill_Extra1": "[追加]",
   "skill_cthulhu_mythos": "クトゥル神話",
   "remake": "再作成",
   "copyToCoco": "ココフォリアへ貼り付け",
@@ -98,17 +99,14 @@
   "skill_extreme": "エクストリーム(1/5)",
   "check_suffix": "判定",
   "check_san": "SAN",
+   "ins_hp": "生命力",
+  "ins_san": "正気度",
   "attack_unarmed": "打撃 - 非武装",
-
-
-
-
   "weapon": "武器",
   "painkillers": "鎮痛剤",
   "omamori": "お守り",
   "curiosity": "好奇心",
   "fear": "恐怖心",
-
   "InS_result": "インセイン・PC情報",
   "specialty_list": "特技リスト",
   "ins_Violence": "1. 暴力",
@@ -183,12 +181,11 @@
   "ins_skill_Dream": "夢",
   "ins_skill_Underground": "地底",
   "ins_skill_Cosmic": "宇宙",
-
-  "ability_list" : "アビリティ リスト",
-  "ability_name" : "アビリティ名",
-  "ability_type" : "タイプ",
-  "ability_specified" : "指定特技",
-  "ability_description" : "説明",
+  "ability_list": "アビリティ リスト",
+  "ability_name": "アビリティ名",
+  "ability_type": "タイプ",
+  "ability_specified": "指定特技",
+  "ability_description": "説明",
   "ability_explain": "説明を作成ください。",
   "ability_melee": "基本攻撃",
   "abil_meleeDesc": "攻撃が成功すると、目標に1D6点のダメージを与える。",
@@ -201,9 +198,3 @@
   "alert_ins_item": "☠️ お守り、武器、鎮痛剤の合計は'2'を推奨します。",
   "alert_ins_spec": "☠️  初期の特技は6つを推奨します。 現在の特技数："
 }
-
-
-
-
-
-

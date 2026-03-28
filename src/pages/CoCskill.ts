@@ -60,5 +60,4 @@ export const INITIAL_SKILLS: Skill[] = [
   { name: "skill_Navigate", point: 0, base: 10 },
   { name: "skill_Accounting", point: 0, base: 5 },
   { name: "skill_Dodge", point: 0, base: 0, evade: 'HALF_DEX' },
-  { name: "skill_Extra1", point: 0, base: 1 },
 ];

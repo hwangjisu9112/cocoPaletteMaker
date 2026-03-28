@@ -19,8 +19,10 @@
   "mp": "MP",
   "san": "Sanity",
   "db": "DB",
-  "skill_describe": "Skill",
+  "skill_describe": "Skill Point",
   "skill_remaining": "remaining",
+  "skill_job": "job: ",
+  "skill_interested": "interest: ",
   "skill_Appraise": "Appraise",
   "skill_Archaeology": "Archaeology",
   "skill_Science()": "Science()",
@@ -68,7 +70,6 @@
   "skill_Navigate": "Navigate",
   "skill_Accounting": "Accounting",
   "skill_Dodge": "Dodge",
-  "skill_Extra1": "[extra]",
   "skill_cthulhu_mythos": "cthulhu mythos",
   "remake": "remake",
   "copyToCoco": "Copy To CoCo",
@@ -99,7 +100,7 @@
   "check_suffix": "Judgment",
   "check_san": "SAN",
   "attack_unarmed": "Strike - Unarmed",
-"weapon": "무기",
+  "weapon": "무기",
   "painkillers": "진통제",
   "omamori": "부적",
   "curiosity": "호기심",
@@ -193,5 +194,4 @@
   "abil_tp_gear": "장비",
   "random": "무작위",
   "alert_ins_item": "부적, 무기, 진통제의 합은 '2'를 권장합니다."
-
 }

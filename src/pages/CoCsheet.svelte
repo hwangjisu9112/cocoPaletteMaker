@@ -21,13 +21,17 @@
   let hp = (appState.currentStats.siz + appState.currentStats.con) / 10;
   let mp = appState.currentStats.pow / 5;
   let sanity = appState.currentStats.pow;
+
+  let jobSkillPoint = appState.currentStats.edu * 4;
+  let interestdSkillPoint = appState.currentStats.int * 2;
+
   let baseSkillPoint =
     appState.currentStats.edu * 4 + appState.currentStats.int * 2;
 
   let db = appState.currentStats.siz + appState.currentStats.str;
 
   // svelte-ignore non_reactive_update
-    let damage = "0";
+  let damage = "0";
   {
     if (db <= 64) {
       damage = "-2";
@@ -193,7 +197,14 @@
       <p>{$_("san")} <strong>{sanity}</strong></p>
       <p>{$_("db")}<strong>{damage}</strong></p>
     </div>
-    <h4>{$_("skill_describe")}</h4>
+    <div class="skill-header">
+      <h3>
+        {$_("skill_describe")} = {baseSkillPoint}({$_(
+          "skill_job",
+        )}{jobSkillPoint} + {$_("skill_interested")}{interestdSkillPoint} )
+      </h3>
+    </div>
+
     <p class="skill-points-display">
       {$_("skill_remaining")}:{#key remainingSkillPoint}
         <strong class="animate-pop">{remainingSkillPoint}</strong>
@@ -219,6 +230,39 @@
           >
         </div>
       {/each}
+    </div>
+
+    <div class="custom-skill">
+      <h4>추가 기능 :</h4>
+      <input
+        type="text"
+        class="extra-kill-input"
+        placeholder="extra-skill-name"
+      />
+      <h4>초기값 :</h4>
+      <input
+        type="number"
+        class="extra-kill-input"
+        placeholder="1"
+        min="1"
+        max="100"
+      />
+      <h4>입력값 :</h4>
+      <input
+        type="number"
+        class="extra-kill-input"
+        placeholder="1"
+        min="0"
+        max="99"
+      />
+      <h4>결과 :</h4>
+      <input
+        type="number"
+        class="extra-kill-input"
+        min="1"
+        max="100"
+        readonly
+      />
     </div>
     <br />
     <div>
@@ -346,6 +390,16 @@
     text-overflow: ellipsis;
     max-width: 100%;
     margin-bottom: 2px;
+  }
+
+  .skill-header {
+    display: flex;
+    background-color: #274d60;
+    color: #fafffe;
+    padding: 5px 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
   }
 
   @keyframes stat-pop {
