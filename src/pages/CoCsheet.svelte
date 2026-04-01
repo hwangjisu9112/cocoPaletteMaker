@@ -18,6 +18,11 @@
   }
   let skills = $state(JSON.parse(JSON.stringify(INITIAL_SKILLS)));
 
+  let extraSkillName = $state("");
+  let extraSkillBase = $state(1);
+  let extraSkillPoint = $state(0);
+  let extraSkillResult = $derived(extraSkillBase + extraSkillPoint);
+
   let hp = (appState.currentStats.siz + appState.currentStats.con) / 10;
   let mp = appState.currentStats.pow / 5;
   let sanity = appState.currentStats.pow;
@@ -104,6 +109,43 @@
     if (points > budgetLeft) points = Math.max(0, budgetLeft);
 
     skill.point = points; // $state이므로 내부 값만 바꿔도 즉시 반응합니다.
+  }
+
+  function addCustomSkill(): void {
+    if (!extraSkillName.trim()) {
+      alert("스킬 이름을 입력해주세요.");
+      return;
+    }
+
+    if (extraSkillPoint > remainingSkillPoint) {
+      alert("남은 스킬 포인트가 부족합니다.");
+      return;
+    }
+
+    if (extraSkillPoint > 100) {
+      alert("기능치의 합이 100보다 큽니다");
+      return;
+    }
+
+    // Add new skill object to the state array
+    skills = [
+      ...skills,
+      {
+        name: extraSkillName,
+        base: extraSkillBase,
+        point: extraSkillPoint,
+        isCustom: true,
+      },
+    ];
+
+    // Reset inputs
+    extraSkillName = "";
+    extraSkillBase = 1;
+    extraSkillPoint = 0;
+  }
+
+  function removeExSkill(index: number): void {
+    skills = skills.filter((_: any, i: number) => i !== index);
   }
 
   /**
@@ -228,42 +270,46 @@
           <span class="skill-total-score"
             >Total: {skill.point + skill.base}</span
           >
+          {#if skill.isCustom}
+            <span onclick={() => removeExSkill(i)}>❌</span>
+          {/if}
         </div>
       {/each}
     </div>
+    <!-- Custom Skill Input Section -->
+    <div class="custom-skill-section">
+      <h3 class="section-title">{$_("skill_add_extra")}</h3>
 
-    <div class="custom-skill">
-      <h4>추가 기능 :</h4>
-      <input
-        type="text"
-        class="extra-kill-input"
-        placeholder="extra-skill-name"
-      />
-      <h4>초기값 :</h4>
-      <input
-        type="number"
-        class="extra-kill-input"
-        placeholder="1"
-        min="1"
-        max="100"
-      />
-      <h4>입력값 :</h4>
-      <input
-        type="number"
-        class="extra-kill-input"
-        placeholder="1"
-        min="0"
-        max="99"
-      />
-      <h4>결과 :</h4>
-      <input
-        type="number"
-        class="extra-kill-input"
-        min="1"
-        max="100"
-        readonly
-      />
+      <div class="custom-input-group">
+        <div class="input-field">
+          <span class="label">{$_("skill_extra_name")}</span>
+          <input type="text" bind:value={extraSkillName} />
+        </div>
+        <div class="input-field">
+          <span class="label">{$_("skill_extra_init")}</span>
+          <input type="number" bind:value={extraSkillBase} min="1" max="100" />
+        </div>
+        <div class="input-field">
+          <span class="label">{$_("skill_extra_input")}</span>
+          <input type="number" bind:value={extraSkillPoint} min="0" max="100" />
+        </div>
+        <div class="input-field">
+          <span class="label">{$_("skill_extra_result")}</span>
+          <input
+            type="number"
+            value={extraSkillBase + extraSkillPoint}
+            readonly
+            class="readonly-input"
+          />
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button onclick={addCustomSkill} style="width:250">{$_("skill_extra")}</button
+        >
+      </div>
     </div>
+
     <br />
     <div>
       <button onclick={copyToData}>{$_("copyToCoco")}</button>
@@ -422,4 +468,82 @@
     display: inline-block; /* 크기 변화를 위해 인라인 블록 설정 */
     animation: stat-pop 0.4s ease-out; /* 0.4초 동안 부드럽게 실행 */
   }
+
+  .custom-skill-section {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ddd; /* 부드러운 배경색 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  /* 1열: 제목 스타일 */
+  .section-title {
+    margin: 0 0 20px 0;
+    text-align: center;
+    color: #274d60;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #274d60;
+    padding-bottom: 10px;
+  }
+
+  /* 2열: 입력 그룹 (수평 정렬 및 균등 배분) */
+  .custom-input-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* 항목 간 간격 */
+    margin-bottom: 25px;
+  }
+
+  .input-field {
+    flex: 1; /* 균일한 너비 차지 */
+    display: flex;
+    flex-direction: column; /* 레이블을 위로, 입력을 아래로 (혹은 row로 변경 가능) */
+    align-items: center;
+    gap: 8px;
+    min-width: 100px;
+  }
+
+  .input-field .label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #555;
+    white-space: nowrap;
+  }
+
+  /* 입력창 공통 스타일 */
+  .input-field input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+
+  .input-field input:focus {
+    outline: none;
+    border-color: #40ddb3;
+    box-shadow: 0 0 4px rgba(64, 221, 179, 0.3);
+  }
+
+  /* 읽기 전용(최종치) 강조 */
+  .readonly-input {
+    background-color: #eee;
+    color: #274d60;
+    font-weight: bold;
+    border: 1px solid #bbb !important;
+  }
+
+  .button-row {
+    display: flex;
+    justify-content: center;
+  }
+
+ 
+
 </style>

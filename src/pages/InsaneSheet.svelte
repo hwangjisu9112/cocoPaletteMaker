@@ -173,6 +173,8 @@
     console.log("Selected Position 변경됨 ~ :", selectedPositions);
   }
 
+
+
   /**
    * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
    */
@@ -445,6 +447,8 @@
 
     <div>
       <div>
+    
+
         <button onclick={copyToData} style="width:600px"
           >{$_("copyToCoco")}</button
         >

@@ -66,7 +66,7 @@ interface InsaneCharacteristics {
 class AppStateIns {
   // $state 룬으로 반응형 상태 선언
   currentStats = $state<InsaneCharacteristics>({
-    hp: 0, san: 0, weapon: 0, painkillers: 0, omamori: 0, curiosity: "-", fear:"-"
+    hp: 0, san: 0, weapon: 0, painkillers: 0, omamori: 0, curiosity: "-", fear: "-"
   });
   isConfirmed = $state(false);
 
