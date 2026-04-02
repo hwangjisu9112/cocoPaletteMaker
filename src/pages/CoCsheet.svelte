@@ -19,9 +19,8 @@
   let skills = $state(JSON.parse(JSON.stringify(INITIAL_SKILLS)));
 
   let extraSkillName = $state("");
-  let extraSkillBase = $state(1);
+  let extraSkillBase = $state(0);
   let extraSkillPoint = $state(0);
-  let extraSkillResult = $derived(extraSkillBase + extraSkillPoint);
 
   let hp = (appState.currentStats.siz + appState.currentStats.con) / 10;
   let mp = appState.currentStats.pow / 5;
@@ -140,7 +139,7 @@
 
     // Reset inputs
     extraSkillName = "";
-    extraSkillBase = 1;
+    extraSkillBase = 0;
     extraSkillPoint = 0;
   }
 

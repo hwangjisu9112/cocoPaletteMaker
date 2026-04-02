@@ -116,11 +116,12 @@ export function createGooglesheetData(
 
     abilities.forEach(ab => {
         const abilityMatch = skills.find(s => s.name === ab.specified);
+        const judgeAb = ab.specified ? T(ab.specified) : "";
         if (abilityMatch) {
             const val = abilityMatch.current || abilityMatch.base;
-            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜ ${ab.specified}｜${ab.description}` + EOL;;
+            data += `2d6>=${val} [${ab.name}]｜${ab.type}｜ ${judgeAb}｜${ab.description}` + EOL;;
         } else {
-            data += `【${ab.name}】｜${ab.type}｜ ${ab.specified}｜${ab.description}\n`;
+            data += `[${ab.name}]｜${ab.type}｜ ${judgeAb}｜${ab.description}\n`;
         }
     });
 
@@ -169,11 +170,13 @@ export function createCocoPalette(
 
     abilities.forEach(ab => {
         const abilityMatch = skills.find(s => s.name === ab.specified);
+        const judgeAb = ab.specified ? T(ab.specified) : "";
+
         if (abilityMatch) {
             const val = abilityMatch.current || abilityMatch.base;
-            data += ` 2d6>=${val} 【${ab.name}】｜${ab.type}｜ ${ab.specified} ｜${ab.description}` + EOL;;
+            data += `2d6>=${val} [${ab.name}]｜${ab.type}｜ ${judgeAb} ｜${ab.description}` + EOL;;
         } else {
-            data += `【${ab.name}】｜${ab.type}｜ ${ab.specified} ｜${ab.description}\n`;
+            data += `[${ab.name}]｜${ab.type}｜ ${judgeAb} ｜${ab.description}\n`;
         }
     });
 
