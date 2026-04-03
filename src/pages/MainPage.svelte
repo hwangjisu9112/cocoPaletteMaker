@@ -12,7 +12,7 @@
       class="how-to-use-btn"
       onclick={() =>
         window.open(
-          "https://www.postype.com/@dmong0304/post/20879624",
+          "https://nice-surgeon-b5e.notion.site/Manual-TRPG-Character-Maker-33778a0f8bcb80659ad4dbf0a07024dd?pvs=73",
           "_blank",
         )}>🤔 How to Use</button
     >

@@ -117,43 +117,48 @@
    * 거리 기반 판정 수치를 계산하는 함수
    * 여러 개의 선택된 특기 중 현재 위치에서 가장 가까운(최소값) 거리를 계산합니다.
    */
-  function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
-    // 선택된 특기가 하나도 없으면 기본값 12
-    if (selectedPositions.length === 0) return skill.base;
+function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
+  // 1. 습득한 특기가 하나도 없으면 기본값(보통 12) 반환
+  if (selectedPositions.length === 0) return skill.base;
 
-    // 현재 특기가 선택된 특기라면 판정치는 5가 됩니다.
-    const isActuallySelected = selectedPositions.some(
-      (pos) => pos.cIdx === cIdx && pos.sIdx === sIdx,
-    );
-    if (isActuallySelected) return 5;
+  // 2. 현재 칸이 이미 유저가 습득한 특기라면 판정치는 무조건 5
+  const isActuallySelected = selectedPositions.some(
+    (pos) => pos.cIdx === cIdx && pos.sIdx === sIdx,
+  );
+  if (isActuallySelected) return 5;
 
-    // 모든 선택된 특기로부터의 거리를 비교하여 가장 유리한(작은) 판정치를 찾습니다.
-    let minCalculatedValue = 12;
+  let minCalculatedValue = 12;
 
-    for (const pos of selectedPositions) {
-      const SourceCtgr = categories[pos.cIdx];
+  // 3. 모든 습득 특기(Source)로부터 현재 타겟(Target)까지의 최단 거리 계산
+  for (const pos of selectedPositions) {
+    // 수평 거리 계산 (열당 2칸)
+    const horizontalDistance = Math.abs(pos.cIdx - cIdx) * 2;
+    
+    // 수직 거리 계산 (행 인덱스 차이)
+    // INITIAL_CATEGORY에서 원본 소스 스킬의 index를 참조합니다.
+    const sourceSkill = INITIAL_CATEGORY[pos.cIdx].skill[pos.sIdx];
+    const verticalDistance = Math.abs(sourceSkill.index - skill.index);
 
-      let horizonDistance = Math.abs(pos.cIdx - cIdx) * 2;
-      const targetSkill = categories[pos.cIdx].skill[pos.sIdx];
-      const verticalDistance = Math.abs(targetSkill.index - skill.index);
+    let totalDistance = horizontalDistance + verticalDistance;
 
-      if (horizonDistance > 0 && stats.curiosity === SourceCtgr.type) {
-        horizonDistance -= 1;
-      }
-
-      // 인세인 규칙: 동일 카테고리(열) 내에서 수직 거리를 계산합니다.
-      // 최종 판정치 = 기본 성공치(5) + 수평 거리 + 수직 거리
-      const totalDistance = horizonDistance + verticalDistance;
-      const val = 5 + totalDistance;
-
-      if (val < minCalculatedValue) {
-        minCalculatedValue = val;
-      }
+    // 4. 호기심 보너스
+    // 목적지(Target) 카테고리가 호기심이며, 수평 이동이 발생한 경우에만 1을 더 빼줍니다.
+    const targetCategory = INITIAL_CATEGORY[cIdx];
+    if (horizontalDistance > 0 && stats.curiosity === targetCategory.type) {
+      totalDistance -= 1;
     }
 
-    // 결과값은 12를 초과할 수 없다
-    return Math.min(minCalculatedValue, 12);
+    const val = 5 + totalDistance;
+
+    // 5. 여러 습득 특기 중 가장 유리한(작은) 판정값 선택
+    if (val < minCalculatedValue) {
+      minCalculatedValue = val;
+    }
   }
+
+  // 결과값은 인세인 룰상 최대 12를 초과할 수 없습니다.
+  return Math.min(minCalculatedValue, 12);
+}
 
   /**
    * 스킬 클릭 핸들러 (다중 선택 및 토글 로직)

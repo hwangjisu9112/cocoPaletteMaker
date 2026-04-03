@@ -304,7 +304,8 @@
       </div>
 
       <div class="button-row">
-        <button onclick={addCustomSkill} style="width:250">{$_("skill_extra")}</button
+        <button onclick={addCustomSkill} class="add-button" style="width:250px;"
+          >{$_("skill_extra")}</button
         >
       </div>
     </div>
@@ -470,6 +471,7 @@
 
   .custom-skill-section {
     max-width: 800px;
+    max-height: 200px;
     margin: 30px auto;
     padding: 20px;
     background-color: #ddd; /* 부드러운 배경색 */
@@ -493,7 +495,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px; /* 항목 간 간격 */
+    gap: 15px;
     margin-bottom: 25px;
   }
 
@@ -538,11 +540,10 @@
     border: 1px solid #bbb !important;
   }
 
-  .button-row {
-    display: flex;
-    justify-content: center;
+  .add-button {
+    border-radius: 80px;
+    text-align: center;
+    background-color: #eea830;
+    color: #274d60;
   }
-
- 
-
 </style>
