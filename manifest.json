@@ -10,8 +10,10 @@
     "128": "128image.png"
   },
   "action": {
-    "default_popup": "index.html",
     "default_icon": "16image.png",
     "default_title": "TRPG Character Maker"
+  },
+  "background": {
+    "service_worker": "background.js"
   }
 }
