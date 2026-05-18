@@ -2,7 +2,7 @@
   import { appStateIns } from "../store.svelte";
   import { get } from "svelte/store";
   import { _, json, locale, number } from "svelte-i18n";
-  import "../i18n.ts";
+  import "../i18n";
   import { INITIAL_CATEGORY, type Category, type Skill } from "./InsaneSkill";
   import { createGooglesheetData, createCocoPalette } from "./InsaneSheetStyle";
 
@@ -326,11 +326,11 @@ function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
     <div class="derived-stats-grid">
       <div class="stat-item">
         <p>{$_("ins_hp")}</p>
-        <input type="number" bind:value={stats.hp} min="1" max="10" />
+        <input type="number" bind:value={stats.hp} min="1" max="30" />
       </div>
       <div class="stat-item">
         <p>{$_("ins_san")}</p>
-        <input type="number" bind:value={stats.san} min="1" max="10" />
+        <input type="number" bind:value={stats.san} min="1" max="30" />
       </div>
       <div class="stat-item">
         <p>{$_("painkillers")}</p>

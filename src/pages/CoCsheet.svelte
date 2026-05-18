@@ -4,7 +4,7 @@
   import { INITIAL_SKILLS } from "./CoCskill";
   import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
   import { _, locale, isLoading } from "svelte-i18n";
-  import "../i18n.ts";
+  import "../i18n";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 

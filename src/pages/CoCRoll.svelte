@@ -3,7 +3,7 @@
   import { StatDescriptions } from "../CoCtooltip";
   import image02 from "../assets/image02.png";
   import { _, locale } from "svelte-i18n";
-  import "../i18n.ts";
+  import "../i18n";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
