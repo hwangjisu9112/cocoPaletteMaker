@@ -312,6 +312,7 @@
 
     <br />
     <div>
+      <button onclick={copyToData}> Clipboard api</button>
       <button onclick={copyToData}>{$_("copyToCoco")}</button>
       <button onclick={copyToSheet}>{$_("copyToSheet")}</button>
     </div>

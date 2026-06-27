@@ -16,6 +16,9 @@
           "_blank",
         )}>🤔 How to Use</button
     >
+       <button
+      class="how-to-use-btn" onclick={() => onNavigate("Sheet")}>🦫 Cells</button
+    >
     <h2>- Rules -</h2>
     <div class="button-container">
       <button onclick={() => onNavigate("CoCgen")}>
