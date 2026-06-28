@@ -82,6 +82,7 @@
   "alert_coco_success": "🎨　탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아의 채팅 팔레트에 ctrl + v를 입력하세요",
   "copyToSheet": "구글 시트에 붙여넣기",
   "alert_sheet_success": "✅　탐사자 정보가 클립보드에 복사됐습니다 \n빈 구글 시트의 A1셀에 ctrl + v를 입력하세요",
+  "alert_api_success": "👋　탐사자 정보가 클립보드에 복사됐습니다 \n코코포리아 웹 페이지에 바로 ctrl + v를 입력하세요",
   "label_name": "이름",
   "label_player": "플레이어",
   "label_job": "직업",

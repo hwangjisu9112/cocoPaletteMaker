@@ -1,33 +1,23 @@
 <script lang="ts">
-  import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
   import { _, locale, isLoading } from "svelte-i18n";
   import "../i18n";
 
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
-  let gridData = $state(Array.from({ length: 100 }, () => Array(20).fill("")));
+ let gridData = $state(Array.from({ length: 100 }, () => Array(10).fill("")));
 
-  // 데이터 저장(DB 기능)
-  function saveGrid() {
-    localStorage.setItem("insane-grid-data", JSON.stringify(gridData));
-  }
-
-  // 데이터 불러오기
-  function loadGrid() {
-    const saved = localStorage.getItem("insane-grid-data");
-    if (saved) gridData = JSON.parse(saved);
-  }
-
-  function handlePaste(e: ClipboardEvent, startRow: number, startCol: number) {
+  // 셀 붙여넣기 핸들러: 이벤트 객체만 받아서 현재 셀 위치를 추적
+  function handlePaste(e: ClipboardEvent, rIdx: number, cIdx: number) {
+    e.preventDefault();
     const data = e.clipboardData?.getData("text");
     if (!data) return;
 
     const rows = data.split(/\r?\n/);
-    rows.forEach((rowStr, rIdx) => {
+    rows.forEach((rowStr, rIdxOffset) => {
       const cols = rowStr.split("\t");
-      cols.forEach((val, cIdx) => {
-        const targetRow = startRow + rIdx;
-        const targetCol = startCol + cIdx;
+      cols.forEach((val, cIdxOffset) => {
+        const targetRow = rIdx + rIdxOffset;
+        const targetCol = cIdx + cIdxOffset;
         if (targetRow < 100 && targetCol < 20) {
           gridData[targetRow][targetCol] = val;
         }
@@ -37,33 +27,35 @@
 </script>
 
 <main>
-  <div class="content-wrapper">
-    <div>
-      <br /><br />
-      <div class="nav-row">
-        <button class="main-btn" onclick={() => onNavigate("main")}
-          >{$_("main_btn")}</button
-        >
-      </div>
-      <div class="grid-container">
-        {#each gridData as row, rIdx}
-          {#each row as cell, cIdx}{/each}
-        {/each}
-      </div>
-    </div>
+  <div class="grid-container">
+    {#each gridData as row, rIdx}
+      {#each row as cell, cIdx}
+        <input 
+          value={gridData[rIdx][cIdx]}
+          oninput={(e: any) => gridData[rIdx][cIdx] = e.target.value}
+          onpaste={(e) => handlePaste(e, rIdx, cIdx)}
+        />
+      {/each}
+    {/each}
   </div>
 </main>
 
 <style>
   .grid-container {
     display: grid;
-    /* 20개의 열을 40px씩 고정 */
-    grid-template-columns: repeat(20, 40px);
+    grid-template-columns: repeat(20, 40px); /* 20개 열 */
+    width: fit-content; /* 컨테이너 크기 조정 */
+    border: 1px solid #ccc;
   }
   input {
     width: 40px;
     height: 25px;
-    border: 1px solid #ddd;
+    border: 0.5px solid #eee; /* 아주 얇은 테두리 */
     outline: none;
+    font-size: 12px;
+  }
+  input:focus {
+    background-color: #eef6ff; /* 포커스 시 색상 변경으로 위치 확인 */
+    border: 1.5px solid #0e0eab; /* 아주 얇은 테두리 */
   }
 </style>

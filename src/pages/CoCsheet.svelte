@@ -2,7 +2,11 @@
   import { appState } from "../store.svelte";
   import { get } from "svelte/store";
   import { INITIAL_SKILLS } from "./CoCskill";
-  import { createGooglesheetData, createCocoPalette } from "./CoCsheetStyle";
+  import {
+    createGooglesheetData,
+    createCocoPalette,
+    createCocoporiaJson,
+  } from "./CoCsheetStyle";
   import { _, locale, isLoading } from "svelte-i18n";
   import "../i18n";
 
@@ -206,6 +210,49 @@
     }
     document.body.removeChild(textarea);
   }
+
+  /**
+   * JSON 데이터를 생성해 클립보드로 복사합니다.
+   */
+  function copyToAPI(): void {
+    if (!appState.currentStats) {
+      alert("특성치 정보가 없습니다.");
+      return;
+    }
+
+    // 재력 스킬 찾기 (기능치 목록에서 '재력' 검색)
+    const wealthSkill = skills.find((s: Skills) => s.name === "skill_Credit") || {
+      base: 0,
+      point: 0,
+    };
+    const wealthTotal = wealthSkill.base + wealthSkill.point;
+
+    const jsonData = createCocoporiaJson(
+      appState.currentStats,
+      { hp, mp, sanity, damage },
+      skills,
+      wealthTotal,
+      (key) => get(_)(key),
+    );
+
+    // 현대적인 Clipboard API 사용 (권장)
+    navigator.clipboard
+      .writeText(jsonData)
+      .then(() => {
+        alert("코코포리아용 JSON 데이터가 클립보드에 복사되었습니다.");
+      })
+      .catch((err) => {
+        console.error("복사 실패:", err);
+        // 실패 시 기존 방식(textarea)으로 폴백
+        const textarea = document.createElement("textarea");
+        textarea.value = jsonData;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("데이터가 복사되었습니다.");
+      });
+  }
 </script>
 
 <main>
@@ -312,7 +359,7 @@
 
     <br />
     <div>
-      <button onclick={copyToData}> Clipboard api</button>
+      <button onclick={copyToAPI}> Clipboard API</button>
       <button onclick={copyToData}>{$_("copyToCoco")}</button>
       <button onclick={copyToSheet}>{$_("copyToSheet")}</button>
     </div>
