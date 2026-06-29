@@ -220,8 +220,8 @@ export function createCocoporiaJson(
             status: [
                 { label: T("hp"), value: derivedStats.hp, max: derivedStats.hp },
                 { label: T("mp"), value: derivedStats.mp, max: derivedStats.mp },
-                { label: T("san"), value: derivedStats.sanity, max: 99 },
-                { label: T("luc"), value: stats.luc, max: 99 }
+                { label: T("san"), value: derivedStats.sanity, max: derivedStats.sanity },
+                { label: T("luc"), value: stats.luc, max: stats.luc }
             ],
             params: [
                 { label: "피해보너스", value: derivedStats.damage },
@@ -234,7 +234,7 @@ export function createCocoporiaJson(
                 { label: T("int"), value: stats.int.toString() },
                 { label: T("siz"), value: stats.siz.toString() }
             ],
-            commands: allCommands // 💡 합쳐진 커맨드 적용
+            commands: allCommands // 
         }
     };
 

@@ -18,7 +18,7 @@
       cols.forEach((val, cIdxOffset) => {
         const targetRow = rIdx + rIdxOffset;
         const targetCol = cIdx + cIdxOffset;
-        if (targetRow < 100 && targetCol < 20) {
+        if (targetRow < 200 && targetCol < 10) {
           gridData[targetRow][targetCol] = val;
         }
       });
@@ -43,19 +43,19 @@
 <style>
   .grid-container {
     display: grid;
-    grid-template-columns: repeat(20, 40px); /* 20개 열 */
-    width: fit-content; /* 컨테이너 크기 조정 */
-    border: 1px solid #ccc;
+    grid-template-columns: repeat(10, 100px); 
+    width: fit-content; 
+    border: 1px solid #1654e3b3;
   }
   input {
-    width: 40px;
+    width: 100px;
     height: 25px;
-    border: 0.5px solid #eee; /* 아주 얇은 테두리 */
+    border: 1.5px solid #eee; 
     outline: none;
     font-size: 12px;
   }
   input:focus {
-    background-color: #eef6ff; /* 포커스 시 색상 변경으로 위치 확인 */
-    border: 1.5px solid #0e0eab; /* 아주 얇은 테두리 */
+    background-color: #eef6ff; 
+    border: 1.5px solid #0e0eab; 
   }
 </style>

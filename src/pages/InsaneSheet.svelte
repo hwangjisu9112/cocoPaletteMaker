@@ -4,7 +4,11 @@
   import { _, json, locale, number } from "svelte-i18n";
   import "../i18n";
   import { INITIAL_CATEGORY, type Category, type Skill } from "./InsaneSkill";
-  import { createGooglesheetData, createCocoPalette } from "./InsaneSheetStyle";
+  import {
+    createGooglesheetData,
+    createCocoPalette,
+    createCocoporiaJson,
+  } from "./InsaneSheetStyle";
 
   import { passive } from "svelte/legacy";
   import app from "../main";
@@ -117,48 +121,48 @@
    * 거리 기반 판정 수치를 계산하는 함수
    * 여러 개의 선택된 특기 중 현재 위치에서 가장 가까운(최소값) 거리를 계산합니다.
    */
-function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
-  // 1. 습득한 특기가 하나도 없으면 기본값(보통 12) 반환
-  if (selectedPositions.length === 0) return skill.base;
+  function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
+    // 1. 습득한 특기가 하나도 없으면 기본값(보통 12) 반환
+    if (selectedPositions.length === 0) return skill.base;
 
-  // 2. 현재 칸이 이미 유저가 습득한 특기라면 판정치는 무조건 5
-  const isActuallySelected = selectedPositions.some(
-    (pos) => pos.cIdx === cIdx && pos.sIdx === sIdx,
-  );
-  if (isActuallySelected) return 5;
+    // 2. 현재 칸이 이미 유저가 습득한 특기라면 판정치는 무조건 5
+    const isActuallySelected = selectedPositions.some(
+      (pos) => pos.cIdx === cIdx && pos.sIdx === sIdx,
+    );
+    if (isActuallySelected) return 5;
 
-  let minCalculatedValue = 12;
+    let minCalculatedValue = 12;
 
-  // 3. 모든 습득 특기(Source)로부터 현재 타겟(Target)까지의 최단 거리 계산
-  for (const pos of selectedPositions) {
-    // 수평 거리 계산 (열당 2칸)
-    const horizontalDistance = Math.abs(pos.cIdx - cIdx) * 2;
-    
-    // 수직 거리 계산 (행 인덱스 차이)
-    // INITIAL_CATEGORY에서 원본 소스 스킬의 index를 참조합니다.
-    const sourceSkill = INITIAL_CATEGORY[pos.cIdx].skill[pos.sIdx];
-    const verticalDistance = Math.abs(sourceSkill.index - skill.index);
+    // 3. 모든 습득 특기(Source)로부터 현재 타겟(Target)까지의 최단 거리 계산
+    for (const pos of selectedPositions) {
+      // 수평 거리 계산 (열당 2칸)
+      const horizontalDistance = Math.abs(pos.cIdx - cIdx) * 2;
 
-    let totalDistance = horizontalDistance + verticalDistance;
+      // 수직 거리 계산 (행 인덱스 차이)
+      // INITIAL_CATEGORY에서 원본 소스 스킬의 index를 참조합니다.
+      const sourceSkill = INITIAL_CATEGORY[pos.cIdx].skill[pos.sIdx];
+      const verticalDistance = Math.abs(sourceSkill.index - skill.index);
 
-    // 4. 호기심 보너스
-    // 목적지(Target) 카테고리가 호기심이며, 수평 이동이 발생한 경우에만 1을 더 빼줍니다.
-    const targetCategory = INITIAL_CATEGORY[cIdx];
-    if (horizontalDistance > 0 && stats.curiosity === targetCategory.type) {
-      totalDistance -= 1;
+      let totalDistance = horizontalDistance + verticalDistance;
+
+      // 4. 호기심 보너스
+      // 목적지(Target) 카테고리가 호기심이며, 수평 이동이 발생한 경우에만 1을 더 빼줍니다.
+      const targetCategory = INITIAL_CATEGORY[cIdx];
+      if (horizontalDistance > 0 && stats.curiosity === targetCategory.type) {
+        totalDistance -= 1;
+      }
+
+      const val = 5 + totalDistance;
+
+      // 5. 여러 습득 특기 중 가장 유리한(작은) 판정값 선택
+      if (val < minCalculatedValue) {
+        minCalculatedValue = val;
+      }
     }
 
-    const val = 5 + totalDistance;
-
-    // 5. 여러 습득 특기 중 가장 유리한(작은) 판정값 선택
-    if (val < minCalculatedValue) {
-      minCalculatedValue = val;
-    }
+    // 결과값은 인세인 룰상 최대 12를 초과할 수 없습니다.
+    return Math.min(minCalculatedValue, 12);
   }
-
-  // 결과값은 인세인 룰상 최대 12를 초과할 수 없습니다.
-  return Math.min(minCalculatedValue, 12);
-}
 
   /**
    * 스킬 클릭 핸들러 (다중 선택 및 토글 로직)
@@ -177,8 +181,6 @@ function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
     }
     console.log("Selected Position 변경됨 ~ :", selectedPositions);
   }
-
-
 
   /**
    * 구글시트용 캐릭터 데이터를 생성해 클립보드로 복사합니다.
@@ -301,6 +303,52 @@ function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
       alert(
         get(_)("alert_coco_success", {
           default: "클립보드에 복사되었습니다.",
+        }),
+      );
+    } catch (err) {
+      console.error("복사 실패:", err);
+    }
+    document.body.removeChild(textarea);
+  }
+
+  /**
+   * 봉마인 캐릭터 데이터를 코코포리아 JSON 형식으로 변환하여 클립보드에 복사합니다.
+   */
+  function copyToAPI(): void {
+    // 1. 상태 업데이트
+    appStateIns.setStats({ ...stats });
+
+    // 2. 특기 데이터 준비 (기존 방식 활용)
+    const selectedSkills = categories.flatMap((category, cIdx) =>
+      category.skill.map((skill, sIdx) => {
+        const value = getSkillValue(cIdx, sIdx, skill);
+        return {
+          ...skill,
+          base: value, // base에 계산된 판정치를 저장
+        };
+      }),
+    );
+
+    // 3. JSON 데이터 생성
+    const jsonData = createCocoporiaJson(
+      stats,
+      { ...stats },
+      selectedSkills,
+      abilities,
+      (key) => get(_)(key),
+    );
+
+    // 4. 클립보드 복사 실행
+    const textarea = document.createElement("textarea");
+    textarea.value = jsonData;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand("copy");
+      console.log("JSON 복사 성공");
+      alert(
+        get(_)("alert_coco_success", {
+          default: "JSON 데이터가 복사되었습니다.",
         }),
       );
     } catch (err) {
@@ -452,7 +500,7 @@ function getSkillValue(cIdx: number, sIdx: number, skill: Skill): number {
 
     <div>
       <div>
-    
+        <button onclick={copyToAPI} style="width:600px"> Clipboard API</button>
 
         <button onclick={copyToData} style="width:600px"
           >{$_("copyToCoco")}</button
