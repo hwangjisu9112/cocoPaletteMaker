@@ -2,6 +2,13 @@
   import { _, locale, isLoading } from "svelte-i18n";
   import "../i18n";
 
+  import { onMount } from 'svelte';
+  import Handsontable from 'handsontable';
+  import 'handsontable/dist/handsontable.full.min.css';
+
+  let container: HTMLDivElement;
+  let hot: Handsontable;
+
   let { onNavigate }: { onNavigate: (page: string) => void } = $props();
 
  let gridData = $state(Array.from({ length: 100 }, () => Array(10).fill("")));
